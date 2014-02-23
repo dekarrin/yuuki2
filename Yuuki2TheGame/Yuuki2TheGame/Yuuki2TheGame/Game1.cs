@@ -34,7 +34,8 @@ namespace Yuuki2TheGame
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            int butts = 0;
+            butts++;
             base.Initialize();
         }
 
