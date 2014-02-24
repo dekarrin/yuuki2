@@ -2,14 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace Yuuki2TheGame.Core
 {
-    class Character
+    class InteractEventArgs : EventArgs
+    {
+        public GameCharacter Actor { get; set; }
+    }
+
+    class GameCharacter
     {
         private int _health = 0;
 
-        public int MaxHealth { get; }
+        public Point Position { get; private set; }
+
+        public int MaxHealth { get; private set; }
 
         public int Health {
             get {
@@ -38,25 +46,58 @@ namespace Yuuki2TheGame.Core
 
         public delegate void DeathHandler(object source, EventArgs e);
 
-        public DeathHandler OnDeath = null;
+        public event DeathHandler OnDeath = null;
 
-        public delegate void OnInteract(Character source);
+        public delegate void InteractHandler(object source, InteractEventArgs e);
 
-        protected abstract void Interact;
+        public event InteractHandler OnInteract = null;
+
+        public GameCharacter(string name, Point position, int health, int baseAttack, int baseArmor)
+        {
+            this.Name = name;
+            this.Position = position;
+            this.MaxHealth = health;
+            this.Health = health;
+            this.BaseArmor = baseArmor;
+            this.BaseAttack = baseAttack;
+        }
+
+        /// <summary>
+        /// Interacts with this character.
+        /// </summary>
+        /// <param name="interactor"></param>
+        public void Interact(GameCharacter interactor)
+        {
+            if (OnInteract != null)
+            {
+                InteractEventArgs e = new InteractEventArgs();
+                e.Actor = interactor;
+                OnInteract(this, e);
+            }
+        }
+
+        /// <summary>
+        /// Called by game engine; tells instance to update self.
+        /// </summary>
+        /// <param name="ts">Amount of time passed since last update.</param>
+        public virtual void Update(TimeSpan ts)
+        {
+
+        }
 
         public void MoveLeft()
         {
-
+            // can't fill out until we have engine details
         }
 
         public void MoveRight()
         {
-
+            // can't fill out until we have engine details
         }
 
         public void Jump()
         {
-
+            // can't fill out until we have engine details
         }
 
 
