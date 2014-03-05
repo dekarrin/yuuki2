@@ -8,29 +8,47 @@ namespace Yuuki2TheGame
 {
     class Block
     {
-        int LevelRequired;
-        int MiningResistance;
-        Point Position;
-        
-        public Block(int BlockHealth, int ItemLevel, Point Map)
+        private int levelrequired;
+        private int mininghealth;
+        private Point position;
+
+        public int LevelRequired
         {
-            MiningResistance = BlockHealth;
+            get { return levelrequired; }
+            set { levelrequired = value; }
+        }
+
+        public int MiningHealth
+        {
+            get { return mininghealth; }
+            set { mininghealth = value; }
+        }
+        public Point Position
+        {
+            get { return position; }
+            set { position = value; }
+        }
+
+
+        public Block(int BlockHealth, int ItemLevel, Point MapPosition)
+        {
+            MiningHealth = BlockHealth;
             LevelRequired = ItemLevel;
-            Position = Map;
+            Position = MapPosition;
         }
 
         public void Destroy(Point MapPosition)
         {
-            if (Position.Equals(MapPosition)){
-                Position.X = 0;
-                Position.Y = 0;
+            if (position.Equals(MapPosition)){
+                position.X = 0;
+                position.Y = 0;
             }
         }
 
         public void BlockPlaced(Point MapPosition)
         {
-            if(Position.X == null || Position.Y == null){
-                Position = MapPosition;
+            if(position.X == 0 || position.Y == 0){
+                position = MapPosition;
             }
         }
     }
