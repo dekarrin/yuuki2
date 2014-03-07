@@ -52,12 +52,6 @@ namespace Yuuki2TheGame.Core
             set { stack = value; }
         }
         
-
-        public int Maxstack
-        {
-            get { return _maxstack; }
-            set { _maxstack = value; }
-        }
         public int ID
         {
             get {return id;}
