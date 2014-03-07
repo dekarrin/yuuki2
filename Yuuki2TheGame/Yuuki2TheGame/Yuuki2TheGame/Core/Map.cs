@@ -1,0 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Yuuki2TheGame.Core
+{
+    class Map
+    {
+        private int[,] MapArray = new int[200, 200];
+
+    }
+}
