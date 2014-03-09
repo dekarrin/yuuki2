@@ -44,7 +44,7 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return null // TODO Implement Items property
+                return null; // TODO Implement Items property
             }
         }
     }

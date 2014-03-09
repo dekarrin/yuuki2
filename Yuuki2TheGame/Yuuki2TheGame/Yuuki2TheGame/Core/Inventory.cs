@@ -13,17 +13,15 @@ namespace Yuuki2TheGame.Core
             inventory = new List<Item>();
         }
 
-        private Item GetItem(Item item){
-            Item FoundItem = inventory.Find(x => item.ID == x.ID);
-            return FoundItem;
+        public bool FindItem(Item i){
+            return inventory.Exists(x => i.ID == x.ID);
         }
 
         public void Add(Item n){
-            if (n.Stackable)
+            if (n.Stackable && this.FindItem(n))
             {
-                //probably broken code RIP
-                Item foundItem = GetItem(n);
-                foundItem.Count++;
+                //not broken anymore B]
+                inventory.Find(x => n.ID == x.ID).Count++;
             }
             else
             {
@@ -31,11 +29,24 @@ namespace Yuuki2TheGame.Core
             }
         }
 
+        //removes one instance of the item.
         public void Remove(Item n)
         {
-            Item r = GetItem(n);
-            inventory.Remove(r);
+            
+            if(n.Stackable && this.FindItem(n))
+            {
+                inventory.Find(x => n.ID == x.ID).Count--;
+            }
+            else
+            {
+                inventory.RemoveAll(x => n.ID == x.ID);
+            }
 
+        }
+
+        public void Empty()
+        {
+            inventory.Clear();
         }
         
     }

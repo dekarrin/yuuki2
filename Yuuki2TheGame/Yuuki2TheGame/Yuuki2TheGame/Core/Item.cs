@@ -1,20 +1,36 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Yuuki2TheGame.Core
 {
+    
     class Item
     {
         private int id;
         private string name;
         private string type;
         private int level;
+        private int health;
         private bool stack;
         private int _maxstack;
         private bool equipable;
         private int count;
+        private string description;
+
+        public int Health
+        {
+            get { return health; }
+            set { health = value; }
+        }
+
+        public string Description
+        {
+            get { return description; }
+            set { description = value; }
+        }
 
         public int Count
         {
@@ -45,12 +61,6 @@ namespace Yuuki2TheGame.Core
             set { level = value; }
         }
         
-
-        public bool Stack
-        {
-            get { return stack; }
-            set { stack = value; }
-        }
         
         public int ID
         {
@@ -103,6 +113,11 @@ namespace Yuuki2TheGame.Core
             Equipable = isEquipable;
         }
 
+        public abstract Item()
+        {
+            // TODO: Complete member initialization
+        }
+
         public void Use(){
             //implemented with engine details
         }
@@ -111,6 +126,23 @@ namespace Yuuki2TheGame.Core
         {
             Name = DesiredName;
         }
+
+        public void PerformAction()
+        {
+
+        }
+
+        public string InspectInfo()
+        {
+            return Description;
+        }
+
+        public void OnDestroy()
+        {
+            this.Health = 0;
+        }
+
+
         
 
     }
