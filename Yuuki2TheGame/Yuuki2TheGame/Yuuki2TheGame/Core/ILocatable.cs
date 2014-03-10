@@ -8,8 +8,8 @@ namespace Yuuki2TheGame.Core
 {
     class MovedEventArgs : EventArgs
     {
-        public Vector2 OldLocation;
-        public Vector2 NewLocation;
+        public Vector2 OldLocation { get; set; }
+        public Vector2 NewLocation { get; set; }
     }
 
     delegate void MovedEventHandler(object source, MovedEventArgs e);
