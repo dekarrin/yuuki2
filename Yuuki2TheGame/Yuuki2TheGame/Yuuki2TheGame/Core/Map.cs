@@ -10,6 +10,48 @@ namespace Yuuki2TheGame.Core
     {
         public Block[,] world { get; private set; }
 
+        private int _updateOrder = 0;
+
+        public int UpdateOrder
+        {
+            get
+            {
+                return _updateOrder;
+            }
+            set
+            {
+                bool diff = _updateOrder != value;
+                _updateOrder = value;
+                if (diff && UpdateOrderChanged != null)
+                {
+                    UpdateOrderChanged(this, new EventArgs());
+                }
+            }
+        }
+
+        private bool _enabled = true;
+
+        public bool Enabled
+        {
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                bool diff = _enabled != value;
+                _enabled = value;
+                if (diff && EnabledChanged != null)
+                {
+                    EnabledChanged(this, new EventArgs());
+                }
+            }
+        }
+
+        public event EventHandler<EventArgs> UpdateOrderChanged = null;
+
+        public event EventHandler<EventArgs> EnabledChanged = null;
+
         public Map(int height, int width)
         {
             GenerateWorld(height, width);
@@ -27,12 +69,14 @@ namespace Yuuki2TheGame.Core
             return world;
         }
 
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             // apply physics to blocks
             foreach (Block b in world)
             {
-                b.Update(gameTime);
+                if (b != null) {
+                    b.Update(gameTime);
+                }
             }
         }
 

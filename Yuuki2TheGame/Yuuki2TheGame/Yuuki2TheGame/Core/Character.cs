@@ -13,6 +13,48 @@ namespace Yuuki2TheGame.Core
 
     class GameCharacter : IUpdateable
     {
+        private int _updateOrder = 0;
+
+        public int UpdateOrder
+        {
+            get
+            {
+                return _updateOrder;
+            }
+            set
+            {
+                bool diff = _updateOrder != value;
+                _updateOrder = value;
+                if (diff && UpdateOrderChanged != null)
+                {
+                    UpdateOrderChanged(this, new EventArgs());
+                }
+            }
+        }
+
+        private bool _enabled = true;
+
+        public bool Enabled
+        {
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                bool diff = _enabled != value;
+                _enabled = value;
+                if (diff && EnabledChanged != null)
+                {
+                    EnabledChanged(this, new EventArgs());
+                }
+            }
+        }
+
+        public event EventHandler<EventArgs> UpdateOrderChanged = null;
+
+        public event EventHandler<EventArgs> EnabledChanged = null;
+        
         private int _health = 0;
 
         public Point Position { get; private set; }
@@ -80,7 +122,7 @@ namespace Yuuki2TheGame.Core
         /// Called by game engine; tells instance to update self.
         /// </summary>
         /// <param name="ts">Amount of time passed since last update.</param>
-        public override virtual void Update(GameTime ts)
+        public void Update(GameTime ts)
         {
 
         }
