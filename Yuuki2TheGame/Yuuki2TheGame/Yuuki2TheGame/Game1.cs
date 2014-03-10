@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using Yuuki2TheGame.Core;
 
 namespace Yuuki2TheGame
 {
@@ -18,11 +19,22 @@ namespace Yuuki2TheGame
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Engine gameEngine;
+
+        public const int WORLD_WIDTH = 100;
+        public const int WORLD_HEIGHT = 100;
+
+        public const int GAME_WIDTH = 800;
+        public const int GAME_HEIGHT = 600;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = GAME_WIDTH;
+            graphics.PreferredBackBufferHeight = GAME_HEIGHT;
+            graphics.ApplyChanges();
             Content.RootDirectory = "Content";
+            gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
         }
 
         /// <summary>
@@ -72,7 +84,7 @@ namespace Yuuki2TheGame
                 this.Exit();
 
             // TODO: Add your update logic here
-
+            gameEngine.Update(gameTime);
             base.Update(gameTime);
         }
 

@@ -14,37 +14,45 @@ namespace Yuuki2TheGame.Core
 
         private Map _map;
 
-        public Engine()
+        public Engine(Point size)
         {
-
+            _map = new Map(size.X, size.Y);
         }
 
-        public void Update(GameTime gametime)
+        public void Update(GameTime gameTime)
         {
-
+            foreach (GameCharacter c in _characters)
+            {
+                c.Update(gameTime);
+            }
+            foreach (Item i in _items)
+            {
+                i.Update(gameTime);
+            }
+            _map.Update(gameTime);
         }
 
         public Block[,] MapData
         {
             get
             {
-                return null; // TODO Implement MapData property
+                return _map.GetView(); // TODO Implement MapData property
             }
         }
 
-        public List<GameCharacter> Characters
+        public IList<GameCharacter> Characters
         {
             get
             {
-                return null; // TODO Implement Character property
+                return _characters.AsReadOnly();
             }
         }
 
-        public List<Item> Items
+        public IList<Item> Items
         {
             get
             {
-                return null // TODO Implement Items property
+                return _items.AsReadOnly();
             }
         }
     }

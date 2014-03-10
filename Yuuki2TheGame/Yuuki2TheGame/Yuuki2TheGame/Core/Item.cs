@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace Yuuki2TheGame.Core
 {
-    class Item
+    class Item : IUpdateable
     {
         private int id;
         private string name;
@@ -15,6 +16,52 @@ namespace Yuuki2TheGame.Core
         private int _maxstack;
         private bool equipable;
         private int count;
+
+        private int _updateOrder = 0;
+
+        public int UpdateOrder
+        {
+            get
+            {
+                return _updateOrder;
+            }
+            set
+            {
+                bool diff = _updateOrder != value;
+                _updateOrder = value;
+                if (diff && UpdateOrderChanged != null)
+                {
+                    UpdateOrderChanged(this, new EventArgs());
+                }
+            }
+        }
+
+        private bool _enabled = true;
+
+        public bool Enabled
+        {
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                bool diff = _enabled != value;
+                _enabled = value;
+                if (diff && EnabledChanged != null)
+                {
+                    EnabledChanged(this, new EventArgs());
+                }
+            }
+        }
+
+        public event EventHandler<EventArgs> UpdateOrderChanged = null;
+
+        public event EventHandler<EventArgs> EnabledChanged = null;
+
+        public void Update(GameTime gameTime) {
+
+        }
 
         public int Count
         {

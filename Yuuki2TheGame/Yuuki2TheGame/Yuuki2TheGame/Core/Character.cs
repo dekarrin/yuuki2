@@ -11,11 +11,53 @@ namespace Yuuki2TheGame.Core
         public GameCharacter Actor { get; set; }
     }
 
-    class GameCharacter
+    class GameCharacter : IUpdateable, ILocatable
     {
+        private int _updateOrder = 0;
+
+        public int UpdateOrder
+        {
+            get
+            {
+                return _updateOrder;
+            }
+            set
+            {
+                bool diff = _updateOrder != value;
+                _updateOrder = value;
+                if (diff && UpdateOrderChanged != null)
+                {
+                    UpdateOrderChanged(this, new EventArgs());
+                }
+            }
+        }
+
+        private bool _enabled = true;
+
+        public bool Enabled
+        {
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                bool diff = _enabled != value;
+                _enabled = value;
+                if (diff && EnabledChanged != null)
+                {
+                    EnabledChanged(this, new EventArgs());
+                }
+            }
+        }
+
+        public event EventHandler<EventArgs> UpdateOrderChanged = null;
+
+        public event EventHandler<EventArgs> EnabledChanged = null;
+        
         private int _health = 0;
 
-        public Point Position { get; private set; }
+        public Vector2 Location { get; private set; }
 
         public int MaxHealth { get; private set; }
 
@@ -36,7 +78,7 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public string Name { get; set; } 
+        public string Name { get; set; }
 
         public int BaseAttack { get; set; }
 
@@ -52,10 +94,12 @@ namespace Yuuki2TheGame.Core
 
         public event InteractHandler OnInteract = null;
 
-        public GameCharacter(string name, Point position, int health, int baseAttack, int baseArmor)
+        public event MovedEventHandler OnMoved = null;
+
+        public GameCharacter(string name, Vector2 location, int health, int baseAttack, int baseArmor)
         {
             this.Name = name;
-            this.Position = position;
+            this.Location = location;
             this.MaxHealth = health;
             this.Health = health;
             this.BaseArmor = baseArmor;
@@ -80,7 +124,7 @@ namespace Yuuki2TheGame.Core
         /// Called by game engine; tells instance to update self.
         /// </summary>
         /// <param name="ts">Amount of time passed since last update.</param>
-        public virtual void Update(TimeSpan ts)
+        public void Update(GameTime ts)
         {
 
         }
