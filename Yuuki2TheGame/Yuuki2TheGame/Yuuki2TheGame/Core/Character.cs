@@ -11,7 +11,7 @@ namespace Yuuki2TheGame.Core
         public GameCharacter Actor { get; set; }
     }
 
-    class GameCharacter : IUpdateable
+    class GameCharacter : IUpdateable, ILocatable
     {
         private int _updateOrder = 0;
 
@@ -57,7 +57,7 @@ namespace Yuuki2TheGame.Core
         
         private int _health = 0;
 
-        public Point Position { get; private set; }
+        public Vector2 Location { get; private set; }
 
         public int MaxHealth { get; private set; }
 
@@ -78,7 +78,7 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public string Name { get; set; } 
+        public string Name { get; set; }
 
         public int BaseAttack { get; set; }
 
@@ -94,10 +94,12 @@ namespace Yuuki2TheGame.Core
 
         public event InteractHandler OnInteract = null;
 
-        public GameCharacter(string name, Point position, int health, int baseAttack, int baseArmor)
+        public event MovedEventHandler OnMoved = null;
+
+        public GameCharacter(string name, Vector2 location, int health, int baseAttack, int baseArmor)
         {
             this.Name = name;
-            this.Position = position;
+            this.Location = location;
             this.MaxHealth = health;
             this.Health = health;
             this.BaseArmor = baseArmor;

@@ -24,10 +24,10 @@ namespace Yuuki2TheGame.Core
             {
                 if (_follow != null)
                 {
-                    _follow.Moved -= HandleMovement;
+                    _follow.OnMoved -= HandleMovement;
                 }
                 _follow = value;
-                _follow.Moved += HandleMovement;
+                _follow.OnMoved += HandleMovement;
             }
         }
 

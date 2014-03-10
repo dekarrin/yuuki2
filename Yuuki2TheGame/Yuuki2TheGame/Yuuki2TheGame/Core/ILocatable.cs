@@ -12,12 +12,12 @@ namespace Yuuki2TheGame.Core
         public Vector2 NewLocation;
     }
 
+    delegate void MovedEventHandler(object source, MovedEventArgs e);
+
     interface ILocatable
     {
-        public Vector2 Location;
+        Vector2 Location { get; }
 
-        public delegate void MovedEventHandler(object source, MovedEventArgs e);
-
-        public event MovedEventHandler Moved;
+        event MovedEventHandler OnMoved;
     }
 }
