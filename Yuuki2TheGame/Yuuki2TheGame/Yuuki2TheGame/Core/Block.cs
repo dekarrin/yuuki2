@@ -21,7 +21,7 @@ namespace Yuuki2TheGame
         public int BlockHealth
         {
             get { return blockhealth; }
-            set { blockhealth = value; }
+            set { blockhealth = value; } 
         }
 
         public int ID
