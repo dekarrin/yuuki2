@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Yuuki2TheGame.Core
 {
-    class Map
+    class Map : IUpdateable
     {
         public Block[,] world { get; private set; }
 
@@ -25,6 +25,15 @@ namespace Yuuki2TheGame.Core
                 }
             }
             return world;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            // apply physics to blocks
+            foreach (Block b in world)
+            {
+                b.Update(gameTime);
+            }
         }
 
         public Block BlockAt(Point p)

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace Yuuki2TheGame.Core
 {
-    class Item
+    class Item : IUpdateable
     {
         private int id;
         private string name;
@@ -15,6 +16,10 @@ namespace Yuuki2TheGame.Core
         private int _maxstack;
         private bool equipable;
         private int count;
+
+        public override virtual void Update(GameTime gameTime) {
+
+        }
 
         public int Count
         {

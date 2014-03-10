@@ -11,7 +11,7 @@ namespace Yuuki2TheGame.Core
         public GameCharacter Actor { get; set; }
     }
 
-    class GameCharacter
+    class GameCharacter : IUpdateable
     {
         private int _health = 0;
 
@@ -80,7 +80,7 @@ namespace Yuuki2TheGame.Core
         /// Called by game engine; tells instance to update self.
         /// </summary>
         /// <param name="ts">Amount of time passed since last update.</param>
-        public virtual void Update(TimeSpan ts)
+        public override virtual void Update(GameTime ts)
         {
 
         }

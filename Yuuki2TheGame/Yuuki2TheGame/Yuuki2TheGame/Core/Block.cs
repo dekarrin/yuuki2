@@ -6,8 +6,9 @@ using System.Text;
 
 namespace Yuuki2TheGame
 {
-    class Block
+    class Block : IUpdateable
     {
+
         private int levelrequired;
         private int mininghealth;
         private int id;
@@ -16,6 +17,11 @@ namespace Yuuki2TheGame
         {
             get { return levelrequired; }
             set { levelrequired = value; }
+        }
+
+        public override virtual void Update(GameTime gt)
+        {
+            // do physics of block here
         }
 
         public int MiningHealth
