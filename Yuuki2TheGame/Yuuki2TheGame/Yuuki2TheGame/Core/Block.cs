@@ -10,9 +10,9 @@ namespace Yuuki2TheGame
     {
 
         private int levelrequired;
-        private int mininghealth;
+        private int blockhealth;
         private int id;
-        
+
         private int _updateOrder = 0;
 
         public int UpdateOrder
@@ -68,8 +68,8 @@ namespace Yuuki2TheGame
 
         public int MiningHealth
         {
-            get { return mininghealth; }
-            set { mininghealth = value; }
+            get { return blockhealth; }
+            set { blockhealth = value; } 
         }
 
         public int ID
@@ -82,7 +82,7 @@ namespace Yuuki2TheGame
         {
             this.ID = ID;
             levelrequired = 0;
-            mininghealth = 1;
+            blockhealth = 1;
         }
     }
 }
