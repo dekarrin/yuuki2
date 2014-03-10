@@ -57,7 +57,72 @@ namespace Yuuki2TheGame.Core
         
         private int _health = 0;
 
-        public Vector2 Location { get; private set; }
+        private float _x;
+
+        private float _y;
+
+        public Vector2 Location {
+            get
+            {
+                return new Vector2(X, Y);
+            }
+            private set
+            {
+                if ((_x != value.X || _y != value.Y) && OnMoved != null)
+                {
+                    Vector2 oldV = new Vector2(_x, _y);
+                    Vector2 newV = new Vector2(value.X, value.Y);
+                    MovedEventArgs mea = new MovedEventArgs();
+                    mea.NewLocation = newV;
+                    mea.OldLocation = oldV;
+                    OnMoved(this, mea);
+                }
+                _x = value.X;
+                _y = value.Y;
+            }
+        }
+
+        public float X
+        {
+            get
+            {
+                return _x;
+            }
+            set
+            {
+                if (_x != value && OnMoved != null)
+                {
+                    Vector2 oldV = new Vector2(_x, _y);
+                    Vector2 newV = new Vector2(value, _y);
+                    MovedEventArgs mea = new MovedEventArgs();
+                    mea.NewLocation = newV;
+                    mea.OldLocation = oldV;
+                    OnMoved(this, mea);
+                }
+                _x = value;
+            }
+        }
+
+        public float Y
+        {
+            get
+            {
+                return _y;
+            }
+            set
+            {
+                if (_y != value && OnMoved != null)
+                {
+                    Vector2 oldV = new Vector2(_x, _y);
+                    Vector2 newV = new Vector2(_x, value);
+                    MovedEventArgs mea = new MovedEventArgs();
+                    mea.NewLocation = newV;
+                    mea.OldLocation = oldV;
+                    OnMoved(this, mea);
+                }
+                _y = value;
+            }
+        }
 
         public int MaxHealth { get; private set; }
 
