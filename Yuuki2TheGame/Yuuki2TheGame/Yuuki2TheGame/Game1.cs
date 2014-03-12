@@ -20,6 +20,7 @@ namespace Yuuki2TheGame
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Engine gameEngine;
+        Texture2D defaultTexture;
 
         public const int WORLD_WIDTH = 100;
         public const int WORLD_HEIGHT = 100;
@@ -60,7 +61,8 @@ namespace Yuuki2TheGame
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            defaultTexture = Content.Load<Texture2D>("default_tile");
+
         }
 
         /// <summary>
@@ -96,7 +98,9 @@ namespace Yuuki2TheGame
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
