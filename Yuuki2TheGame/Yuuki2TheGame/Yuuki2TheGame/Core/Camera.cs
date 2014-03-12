@@ -15,7 +15,7 @@ namespace Yuuki2TheGame.Core
 
         public Vector2 Offset { get; set; }
 
-        public ILocatable Following {
+        public ILocatable Target {
             get
             {
                 return _follow;
@@ -31,9 +31,20 @@ namespace Yuuki2TheGame.Core
             }
         }
 
+        /// <summary>
+        /// Coordinates of the block that this camera is over.
+        /// </summary>
+        public Point Coordinates
+        {
+            get
+            {
+                return new Point((int) Math.Floor(Location.X), (int) Math.Floor(Location.Y));
+            }
+        }
+
         public Camera(ILocatable gc, Vector2 offset)
         {
-            Following = gc;
+            Target = gc;
             Offset = offset;
         }
 
