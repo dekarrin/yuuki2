@@ -82,7 +82,7 @@ namespace Yuuki2TheGame.Core
 
         public Block BlockAt(Point p)
         {
-            return world[p.X, p.Y];
+            return world[p.Y, p.X];
         }
 
         public Block[,] GetView()
