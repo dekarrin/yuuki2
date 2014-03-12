@@ -41,6 +41,17 @@ namespace Yuuki2TheGame.Core
             _map.Update(gameTime);
         }
 
+        /// <summary>
+        /// Gets all tiles that need to be displayed.
+        /// </summary>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public IList<Tile> GetView(Point size)
+        {
+            Vector2 origin = Camera.Location;
+            return null;
+        }
+
         public Block[,] Map
         {
             get
