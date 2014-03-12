@@ -13,7 +13,7 @@ namespace Yuuki2TheGame.Core
 
         public Vector2 Location { get; private set; }
 
-        public Vector2 Offset { get; set; }
+        public Vector2 TargetOffset { get; set; }
 
         public ILocatable Target {
             get
@@ -38,19 +38,32 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return new Point((int) Math.Floor(Location.X), (int) Math.Floor(Location.Y));
+                return new Point((int) Math.Truncate(Location.X), (int) Math.Truncate(Location.Y));
+            }
+        }
+
+        /// <summary>
+        /// Amount we are offset from the upper left of the block that we are over.
+        /// </summary>
+        public Vector2 Offsets
+        {
+            get
+            {
+                float x = Location.X;
+                float y = Location.Y;
+                return new Vector2(x - (float) Math.Truncate(x), y - (float) Math.Truncate(y));
             }
         }
 
         public Camera(ILocatable gc, Vector2 offset)
         {
             Target = gc;
-            Offset = offset;
+            TargetOffset = offset;
         }
 
         public void HandleMovement(object sender, MovedEventArgs e)
         {
-            Location = e.NewLocation - Offset;
+            Location = e.NewLocation - TargetOffset;
         }
 
     }
