@@ -23,8 +23,9 @@ namespace Yuuki2TheGame.Core
             _map = new Map(size.X, size.Y);
             spawn = new Vector2(1, 1);
             // temp vars until we can meet with the team
-            PlayerCharacter pc = new PlayerCharacter("Becky", spawn, 100, 10, 10);
-            Camera = new Camera(pc, new Vector2(50, 50));
+            Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
+            _characters.Add(Player);
+            Camera = new Camera(Player, new Vector2(50, 50));
         }
 
         public void Update(GameTime gameTime)
@@ -47,6 +48,8 @@ namespace Yuuki2TheGame.Core
                 return _map.GetView(); // TODO Implement MapData property
             }
         }
+
+        public PlayerCharacter Player { get; private set; }
 
         public IList<GameCharacter> Characters
         {
