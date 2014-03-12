@@ -28,6 +28,14 @@ namespace Yuuki2TheGame
         public const int GAME_WIDTH = 800;
         public const int GAME_HEIGHT = 600;
 
+        public const int BLOCK_WIDTH = 25;
+        public const int BLOCK_HEIGHT = 25;
+
+        /// <summary>
+        /// Ha the number of blocks that are on the screen.
+        /// </summary>
+        private Point blocksOnScreen;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -35,6 +43,7 @@ namespace Yuuki2TheGame
             graphics.PreferredBackBufferHeight = GAME_HEIGHT;
             graphics.ApplyChanges();
             Content.RootDirectory = "Content";
+            blocksOnScreen = new Point (GAME_WIDTH / BLOCK_WIDTH + 1, GAME_HEIGHT / BLOCK_HEIGHT + 1);
             gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
         }
 
@@ -96,13 +105,27 @@ namespace Yuuki2TheGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            IList<Tile> drawn = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y);
+            ProcessTileGraphics(drawn);
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
-
+            foreach (Tile t in drawn)
+            {
+                spriteBatch.Draw(t.Texture, t.Location, Color.White);
+            }
             spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        private void ProcessTileGraphics(IList<Tile> tiles)
+        {
+            foreach (Tile t in tiles)
+            {
+                //TODO: precache graphics
+                t.Texture = Content.Load<Texture2D>(t.TextureID);
+            }
         }
     }
 }
