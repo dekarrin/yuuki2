@@ -70,7 +70,7 @@ namespace Yuuki2TheGame
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            defaultTexture = Content.Load<Texture2D>("default_tile");
+            defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
 
         }
 
@@ -105,7 +105,7 @@ namespace Yuuki2TheGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            IList<Tile> drawn = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y);
+            IList<Tile> drawn = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y, BLOCK_WIDTH, BLOCK_HEIGHT);
             ProcessTileGraphics(drawn);
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
@@ -115,7 +115,6 @@ namespace Yuuki2TheGame
                 spriteBatch.Draw(t.Texture, t.Location, Color.White);
             }
             spriteBatch.End();
-
             base.Draw(gameTime);
         }
 
@@ -123,8 +122,8 @@ namespace Yuuki2TheGame
         {
             foreach (Tile t in tiles)
             {
-                //TODO: precache graphics
-                t.Texture = Content.Load<Texture2D>(t.TextureID);
+                //TODO: use preloaded graphics
+                t.Texture = Content.Load<Texture2D>(t.TextureID != null ? t.TextureID : @"Tiles/default_tile");
             }
         }
     }

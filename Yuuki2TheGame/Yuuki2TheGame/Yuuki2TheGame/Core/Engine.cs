@@ -44,21 +44,23 @@ namespace Yuuki2TheGame.Core
         /// <summary>
         /// Gets all tiles that need to be displayed.
         /// </summary>
-        /// <param name="width">Number of tiles wide.</param>
-        /// <param name="width">Number of tiles wide.</param>
+        /// <param name="numX">Number of tiles wide.</param>
+        /// <param name="numY">Number of tiles high.</param>
+        /// <param name="tileWidth">Width of a tile.</param>
+        /// <param name="tileHeight">Height of a tile.</param>
         /// <returns></returns>
-        public IList<Tile> GetView(int width, int height)
+        public IList<Tile> GetView(int numX, int numY, int tileWidth, int tileHeight)
         {
             Point origin = Camera.Coordinates;
             Vector2 offsets = Camera.Offsets;
             IList<Tile> view = new List<Tile>();
-            for (int i = 0; i < width; i++)
+            for (int i = 0; i < numX; i++)
             {
-                for (int j = 0; j < height; j++)
+                for (int j = 0; j < numY; j++)
                 {
                     Tile t = new Tile();
                     t.Block = Map[i, j];
-                    t.Location = offsets + new Vector2(i, j);
+                    t.Location = offsets + new Vector2(i * tileWidth, j * tileHeight);
                     view.Add(t);
                 }
             }
