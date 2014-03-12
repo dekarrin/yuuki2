@@ -21,5 +21,8 @@ namespace Yuuki2TheGame.Core
         public Vector2 Location { get; set; }
 
         public Texture2D Texture { get; set; }
+
+        public string TextureID { get; set; }
+
     }
 }
