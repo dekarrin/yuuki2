@@ -6,6 +6,27 @@ using System.Text;
 
 namespace Yuuki2TheGame
 {
+    enum BlockType
+    {
+        Dirt,
+        Stone,
+        Copper,
+        Iron,
+        Sand,
+        Ice,
+        Swamp,
+        Wood,
+        Smoothstone,
+        Brick,
+        Titanite,
+        Twinkling,
+    }
+
+    enum PhysicsType
+    {
+        Liquid,
+        Solid,
+    }
     class Block : IUpdateable
     {
 

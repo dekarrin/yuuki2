@@ -6,6 +6,17 @@ using Microsoft.Xna.Framework;
 
 namespace Yuuki2TheGame.Core
 {
+    enum ItemType
+    {
+        Block,
+        Weapon,
+        Armor,
+        Axe,
+        PickAxe,
+        Gun,
+        Shovel,
+        Decoration,
+    }
     class Item : IUpdateable
     {
         private int id;
@@ -16,6 +27,8 @@ namespace Yuuki2TheGame.Core
         private int _maxstack;
         private bool equipable;
         private int count;
+        private int blockdamage;
+
 
         private int _updateOrder = 0;
 
@@ -59,10 +72,16 @@ namespace Yuuki2TheGame.Core
 
         public event EventHandler<EventArgs> EnabledChanged = null;
 
+        public delegate void OnUse(Map m);
+
         public void Update(GameTime gameTime) {
 
         }
-
+        public int BlockDamage
+        {
+            get { return blockdamage; }
+            set { blockdamage = value; }
+        }
         public int Count
         {
             get { return count; }
@@ -126,7 +145,7 @@ namespace Yuuki2TheGame.Core
         }
         
 
-        public Item(int number, string ItemName, string ItemType, int ToolLevel, bool isStacakable, bool isEquipable)
+        public Item(int number, string ItemName, string ItemType, int ToolLevel, bool isStacakable, bool isEquipable, OnUse ItemAction)
         {
             ID = number;
             Name = ItemName;
@@ -148,10 +167,18 @@ namespace Yuuki2TheGame.Core
             }
             else{ MaxStack = 0;}
             Equipable = isEquipable;
+            Use = ItemAction;
         }
 
-        public void Use(){
-            //implemented with engine details
+        public void Use(Map m, Point p)
+        {
+            int health = m.BlockAt(p).MiningHealth;
+       
+            if (m.BlockAt(p) != null)
+            {
+                health =- this.BlockDamage;
+                m.BlockAt(p).MiningHealth = health;
+            }
         }
 
         public void ChangeName(string DesiredName)
