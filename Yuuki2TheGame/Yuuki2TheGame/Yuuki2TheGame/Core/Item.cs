@@ -1,35 +1,66 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace Yuuki2TheGame.Core
 {
-    
-    class Item
+    class Item : IUpdateable
     {
         private int id;
         private string name;
         private string type;
         private int level;
-        private int health;
         private bool stack;
         private int _maxstack;
         private bool equipable;
         private int count;
-        private string description;
 
-        public int Health
+        private int _updateOrder = 0;
+
+        public int UpdateOrder
         {
-            get { return health; }
-            set { health = value; }
+            get
+            {
+                return _updateOrder;
+            }
+            set
+            {
+                bool diff = _updateOrder != value;
+                _updateOrder = value;
+                if (diff && UpdateOrderChanged != null)
+                {
+                    UpdateOrderChanged(this, new EventArgs());
+                }
+            }
         }
 
-        public string Description
+        private bool _enabled = true;
+
+        public bool Enabled
         {
-            get { return description; }
-            set { description = value; }
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                bool diff = _enabled != value;
+                _enabled = value;
+                if (diff && EnabledChanged != null)
+                {
+                    EnabledChanged(this, new EventArgs());
+                }
+            }
+        }
+
+        public event EventHandler<EventArgs> UpdateOrderChanged = null;
+
+        public event EventHandler<EventArgs> EnabledChanged = null;
+
+        public void Update(GameTime gameTime) {
+
         }
 
         public int Count
@@ -61,6 +92,12 @@ namespace Yuuki2TheGame.Core
             set { level = value; }
         }
         
+
+        public bool Stack
+        {
+            get { return stack; }
+            set { stack = value; }
+        }
         
         public int ID
         {
@@ -113,11 +150,6 @@ namespace Yuuki2TheGame.Core
             Equipable = isEquipable;
         }
 
-        public abstract Item()
-        {
-            // TODO: Complete member initialization
-        }
-
         public void Use(){
             //implemented with engine details
         }
@@ -126,23 +158,6 @@ namespace Yuuki2TheGame.Core
         {
             Name = DesiredName;
         }
-
-        public void PerformAction()
-        {
-
-        }
-
-        public string InspectInfo()
-        {
-            return Description;
-        }
-
-        public void OnDestroy()
-        {
-            this.Health = 0;
-        }
-
-
         
 
     }

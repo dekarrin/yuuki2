@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using Yuuki2TheGame.Core;
 
 namespace Yuuki2TheGame
 {
@@ -18,11 +19,32 @@ namespace Yuuki2TheGame
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Engine gameEngine;
+        Texture2D defaultTexture;
+
+        public const int WORLD_WIDTH = 100;
+        public const int WORLD_HEIGHT = 100;
+
+        public const int GAME_WIDTH = 800;
+        public const int GAME_HEIGHT = 600;
+
+        public const int BLOCK_WIDTH = 25;
+        public const int BLOCK_HEIGHT = 25;
+
+        /// <summary>
+        /// Ha the number of blocks that are on the screen.
+        /// </summary>
+        private Point blocksOnScreen;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = GAME_WIDTH;
+            graphics.PreferredBackBufferHeight = GAME_HEIGHT;
+            graphics.ApplyChanges();
             Content.RootDirectory = "Content";
+            blocksOnScreen = new Point (GAME_WIDTH / BLOCK_WIDTH + 1, GAME_HEIGHT / BLOCK_HEIGHT + 1);
+            gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
         }
 
         /// <summary>
@@ -48,7 +70,8 @@ namespace Yuuki2TheGame
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
+
         }
 
         /// <summary>
@@ -72,7 +95,7 @@ namespace Yuuki2TheGame
                 this.Exit();
 
             // TODO: Add your update logic here
-
+            gameEngine.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -82,11 +105,26 @@ namespace Yuuki2TheGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            IList<Tile> drawn = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y, BLOCK_WIDTH, BLOCK_HEIGHT);
+            ProcessTileGraphics(drawn);
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
-
+            spriteBatch.Begin();
+            foreach (Tile t in drawn)
+            {
+                spriteBatch.Draw(t.Texture, t.Location, Color.White);
+            }
+            spriteBatch.End();
             base.Draw(gameTime);
+        }
+
+        private void ProcessTileGraphics(IList<Tile> tiles)
+        {
+            foreach (Tile t in tiles)
+            {
+                //TODO: use preloaded graphics
+                t.Texture = Content.Load<Texture2D>(t.TextureID != null ? t.TextureID : @"Tiles/default_tile");
+            }
         }
     }
 }
