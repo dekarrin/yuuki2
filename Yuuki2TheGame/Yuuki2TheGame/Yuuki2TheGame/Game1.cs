@@ -31,6 +31,8 @@ namespace Yuuki2TheGame
         public const int BLOCK_WIDTH = 16;
         public const int BLOCK_HEIGHT = 16;
 
+        private Nullable<Rectangle> TILE_SIZE = new Nullable<Rectangle>(new Rectangle(0, 0, BLOCK_WIDTH, BLOCK_HEIGHT));
+
         /// <summary>
         /// Contains the number of blocks that are on the screen.
         /// </summary>
@@ -107,12 +109,12 @@ namespace Yuuki2TheGame
         {
             IList<Tile> drawn = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y, BLOCK_WIDTH, BLOCK_HEIGHT);
             ProcessTileGraphics(drawn);
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin();
             foreach (Tile t in drawn)
             {
-                spriteBatch.Draw(t.Texture, t.Location, Color.White);
+                spriteBatch.Draw(t.Texture, t.Location, TILE_SIZE, Color.White);
             }
             spriteBatch.End();
             base.Draw(gameTime);

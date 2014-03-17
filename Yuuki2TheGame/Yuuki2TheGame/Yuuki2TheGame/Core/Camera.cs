@@ -11,9 +11,53 @@ namespace Yuuki2TheGame.Core
 
         private IPixelLocatable _follow;
 
-        public Point Location { get; private set; }
+        private int _x;
 
-        public Point TargetOffset { get; set; }
+        private int _y;
+
+        private int _targetx;
+
+        private int _targety;
+
+        public Point Location
+        {
+            get
+            {
+                return new Point(_x, _y);
+            }
+        }
+
+        public int TargetOffsetX
+        {
+            get
+            {
+                return _targetx;
+            }
+            set
+            {
+                _targetx = value;
+                if (_follow != null)
+                {
+                    _x = _follow.PixelLocation.X + _targetx;
+                }
+            }
+        }
+
+        public int TargetOffsetY
+        {
+            get
+            {
+                return _targety;
+            }
+            set
+            {
+                _targety = value;
+                if (_follow != null)
+                {
+                    _y = _follow.PixelLocation.Y + _targety;
+                }
+            }
+        }
 
         public IPixelLocatable Target {
             get
@@ -27,7 +71,12 @@ namespace Yuuki2TheGame.Core
                     _follow.OnMoved -= HandleMovement;
                 }
                 _follow = value;
-                _follow.OnMoved += HandleMovement;
+                if (_follow != null)
+                {
+                    _follow.OnMoved += HandleMovement;
+                    _x = _follow.PixelLocation.X + TargetOffsetX;
+                    _y = _follow.PixelLocation.Y + TargetOffsetY;
+                }
             }
         }
 
@@ -57,14 +106,15 @@ namespace Yuuki2TheGame.Core
 
         public Camera(IPixelLocatable gc, Point offset)
         {
+            TargetOffsetX = offset.X; // must set targetoffset before target!
+            TargetOffsetY = offset.Y;
             Target = gc;
-            TargetOffset = offset;
         }
 
         public void HandleMovement(object sender, MovedEventArgs e)
         {
-            Point newLoc = new Point(e.NewLocation.X - TargetOffset.X, e.NewLocation.Y - TargetOffset.Y);
-            Location = newLoc;
+            _x = e.NewLocation.X + TargetOffsetX;
+            _y = e.NewLocation.Y + TargetOffsetY;
         }
 
     }
