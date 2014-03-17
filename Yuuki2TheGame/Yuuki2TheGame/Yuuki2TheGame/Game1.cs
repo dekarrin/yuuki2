@@ -28,12 +28,11 @@ namespace Yuuki2TheGame
         public const int GAME_WIDTH = 800;
         public const int GAME_HEIGHT = 600;
 
-        // The below constants are NECESSARY for the rest of the game!
-        public const int BLOCK_WIDTH = 25;
-        public const int BLOCK_HEIGHT = 25;
+        public const int BLOCK_WIDTH = 16;
+        public const int BLOCK_HEIGHT = 16;
 
         /// <summary>
-        /// Ha the number of blocks that are on the screen.
+        /// Contains the number of blocks that are on the screen.
         /// </summary>
         private Point blocksOnScreen;
 
