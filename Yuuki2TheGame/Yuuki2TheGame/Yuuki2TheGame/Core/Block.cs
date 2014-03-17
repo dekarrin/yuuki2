@@ -13,6 +13,12 @@ namespace Yuuki2TheGame
         private int blockhealth;
         private int id;
 
+        // Sprite Information;
+        private int blockSpriteID;  // the spritesheet id that serves as a basis for all drawcalls of that block type   -CA
+
+
+
+
         private int _updateOrder = 0;
 
         public int UpdateOrder
@@ -54,6 +60,13 @@ namespace Yuuki2TheGame
         public event EventHandler<EventArgs> UpdateOrderChanged = null;
 
         public event EventHandler<EventArgs> EnabledChanged = null;
+
+
+        public int SpriteID
+        {
+            get { return blockSpriteID; }
+            set { blockSpriteID = value; }
+        }
 
         public int LevelRequired
         {

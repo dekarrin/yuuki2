@@ -61,6 +61,24 @@ namespace Yuuki2TheGame.Core
 
         private float _y;
 
+        // Added a CharacterSprite Object so that every character can be "drawn"        -CA
+        private CharacterSprite _sprite;
+
+        public CharacterSprite Sprite
+        {
+            get { return _sprite; }
+            set { _sprite = value; }
+        }
+        // Added an EquippedSet object so that evey character has a "loadout" of armor,clothing,weapons,etc.    -CA
+        private EquippedSet _currentEquipment;
+
+        public EquippedSet CurrentEquipment
+        {
+            get { return _currentEquipment; }
+            set { _currentEquipment = value; }
+        }
+
+
         public Vector2 Location {
             get
             {
@@ -169,6 +187,10 @@ namespace Yuuki2TheGame.Core
             this.Health = health;
             this.BaseArmor = baseArmor;
             this.BaseAttack = baseAttack;
+
+            // Added simple Equipment defaulting to nothing, and Sprite defaulting to just the skin set
+            this.CurrentEquipment = new EquippedSet();
+            this.Sprite = new CharacterSprite(location.X, location.Y,0, 11,12,true,true,0); // Spawn with naught but ye' skin and few scraps of cloth...
         }
 
         /// <summary>
