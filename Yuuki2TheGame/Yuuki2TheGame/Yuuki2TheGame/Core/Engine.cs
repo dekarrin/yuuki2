@@ -59,20 +59,12 @@ namespace Yuuki2TheGame.Core
                 for (int j = 0; j < numY; j++)
                 {
                     Tile t = new Tile();
-                    t.Block = Map[i, j];
+                    t.Block = _map.BlockAt(new Point(i, j));
                     t.Location = offsets + new Vector2(i * tileWidth, j * tileHeight);
                     view.Add(t);
                 }
             }
             return view;
-        }
-
-        public Block[,] Map
-        {
-            get
-            {
-                return _map.GetView(); // TODO Implement MapData property
-            }
         }
 
         public PlayerCharacter Player { get; private set; }
