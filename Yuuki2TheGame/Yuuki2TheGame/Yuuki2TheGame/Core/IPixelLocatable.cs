@@ -8,15 +8,18 @@ namespace Yuuki2TheGame.Core
 {
     class MovedEventArgs : EventArgs
     {
-        public Vector2 OldLocation { get; set; }
-        public Vector2 NewLocation { get; set; }
+        public Point OldLocation { get; set; }
+        public Point NewLocation { get; set; }
     }
 
     delegate void MovedEventHandler(object source, MovedEventArgs e);
 
-    interface ILocatable
+    /// <summary>
+    /// Object that has a specific pixel location and that notifies listeners whenever it moves.
+    /// </summary>
+    interface IPixelLocatable
     {
-        Vector2 Location { get; }
+        Point PixelLocation { get; }
 
         event MovedEventHandler OnMoved;
     }

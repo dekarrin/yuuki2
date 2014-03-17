@@ -14,18 +14,18 @@ namespace Yuuki2TheGame.Core
 
         private Map _map;
 
-        private Vector2 spawn;
+        private Point spawn;
 
         public Camera Camera { get; set; }
 
         public Engine(Point size)
         {
             _map = new Map(size.X, size.Y);
-            spawn = new Vector2(1, 1);
+            spawn = new Point(0, 0);
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);
-            Camera = new Camera(Player, new Vector2(50, 50));
+            Camera = new Camera(Player, new Point(-20, 0));
         }
 
         public void Update(GameTime gameTime)
@@ -51,17 +51,21 @@ namespace Yuuki2TheGame.Core
         /// <returns></returns>
         public IList<Tile> GetView(int numX, int numY, int tileWidth, int tileHeight)
         {
-            Point origin = Camera.Coordinates;
-            Vector2 offsets = Camera.Offsets;
+            Point coords = Camera.Coordinates;
+            Point offsets = Camera.Offsets;
             IList<Tile> view = new List<Tile>();
             for (int i = 0; i < numX; i++)
             {
                 for (int j = 0; j < numY; j++)
                 {
-                    Tile t = new Tile();
-                    t.Block = _map.BlockAt(new Point(i, j));
-                    t.Location = offsets + new Vector2(i * tileWidth, j * tileHeight);
-                    view.Add(t);
+                    Point tilecoords = new Point(coords.X + i, coords.Y + j);
+                    if (tilecoords.X >= 0 && tilecoords.Y >= 0 && _map.BlockAt(tilecoords) != null)
+                    {
+                        Tile t = new Tile();
+                        t.Block = _map.BlockAt(tilecoords);
+                        t.Location = new Vector2(i * tileWidth - offsets.X, j * tileHeight - offsets.Y);
+                        view.Add(t);
+                    }
                 }
             }
             return view;

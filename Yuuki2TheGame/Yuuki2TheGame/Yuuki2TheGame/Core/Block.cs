@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Yuuki2TheGame
 {
+
     class Block : IUpdateable
     {
 
