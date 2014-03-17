@@ -9,13 +9,13 @@ namespace Yuuki2TheGame.Core
     class Camera
     {
 
-        private ILocatable _follow;
+        private IPixelLocatable _follow;
 
-        public Vector2 Location { get; private set; }
+        public Point Location { get; private set; }
 
-        public Vector2 TargetOffset { get; set; }
+        public Point TargetOffset { get; set; }
 
-        public ILocatable Target {
+        public IPixelLocatable Target {
             get
             {
                 return _follow;
@@ -38,24 +38,24 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return new Point((int) Math.Truncate(Location.X), (int) Math.Truncate(Location.Y));
+                return new Point(Location.X / Game1.BLOCK_WIDTH, Location.Y / Game1.BLOCK_HEIGHT);
             }
         }
 
         /// <summary>
         /// Amount we are offset from the upper left of the block that we are over.
         /// </summary>
-        public Vector2 Offsets
+        public Point Offsets
         {
             get
             {
-                float x = Location.X;
-                float y = Location.Y;
-                return new Vector2(x - (float) Math.Truncate(x), y - (float) Math.Truncate(y));
+                int x = Location.X;
+                int y = Location.Y;
+                return new Point(x % Game1.BLOCK_WIDTH, y % Game1.BLOCK_HEIGHT);
             }
         }
 
-        public Camera(ILocatable gc, Vector2 offset)
+        public Camera(IPixelLocatable gc, Point offset)
         {
             Target = gc;
             TargetOffset = offset;
@@ -63,7 +63,8 @@ namespace Yuuki2TheGame.Core
 
         public void HandleMovement(object sender, MovedEventArgs e)
         {
-            Location = e.NewLocation - TargetOffset;
+            Point newLoc = new Point(e.NewLocation.X - TargetOffset.X, e.NewLocation.Y - TargetOffset.Y);
+            Location = newLoc;
         }
 
     }

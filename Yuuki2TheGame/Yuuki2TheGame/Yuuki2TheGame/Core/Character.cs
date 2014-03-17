@@ -11,7 +11,7 @@ namespace Yuuki2TheGame.Core
         public GameCharacter Actor { get; set; }
     }
 
-    class GameCharacter : IUpdateable, ILocatable
+    class GameCharacter : IUpdateable, IPixelLocatable
     {
         private int _updateOrder = 0;
 
@@ -57,70 +57,70 @@ namespace Yuuki2TheGame.Core
         
         private int _health = 0;
 
-        private float _x;
+        private int _pixelx;
 
-        private float _y;
+        private int _pixely;
 
-        public Vector2 Location {
+        public Point PixelLocation {
             get
             {
-                return new Vector2(X, Y);
+                return new Point(PixelX, PixelY);
             }
             private set
             {
-                if ((_x != value.X || _y != value.Y) && OnMoved != null)
+                if ((_pixelx != value.X || _pixely != value.Y) && OnMoved != null)
                 {
-                    Vector2 oldV = new Vector2(_x, _y);
-                    Vector2 newV = new Vector2(value.X, value.Y);
+                    Point oldV = new Point(_pixelx, _pixely);
+                    Point newV = new Point(value.X, value.Y);
                     MovedEventArgs mea = new MovedEventArgs();
                     mea.NewLocation = newV;
                     mea.OldLocation = oldV;
                     OnMoved(this, mea);
                 }
-                _x = value.X;
-                _y = value.Y;
+                _pixelx = value.X;
+                _pixely = value.Y;
             }
         }
 
-        public float X
+        public int PixelX
         {
             get
             {
-                return _x;
+                return _pixelx;
             }
             set
             {
-                if (_x != value && OnMoved != null)
+                if (_pixelx != value && OnMoved != null)
                 {
-                    Vector2 oldV = new Vector2(_x, _y);
-                    Vector2 newV = new Vector2(value, _y);
+                    Point oldV = new Point(_pixelx, _pixely);
+                    Point newV = new Point(value, _pixely);
                     MovedEventArgs mea = new MovedEventArgs();
                     mea.NewLocation = newV;
                     mea.OldLocation = oldV;
                     OnMoved(this, mea);
                 }
-                _x = value;
+                _pixelx = value;
             }
         }
 
-        public float Y
+        public int PixelY
         {
             get
             {
-                return _y;
+                return _pixely;
             }
             set
             {
-                if (_y != value && OnMoved != null)
+                if (_pixely != value && OnMoved != null)
                 {
-                    Vector2 oldV = new Vector2(_x, _y);
-                    Vector2 newV = new Vector2(_x, value);
+                    Point oldV = new Point(_pixelx, _pixely);
+                    Point newV = new Point(_pixelx, value);
                     MovedEventArgs mea = new MovedEventArgs();
                     mea.NewLocation = newV;
                     mea.OldLocation = oldV;
                     OnMoved(this, mea);
                 }
-                _y = value;
+                _pixely = value;
             }
         }
 
@@ -161,10 +161,10 @@ namespace Yuuki2TheGame.Core
 
         public event MovedEventHandler OnMoved = null;
 
-        public GameCharacter(string name, Vector2 location, int health, int baseAttack, int baseArmor)
+        public GameCharacter(string name, Point pixelLocation, int health, int baseAttack, int baseArmor)
         {
             this.Name = name;
-            this.Location = location;
+            this.PixelLocation = pixelLocation;
             this.MaxHealth = health;
             this.Health = health;
             this.BaseArmor = baseArmor;

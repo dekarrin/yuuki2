@@ -14,18 +14,18 @@ namespace Yuuki2TheGame.Core
 
         private Map _map;
 
-        private Vector2 spawn;
+        private Point spawn;
 
         public Camera Camera { get; set; }
 
         public Engine(Point size)
         {
             _map = new Map(size.X, size.Y);
-            spawn = new Vector2(1, 1);
+            spawn = new Point(1, 1);
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);
-            Camera = new Camera(Player, new Vector2(50, 50));
+            Camera = new Camera(Player, new Point(0, 0));
         }
 
         public void Update(GameTime gameTime)
@@ -52,7 +52,7 @@ namespace Yuuki2TheGame.Core
         public IList<Tile> GetView(int numX, int numY, int tileWidth, int tileHeight)
         {
             Point origin = Camera.Coordinates;
-            Vector2 offsets = Camera.Offsets;
+            Point offsets = Camera.Offsets;
             IList<Tile> view = new List<Tile>();
             for (int i = 0; i < numX; i++)
             {
@@ -60,7 +60,7 @@ namespace Yuuki2TheGame.Core
                 {
                     Tile t = new Tile();
                     t.Block = Map[i, j];
-                    t.Location = offsets + new Vector2(i * tileWidth, j * tileHeight);
+                    t.Location = new Vector2(i * tileWidth - offsets.X, j * tileHeight - offsets.Y);
                     view.Add(t);
                 }
             }
