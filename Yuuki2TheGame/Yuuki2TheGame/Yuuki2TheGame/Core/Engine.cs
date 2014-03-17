@@ -16,16 +16,20 @@ namespace Yuuki2TheGame.Core
 
         private Vector2 spawn;
 
-        public Camera Camera { get; set; }
+        public static Camera Camera { get; set; }           // Made static so it can be accesible from other areas of the game easily  -CA
 
         public Engine(Point size)
         {
+            
             _map = new Map(size.X, size.Y);
             spawn = new Vector2(1, 1);
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);
             Camera = new Camera(Player, new Vector2(50, 50));
+
+            Player.CreateSprite();  // Create the Player's camera-bound sprite image
+            
         }
 
         public void Update(GameTime gameTime)

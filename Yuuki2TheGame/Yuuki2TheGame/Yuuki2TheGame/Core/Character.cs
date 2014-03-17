@@ -190,7 +190,13 @@ namespace Yuuki2TheGame.Core
 
             // Added simple Equipment defaulting to nothing, and Sprite defaulting to just the skin set
             this.CurrentEquipment = new EquippedSet();
-            this.Sprite = new CharacterSprite(location.X, location.Y,0, 11,12,true,true,0); // Spawn with naught but ye' skin and few scraps of cloth...
+            
+        }
+
+        public void CreateSprite()  // must be called after camera is initialized, which is after player is initialized...
+        {
+            // Spawn with naught but ye' skin and few scraps of cloth...
+            this.Sprite = new CharacterSprite(false, Location.X, Location.Y, 0, 11, 12, true, true, 0); 
         }
 
         /// <summary>

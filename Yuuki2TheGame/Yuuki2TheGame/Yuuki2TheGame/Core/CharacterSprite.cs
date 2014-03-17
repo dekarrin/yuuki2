@@ -61,13 +61,17 @@ namespace Yuuki2TheGame.Core
                     backId,             // Apparel Based Back Accesory ( Capes, backpack, etc...) !!! Quivers and scabards will be handled by the ItemSprite associated with the Selected Object !!!
                     skinId;             // ID of the Head associated with characters Race ( Serves as an index to retrieve other skin assets )
 
+      
+
         private int blinkId;            // Temporary eyeId when blinking
         
 
 
 
         //===   Flags   ===
-        private bool isBlinking,        // True: Reset Eyecolor, False: Wait for next blink
+        private bool isVisible,         // IF in view, draw otherwise do nothing
+                     isPlayer,          // IF player, use curosr mechanics
+                     isBlinking,        // True: Reset Eyecolor, False: Wait for next blink
                      isLookingRight,    // True: Draw facing right, False: Draw facing left
                      isMale,            // True: Draw male sprites, False: Draw female sprites                                          !!!! NOT CURRENTLY IMPLEMENTED !!!
                      isClimbing,        // True: Ignore isLookingRight and draw associated special sprites, False: nothing              !!!! NOT CURRENTLY IMPLEMENTED !!!
@@ -81,7 +85,7 @@ namespace Yuuki2TheGame.Core
         //=========================
 
         // Constructor taking all possibe input
-        public CharacterSprite( float x, float y, int skin, int eye, int hair, int torso, int arm, int hand, int pelvis, int leg, int foot, int head, int back, bool male, bool lookright, bool headgear, int stance)
+        public CharacterSprite(bool player, float x, float y, int skin, int eye, int hair, int torso, int arm, int hand, int pelvis, int leg, int foot, int head, int back, bool male, bool lookright, bool headgear, int stance)
         {
             skinId = skin;
             eyeId = eye;
@@ -100,19 +104,24 @@ namespace Yuuki2TheGame.Core
 
             origin = new Vector2(x, y);
 
+            isPlayer = player;
+
+            if (isPlayer)
+                isVisible = true;
+
             isMale = male;
             isLookingRight = lookright;
             isWearingHeadgear = headgear;
             isBlinking = false;
 
             //Create the draw frames for each sprite 'zone'
-            charFrame   = new Rectangle(PixelFromPartialGrid(origin).X-8, PixelFromPartialGrid(origin).Y - 48, 16, 48);
+            charFrame = new Rectangle(Camera.PixPosFromVector2(origin).X - 8, Camera.PixPosFromVector2(origin).Y - 48, 16, 48);
             upperFrame  = new Rectangle(charFrame.X, charFrame.Y,      charFrame.Width, charFrame.Width);
             middleFrame = new Rectangle(charFrame.X, charFrame.Y + 16, charFrame.Width, charFrame.Width);
             lowerFrame  = new Rectangle(charFrame.X, charFrame.Y + 32, charFrame.Width, charFrame.Width);
         }
 
-        public CharacterSprite(float x, float y, int skin, int eye, int hair, bool male, bool lookright, int stance)    // Near-Nude Basic Creation...
+        public CharacterSprite(bool player,float x, float y, int skin, int eye, int hair, bool male, bool lookright, int stance)    // Near-Nude Basic Creation...
         {
             skinId = skin;
             eyeId = eye;
@@ -131,13 +140,25 @@ namespace Yuuki2TheGame.Core
 
             origin = new Vector2(x, y);
 
+            isPlayer = player;
+
+            if (isPlayer)
+                isVisible = true;           // Player is always visible
+
+            else if (   Camera.PixPosFromVector2(origin).X > -32 && Camera.PixPosFromVector2(origin).X < 832    // if NPC is within 2 blocks of camera, they are visible
+                     && Camera.PixPosFromVector2(origin).Y > -32 && Camera.PixPosFromVector2(origin).Y < 632)
+            {
+                isVisible = true;
+            }
+            else isVisible = false;        // otherwise they are not visible and do not need to be drawn
+
             isMale = male;
             isLookingRight = lookright;
             isWearingHeadgear = false;
             isBlinking = false;
 
             //Create the draw frames for each sprite 'zone'
-            charFrame = new Rectangle(PixelFromPartialGrid(origin).X - 8, PixelFromPartialGrid(origin).Y - 48, 16, 48);
+            charFrame = new Rectangle(Camera.PixPosFromVector2(origin).X - 8, Camera.PixPosFromVector2(origin).Y - 48, 16, 48);
             upperFrame = new Rectangle(charFrame.X, charFrame.Y, charFrame.Width, charFrame.Width);
             middleFrame = new Rectangle(charFrame.X, charFrame.Y + 16, charFrame.Width, charFrame.Width);
             lowerFrame = new Rectangle(charFrame.X, charFrame.Y + 32, charFrame.Width, charFrame.Width);
@@ -152,6 +173,22 @@ namespace Yuuki2TheGame.Core
         // Main Update for this CharacterSprite
         void Update( GameTime gametime)
         {
+            //Cursor Mechanics
+            MouseState ms = new MouseState();
+
+            if (isPlayer)                           // if I am a player...
+            {
+                if (ms.X > origin.X && ms.X > 0 && ms.X < 800 && ms.Y > 0 && ms.Y < 600)                // if cursor is to the right of 'me" look right
+                {
+                    isLookingRight = true;
+                }
+                else if (ms.X < origin.X && ms.X > 0 && ms.X < 800 && ms.Y > 0 && ms.Y < 600)           // if cursor is to the left of 'me' look left
+                {
+                    isLookingRight = false;
+                }
+            }
+
+            //Animation Mechanics
             UpdateAnimation(gametime,5);    // Update all sprite animations at 5 Ms/Frame (~Ticks/Frame)
 
         }
@@ -164,23 +201,26 @@ namespace Yuuki2TheGame.Core
         // Main Draw for this CharacterSprite
         void Draw( GameTime gametime, SpriteBatch GlobalSpriteBatchObject)
         {
-            switch (charStance)
+            if (isVisible)
             {
-                case 0: // Idle
-                    PaintIDLE(GlobalSpriteBatchObject);
-                    break;
+                switch (charStance)
+                {
+                    case 0: // Idle
+                        PaintIDLE(GlobalSpriteBatchObject);
+                        break;
 
-                case 1: // Walking
-                    PaintWALK(GlobalSpriteBatchObject);
-                    break;
+                    case 1: // Walking
+                        PaintWALK(GlobalSpriteBatchObject);
+                        break;
 
-                case 2: // Swimming
-                    PaintSWIM(GlobalSpriteBatchObject);
-                    break;
+                    case 2: // Swimming
+                        PaintSWIM(GlobalSpriteBatchObject);
+                        break;
 
-                case 3: // Climbing
-                    PaintCLIMB(GlobalSpriteBatchObject);
-                    break;
+                    case 3: // Climbing
+                        PaintCLIMB(GlobalSpriteBatchObject);
+                        break;
+                }
             }
 
         }
@@ -189,8 +229,8 @@ namespace Yuuki2TheGame.Core
         public String SaveCharacter()
         {
             // Generate a record
-            string saveOutput = "#" + skinId + eyeId + hairId + torsoId + armSetId +  handSetId +  pelvisId +  legSetId + footSetId + headId
-                                    + backId + saveBool(isMale) + saveBool(isLookingRight) + saveBool(isWearingHeadgear) + origin.X + origin.Y + charStance + "\n";
+            string saveOutput = "#" + SkinId + EyeId + HairId + TorsoId + ArmSetId +  HandSetId +  PelvisId +  LegSetId + FootSetId + HeadId + BackId 
+                                    + saveBool(isMale) + saveBool(isLookingRight) + saveBool(isWearingHeadgear) + origin.X + origin.Y + charStance +  saveBool(isPlayer) + "\n";
             return saveOutput;                                
         }
 
@@ -200,7 +240,7 @@ namespace Yuuki2TheGame.Core
             //Temp Vars for parsing
             float x, y;
             int a, b, c, d, e, f, g, h, i, j, k, o;
-            bool l, m, n;
+            bool l, m, n, p;
            
             // Parse the record
             a = Convert.ToInt16(record.Substring(1, 2));
@@ -220,8 +260,9 @@ namespace Yuuki2TheGame.Core
             x = (float)(Convert.ToInt16(record.Substring(26, 4) + Convert.ToInt16(record.Substring(31,2))/10));   // 'XXXX.aa' where 'XXXX' is grid position, 'aa' the partial pixel position of '00' to '15'
             y = (float)(Convert.ToInt16(record.Substring(33, 4) + Convert.ToInt16(record.Substring(38,2))/10));   // 'YYYY.bb' where 'YYYY' is grid position, 'bb' the partial pixel position of '00' to '15'
             o = Convert.ToInt16(record.Substring(40,1));
+            p = loadBool(record.Substring(41, 1));
 
-            return new CharacterSprite(x, y, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o);
+            return new CharacterSprite(p, x, y, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o);
         }
 
 
@@ -270,33 +311,33 @@ namespace Yuuki2TheGame.Core
         {
             Painter.Begin();        // Start this 'Batch'
 
-            Painter.Draw(CharacterSpriteSheet, middleFrame, getSpriteFromID(handSetId + 1), Color.White);   //BackHand
-            Painter.Draw(CharacterSpriteSheet, middleFrame, getSpriteFromID(armSetId + 1), Color.White);    //BackArm
-            Painter.Draw(CharacterSpriteSheet, lowerFrame,  getSpriteFromID(footSetId + 1), Color.White);   //BackFoot
-            Painter.Draw(CharacterSpriteSheet, lowerFrame,  getSpriteFromID(legSetId + 1), Color.White);    //BackLeg
+            Painter.Draw(CharacterSpriteSheet, middleFrame, getSpriteFromID(HandSetId + 1), Color.White);   //BackHand
+            Painter.Draw(CharacterSpriteSheet, middleFrame, getSpriteFromID(ArmSetId + 1), Color.White);    //BackArm
+            Painter.Draw(CharacterSpriteSheet, lowerFrame,  getSpriteFromID(FootSetId + 1), Color.White);   //BackFoot
+            Painter.Draw(CharacterSpriteSheet, lowerFrame,  getSpriteFromID(LegSetId + 1), Color.White);    //BackLeg
 
-            if (pelvisId == skinId)
-                Painter.Draw(CharacterSpriteSheet, lowerFrame, getSpriteFromID(skinId + 32), Color.White);  //Pelvis without apparel;
+            if (PelvisId == SkinId)
+                Painter.Draw(CharacterSpriteSheet, lowerFrame, getSpriteFromID(SkinId + 32), Color.White);  //Pelvis without apparel;
             else
-                Painter.Draw(CharacterSpriteSheet, lowerFrame, getSpriteFromID(pelvisId), Color.White);     //Pelvis
+                Painter.Draw(CharacterSpriteSheet, lowerFrame, getSpriteFromID(PelvisId), Color.White);     //Pelvis
 
-            if (torsoId == skinId)
-                Painter.Draw(CharacterSpriteSheet, middleFrame, getSpriteFromID(skinId + 16), Color.White); //Torso without apparel;
+            if (TorsoId == SkinId)
+                Painter.Draw(CharacterSpriteSheet, middleFrame, getSpriteFromID(SkinId + 16), Color.White); //Torso without apparel;
             else
-                Painter.Draw(CharacterSpriteSheet, middleFrame, getSpriteFromID(torsoId), Color.White);     //Torso
+                Painter.Draw(CharacterSpriteSheet, middleFrame, getSpriteFromID(TorsoId), Color.White);     //Torso
 
-            Painter.Draw(CharacterSpriteSheet, upperFrame, getSpriteFromID(skinId), Color.White);           //Skin of face
-            Painter.Draw(CharacterSpriteSheet, upperFrame, getSpriteFromID(eyeId), Color.White);            //Eye color
+            Painter.Draw(CharacterSpriteSheet, upperFrame, getSpriteFromID(SkinId), Color.White);           //Skin of face
+            Painter.Draw(CharacterSpriteSheet, upperFrame, getSpriteFromID(EyeId), Color.White);            //Eye color
                 
             if (isWearingHeadgear)
-                Painter.Draw(CharacterSpriteSheet, upperFrame, getSpriteFromID(headId), Color.White);       //Headgear
+                Painter.Draw(CharacterSpriteSheet, upperFrame, getSpriteFromID(HeadId), Color.White);       //Headgear
             else
-                Painter.Draw(CharacterSpriteSheet, upperFrame, getSpriteFromID(hairId), Color.White);       //Hair
+                Painter.Draw(CharacterSpriteSheet, upperFrame, getSpriteFromID(HairId), Color.White);       //Hair
 
-            Painter.Draw(CharacterSpriteSheet, middleFrame, getSpriteFromID(handSetId), Color.White);       //FrontHand
-            Painter.Draw(CharacterSpriteSheet, middleFrame, getSpriteFromID(armSetId), Color.White);        //FrontArm
-            Painter.Draw(CharacterSpriteSheet, lowerFrame,  getSpriteFromID(footSetId), Color.White);       //FrontFoot
-            Painter.Draw(CharacterSpriteSheet, lowerFrame,  getSpriteFromID(legSetId), Color.White);        //FrontLeg
+            Painter.Draw(CharacterSpriteSheet, middleFrame, getSpriteFromID(HandSetId), Color.White);       //FrontHand
+            Painter.Draw(CharacterSpriteSheet, middleFrame, getSpriteFromID(ArmSetId), Color.White);        //FrontArm
+            Painter.Draw(CharacterSpriteSheet, lowerFrame,  getSpriteFromID(FootSetId), Color.White);       //FrontFoot
+            Painter.Draw(CharacterSpriteSheet, lowerFrame,  getSpriteFromID(LegSetId), Color.White);        //FrontLeg
 
             Painter.End();      // Finish this 'Batch'
         }
@@ -321,19 +362,19 @@ namespace Yuuki2TheGame.Core
 
 
 
-        //  !!! THIS IS A PLACEHOLDER FOR A METHOD THAT WILL CONVERT A 'CCCC.aa' COORDINATE TO PIXEL POSITIONS OF THE SCREEN !!!
 
-        // Calculate the current pixel coordinates of a given double of format 'CCCC.aa' representing a partial grid location
-        // The given bool "horizontal" denotes whether to calculate a width pixel position or a height pixel position
-        private Point PixelFromPartialGrid(Vector2 coord)
-        {
-            Point pixelPosition;
-
-
-
-
-            return Point.Zero;
-        }
+        ///<summary>         !!!!   Replaced by Camera.PixPosFromVector2()   !!!!
+       //      
+       //  !!! THIS IS A PLACEHOLDER FOR A METHOD THAT WILL CONVERT A 'CCCC.aa' COORDINATE TO PIXEL POSITIONS OF THE SCREEN !!!
+       // Calculate the current pixel coordinates of a given double of format 'CCCC.aa' representing a partial grid location
+       // The given bool "horizontal" denotes whether to calculate a width pixel position or a height pixel position
+       // private Point PixelFromPartialGrid(Vector2 coord)
+       // {
+       //     Point pixelPosition;
+       //     return Point.Zero;
+       // }
+       ///</summary>
+       ///
 
         // Main Animation Sub-Method for Update 
         private void UpdateAnimation(GameTime currentTime, int MsPerFr)
@@ -361,7 +402,7 @@ namespace Yuuki2TheGame.Core
                 // Blinking
                 if (isBlinking && currentTime.ElapsedGameTime.Milliseconds % MPF * 3 == 0)  // If my eyes are closed and they have been for 3 frames then:
                 {
-                    eyeId = blinkId;            // return it to eyecolor id
+                    EyeId = blinkId;            // return it to eyecolor id
                     isBlinking = false;   // stop current 'blink'
                 }
                 else                                                                        // If my eyes are open...
@@ -369,7 +410,7 @@ namespace Yuuki2TheGame.Core
                     int ranDur = new Random().Next(5,30);   
                     if (currentTime.ElapsedGameTime.Milliseconds % MPF * ranDur == 0)       // ...and they have been so for 5 - 30 frames then: 
                     {
-                        eyeId = nullSpriteID;   // temporarily set 'eyeId' to nothing and then switch back
+                        EyeId = nullSpriteID;   // temporarily set 'eyeId' to nothing and then switch back
                         isBlinking = true;
                     }
                 }
@@ -379,6 +420,76 @@ namespace Yuuki2TheGame.Core
             }
         }
 
+
+        //============================
+        //  Accessors and Modifiers
+        //============================
+
+        public int SkinId
+        {
+            get { return skinId; }
+            set { skinId = value; }
+        }
+
+        public int BackId
+        {
+            get { return backId; }
+            set { backId = value; }
+        }
+
+        public int HeadId
+        {
+            get { return headId; }
+            set { headId = value; }
+        }
+
+        public int HairId
+        {
+            get { return hairId; }
+            set { hairId = value; }
+        }
+
+        public int PelvisId
+        {
+            get { return pelvisId; }
+            set { pelvisId = value; }
+        }
+
+        public int TorsoId
+        {
+            get { return torsoId; }
+            set { torsoId = value; }
+        }
+
+        public int HandSetId
+        {
+            get { return handSetId; }
+            set { handSetId = value; }
+        }
+
+        public int FootSetId
+        {
+            get { return footSetId; }
+            set { footSetId = value; }
+        }
+
+        public int LegSetId
+        {
+            get { return legSetId; }
+            set { legSetId = value; }
+        }
+
+        public int ArmSetId
+        {
+            get { return armSetId; }
+            set { armSetId = value; }
+        }
+
+        public int EyeId
+        {
+            get { return eyeId; }
+            set { eyeId = value; }
+        }
 
     }
 }
