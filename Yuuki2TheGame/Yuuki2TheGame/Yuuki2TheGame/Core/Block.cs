@@ -96,6 +96,15 @@ namespace Yuuki2TheGame
             this.ID = ID;
             levelrequired = 0;
             blockhealth = 1;
+            SpriteID = 64;
+        }
+
+        public Block(int ID, int spriteID, int levelReq, int health)        // Added for future block types
+        {
+            this.ID = ID;
+            levelrequired = levelReq;
+            blockhealth = health;
+            SpriteID = spriteID;
         }
     }
 }

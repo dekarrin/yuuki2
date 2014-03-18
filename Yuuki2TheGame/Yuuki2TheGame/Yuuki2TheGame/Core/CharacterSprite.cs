@@ -277,12 +277,12 @@ namespace Yuuki2TheGame.Core
 
             if (isLookingRight) // forward read sprite
             {
-                rect = new Rectangle(id * 16, id % 16, 16, 16);
+                rect = new Rectangle(id % 16, id / 16, 16, 16);
             }
 
             else                // reverse read sprite
             {
-                rect = new Rectangle(id + 1 * 16, id % 16, -16, 16);
+                rect = new Rectangle((id + 1) % 16, id / 16, -16, 16);
             }
 
             return rect;

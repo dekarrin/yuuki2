@@ -72,6 +72,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Block_Types.cs" />
     <Compile Include="Core\Camera.cs" />
     <Compile Include="Core\Character.cs" />
     <Compile Include="Core\Block.cs" />

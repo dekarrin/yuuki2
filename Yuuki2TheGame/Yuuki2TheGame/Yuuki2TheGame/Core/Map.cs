@@ -60,11 +60,22 @@ namespace Yuuki2TheGame.Core
         public Block[,] GenerateWorld(int height, int width)
         {
             world = new Block[height, width];
-            for(int i = 0; i < height/2; i++){ //Temporary algorithm: Iterates through all blocks on the bottom half of the map.
+
+            for (int i = height/2; i < (int)height/3; i++)
+            {
                 for (int j = 0; j < width; j++)
                 {
-                    world[i, j] = new Block(1); //Uses Blocks of ID = 1 for the time being.
+                    world[j, i] = new Block_Dirt(); //Uses Dirt for the time being.
                 }
+            }
+
+             for(int i = height/3; i < height; i++){ 
+                for (int j = 0; j < width; j++)
+                {
+                    
+                    world[j, i] = new Block_Granite(); //Uses Dirt for the time being.
+                }
+             
             }
             return world;
         }

@@ -22,11 +22,11 @@ namespace Yuuki2TheGame.Core
         {
             
             _map = new Map(size.X, size.Y);
-            spawn = new Vector2(1, 1);
+            spawn = new Vector2(size.X/2, size.Y/2);
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);
-            Camera = new Camera(Player, new Vector2(50, 50));
+            Camera = new Camera(Player, new Vector2(spawn.X, spawn.Y));
 
             Player.CreateSprite();  // Create the Player's camera-bound sprite image
             

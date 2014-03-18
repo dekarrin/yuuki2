@@ -13,6 +13,7 @@ namespace Yuuki2TheGame.Core
     /// </summary>
     class Tile
     {
+        public static Texture2D BlockSpriteSheet;           // Sprite Sheet for all block types
         public Block Block { get; set; }
 
         /// <summary>
@@ -20,9 +21,12 @@ namespace Yuuki2TheGame.Core
         /// </summary>
         public Vector2 Location { get; set; }
 
-        public Texture2D Texture { get; set; }
+        public Rectangle TextureFromID(int id)
+        {
+            return new Rectangle(id % 16, (int)(id / 16)*16, 16, 16);
+        }
 
-        public string TextureID { get; set; }
+        public int TextureID { get; set; }  // no longer needed
 
     }
 }

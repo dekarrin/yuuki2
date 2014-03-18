@@ -28,8 +28,8 @@ namespace Yuuki2TheGame
         public const int GAME_WIDTH = 800;
         public const int GAME_HEIGHT = 600;
 
-        public const int BLOCK_WIDTH = 25;
-        public const int BLOCK_HEIGHT = 25;
+        public const int BLOCK_WIDTH = 16;
+        public const int BLOCK_HEIGHT = 16;
 
         /// <summary>
         /// Ha the number of blocks that are on the screen.
@@ -71,6 +71,8 @@ namespace Yuuki2TheGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
+            Tile.BlockSpriteSheet = Content.Load<Texture2D>("Tiles/BlockSprites_v1");
+            CharacterSprite.CharacterSpriteSheet = Content.Load<Texture2D>("Character/CharacterSprites_v1");
 
         }
 
@@ -106,13 +108,14 @@ namespace Yuuki2TheGame
         protected override void Draw(GameTime gameTime)
         {
             IList<Tile> drawn = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y, BLOCK_WIDTH, BLOCK_HEIGHT);
-            ProcessTileGraphics(drawn);
+            //ProcessTileGraphics(drawn);
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
             foreach (Tile t in drawn)
             {
-                spriteBatch.Draw(t.Texture, t.Location, Color.White);
+                if(t.Block != null)
+                    spriteBatch.Draw(Tile.BlockSpriteSheet, new Rectangle((int)t.Location.X,(int)t.Location.Y, BLOCK_WIDTH, BLOCK_HEIGHT), t.TextureFromID(t.Block.SpriteID), Color.White);
             }
             spriteBatch.End();
             base.Draw(gameTime);
@@ -120,11 +123,13 @@ namespace Yuuki2TheGame
 
         private void ProcessTileGraphics(IList<Tile> tiles)
         {
-            foreach (Tile t in tiles)
-            {
+
+            Tile.BlockSpriteSheet = Content.Load<Texture2D>("Tiles/BLockSprites_v1");
+            //foreach (Tile t in tiles)
+            //{
                 //TODO: use preloaded graphics
-                t.Texture = Content.Load<Texture2D>(t.TextureID != null ? t.TextureID : @"Tiles/default_tile");
-            }
+                //t.Texture = Content.Load<Texture2D>(t.TextureID != null ? t.TextureID : @"Tiles/default_tile");
+            //}
         }
     }
 }
