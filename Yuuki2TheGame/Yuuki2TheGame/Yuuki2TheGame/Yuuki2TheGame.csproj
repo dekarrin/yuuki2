@@ -77,7 +77,7 @@
     <Compile Include="Core\Block.cs" />
     <Compile Include="Core\PlayerCharacter.cs" />
     <Compile Include="Core\Engine.cs" />
-    <Compile Include="Core\ILocatable.cs" />
+    <Compile Include="Core\IPixelLocatable.cs" />
     <Compile Include="Core\Item.cs" />
     <Compile Include="Core\Inventory.cs" />
     <Compile Include="Core\Map.cs" />

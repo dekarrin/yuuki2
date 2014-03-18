@@ -8,7 +8,7 @@ namespace Yuuki2TheGame.Core
 {
     class PlayerCharacter : GameCharacter
     {
-        public PlayerCharacter(string name, Vector2 location, int health, int baseAttack, int baseArmor) : base(name, location, health, baseAttack, baseArmor)
+        public PlayerCharacter(string name, Point pixelLocation, int health, int baseAttack, int baseArmor) : base(name, pixelLocation, health, baseAttack, baseArmor)
         {
         }
     }

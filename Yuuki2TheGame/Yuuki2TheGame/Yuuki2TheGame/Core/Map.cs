@@ -6,9 +6,16 @@ using System.Text;
 
 namespace Yuuki2TheGame.Core
 {
+    /// <summary>
+    /// Please note that block array coordinates are x, y, 0 is lower left.
+    /// </summary>
     class Map : IUpdateable
     {
-        public Block[,] world { get; private set; }
+        public int Height { get; private set; }
+
+        public int Width { get; private set; }
+
+        public List<List<Block>> world { get; private set; }
 
         private int _updateOrder = 0;
 
@@ -57,14 +64,25 @@ namespace Yuuki2TheGame.Core
             GenerateWorld(height, width);
         }
 
-        public Block[,] GenerateWorld(int height, int width)
+        public List<List<Block>> GenerateWorld(int height, int width)
         {
-            world = new Block[height, width];
-            for(int i = 0; i < height/2; i++){ //Temporary algorithm: Iterates through all blocks on the bottom half of the map.
-                for (int j = 0; j < width; j++)
+            Width = width;
+            Height = height;
+            world = new List<List<Block>>();
+            for(int x = 0; x < Width; x++){ //Temporary algorithm: Iterates through all blocks on the bottom half of the map.
+                List<Block> slice = new List<Block>();
+                for (int y = 0; y < Height; y++)
                 {
-                    world[i, j] = new Block(1); //Uses Blocks of ID = 1 for the time being.
+                    if (y < Height / 2)
+                    {
+                        slice.Add(new Block(1)); //Uses Blocks of ID = 1 for the time being.
+                    }
+                    else
+                    {
+                        slice.Add(null);
+                    }
                 }
+                world.Add(slice);
             }
             return world;
         }
@@ -72,27 +90,21 @@ namespace Yuuki2TheGame.Core
         public void Update(GameTime gameTime)
         {
             // apply physics to blocks
-            foreach (Block b in world)
+            foreach (List<Block> slice in world)
             {
-                if (b != null) {
-                    b.Update(gameTime);
+                foreach (Block b in slice)
+                {
+                    if (b != null)
+                    {
+                        b.Update(gameTime);
+                    }
                 }
             }
         }
 
         public Block BlockAt(Point p)
         {
-            return world[p.Y, p.X];
-        }
-
-        public Block[,] GetView()
-        {
-            Block[,] worldCopy = new Block[world.GetLength(0), world.GetLength(1)];
-
-            for (int i = 0; i < world.GetLength(0); ++i)
-                Array.Copy(world, i * world.GetLength(1), worldCopy, i * worldCopy.GetLength(1), world.GetLength(1));
-
-            return worldCopy;
+            return world[p.X][p.Y];
         }
     }
 }
