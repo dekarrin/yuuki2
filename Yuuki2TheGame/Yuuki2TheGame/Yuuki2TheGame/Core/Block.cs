@@ -55,6 +55,12 @@ namespace Yuuki2TheGame
 
         private bool _enabled = true;
 
+        /// <summary>
+        /// Gets the name of the texture that should be used to display this Block.
+        /// </summary>
+        /// <returns></returns>
+        public string Texture { get; set; }
+
         public bool Enabled
         {
             get

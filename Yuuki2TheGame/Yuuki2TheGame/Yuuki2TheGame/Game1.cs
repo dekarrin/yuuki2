@@ -106,25 +106,25 @@ namespace Yuuki2TheGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            IList<Tile> drawn = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y, BLOCK_WIDTH, BLOCK_HEIGHT);
-            ProcessTileGraphics(drawn);
+            IList<Sprite> tiles = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y, BLOCK_WIDTH, BLOCK_HEIGHT);
+            ProcessSpriteGraphics(tiles);
             GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin();
-            foreach (Tile t in drawn)
+            foreach (Sprite sp in tiles)
             {
-                spriteBatch.Draw(t.Texture, new Rectangle((int)t.Location.X, (int)t.Location.Y, BLOCK_WIDTH, BLOCK_HEIGHT), Color.White);
+                spriteBatch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
             }
             spriteBatch.End();
             base.Draw(gameTime);
         }
 
-        private void ProcessTileGraphics(IList<Tile> tiles)
+        private void ProcessSpriteGraphics(IList<Sprite> sprites)
         {
-            foreach (Tile t in tiles)
+            foreach (Sprite spr in sprites)
             {
                 //TODO: use preloaded graphics
-                t.Texture = NameToTexture(t.TextureID);
+                spr.Texture = NameToTexture(spr.TextureID);
             }
         }
 

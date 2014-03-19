@@ -50,11 +50,11 @@ namespace Yuuki2TheGame.Core
         /// <param name="tileWidth">Width of a tile.</param>
         /// <param name="tileHeight">Height of a tile.</param>
         /// <returns></returns>
-        public IList<Tile> GetView(int numX, int numY, int tileWidth, int tileHeight)
+        public IList<Sprite> GetView(int numX, int numY, int tileWidth, int tileHeight)
         {
             Point coords = Camera.Coordinates;
             Point offsets = Camera.Offsets;
-            IList<Tile> view = new List<Tile>();
+            IList<Sprite> view = new List<Sprite>();
             for (int i = 0; i < numX; i++)
             {
                 for (int j = 0; j < numY; j++)
@@ -62,10 +62,9 @@ namespace Yuuki2TheGame.Core
                     Point tilecoords = new Point(coords.X + i, coords.Y + j);
                     if (tilecoords.X >= 0 && tilecoords.Y >= 0 && _map.BlockAt(tilecoords) != null)
                     {
-                        Tile t = new Tile();
-                        t.Block = _map.BlockAt(tilecoords);
-                        t.Location = new Vector2(i * tileWidth - offsets.X, j * tileHeight - offsets.Y);
-                        view.Add(t);
+                        Point position = new Point(i * tileWidth - offsets.X, j * tileHeight - offsets.Y);
+                        Sprite spr = new Sprite(position, new Point(tileWidth, tileHeight), _map.BlockAt(tilecoords).Texture);
+                        view.Add(spr);
                     }
                 }
             }
