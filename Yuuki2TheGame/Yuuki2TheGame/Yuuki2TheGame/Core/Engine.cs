@@ -22,7 +22,7 @@ namespace Yuuki2TheGame.Core
         public Engine(Point size)
         {
             _map = new Map(size.X, size.Y);
-            spawn = new Point(0, 0);
+            spawn = new Point(0, (size.Y / 2) * Game1.BLOCK_HEIGHT);
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);

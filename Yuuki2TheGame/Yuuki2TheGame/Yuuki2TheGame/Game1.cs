@@ -32,8 +32,6 @@ namespace Yuuki2TheGame
         public const int BLOCK_WIDTH = 16;
         public const int BLOCK_HEIGHT = 16;
 
-        private Nullable<Rectangle> TILE_SIZE = new Nullable<Rectangle>(new Rectangle(0, 0, BLOCK_WIDTH, BLOCK_HEIGHT));
-
         /// <summary>
         /// Contains the number of blocks that are on the screen.
         /// </summary>
@@ -115,7 +113,7 @@ namespace Yuuki2TheGame
             spriteBatch.Begin();
             foreach (Tile t in drawn)
             {
-                spriteBatch.Draw(t.Texture, t.Location, TILE_SIZE, Color.White);
+                spriteBatch.Draw(t.Texture, new Rectangle((int)t.Location.X, (int)t.Location.Y, BLOCK_WIDTH, BLOCK_HEIGHT), Color.White);
             }
             spriteBatch.End();
             base.Draw(gameTime);
@@ -126,8 +124,18 @@ namespace Yuuki2TheGame
             foreach (Tile t in tiles)
             {
                 //TODO: use preloaded graphics
-                t.Texture = Content.Load<Texture2D>(t.TextureID != null ? t.TextureID : @"Tiles/default_tile");
+                t.Texture = NameToTexture(t.TextureID);
             }
+        }
+
+        /// <summary>
+        /// Attempts to convert the resource name into a texture. If resource name is null, default texture is used.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private Texture2D NameToTexture(string name)
+        {
+            return Content.Load<Texture2D>(name != null ? name : @"Tiles/default_tile");
         }
     }
 }
