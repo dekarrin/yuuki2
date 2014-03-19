@@ -100,5 +100,17 @@ namespace Yuuki2TheGame.Core
             // TODO: Correct position based on camera
             return spr;
         }
+
+        public IList<Sprite> GetCharacters(int screenWidth, int screenHeight)
+        {
+            // TODO: OPTIMIZE! We should be using quadtrees or something...
+            Rectangle view = new Rectangle(Camera.Location.X, Camera.Location.Y, screenWidth, screenHeight);
+            IList<Sprite> chars = new List<Sprite>();
+            foreach (GameCharacter gc in _characters)
+            {
+
+            }
+            return chars;
+        }
     }
 }

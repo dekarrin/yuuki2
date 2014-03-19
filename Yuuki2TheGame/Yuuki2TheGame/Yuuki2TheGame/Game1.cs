@@ -107,6 +107,7 @@ namespace Yuuki2TheGame
         protected override void Draw(GameTime gameTime)
         {
             IList<Sprite> tiles = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y, BLOCK_WIDTH, BLOCK_HEIGHT);
+            IList<Sprite> chars = gameEngine.GetCharacters(GAME_WIDTH, GAME_HEIGHT);
             Sprite bg = gameEngine.GetBackground(GAME_WIDTH, GAME_HEIGHT);
             bg.Texture = NameToTexture(bg.TextureID);
             ProcessSpriteGraphics(tiles);

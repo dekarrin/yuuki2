@@ -8,7 +8,10 @@ namespace Yuuki2TheGame.Core
 {
     class PlayerCharacter : GameCharacter
     {
-        public PlayerCharacter(string name, Point pixelLocation, int health, int baseAttack, int baseArmor) : base(name, pixelLocation, health, baseAttack, baseArmor)
+        public static const int WIDTH = 25;
+        public static const int HEIGHT = 55;
+
+        public PlayerCharacter(string name, Point pixelLocation, int health, int baseAttack, int baseArmor) : base(name, pixelLocation, new Point(WIDTH, HEIGHT), health, baseAttack, baseArmor)
         {
         }
     }
