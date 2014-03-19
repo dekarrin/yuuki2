@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Yuuki2TheGame.Core;
+using Yuuki2TheGame.Graphics;
 
 namespace Yuuki2TheGame
 {

@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Yuuki2TheGame.Core
+namespace Yuuki2TheGame.Graphics
 {
 
     /// <summary>
