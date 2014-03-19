@@ -107,10 +107,14 @@ namespace Yuuki2TheGame
         protected override void Draw(GameTime gameTime)
         {
             IList<Sprite> tiles = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y, BLOCK_WIDTH, BLOCK_HEIGHT);
+            Sprite bg = gameEngine.GetBackground(GAME_WIDTH, GAME_HEIGHT);
+            bg.Texture = NameToTexture(bg.TextureID);
             ProcessSpriteGraphics(tiles);
             GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin();
+            // draw bg first ALWAYS!
+            spriteBatch.Draw(bg.Texture, bg.Destination, bg.Source, Color.Pink);
             foreach (Sprite sp in tiles)
             {
                 spriteBatch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);

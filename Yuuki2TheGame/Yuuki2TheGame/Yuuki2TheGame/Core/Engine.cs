@@ -88,5 +88,17 @@ namespace Yuuki2TheGame.Core
                 return _items.AsReadOnly();
             }
         }
+
+        public Sprite GetBackground(int screenWidth, int screenHeight)
+        {
+            int x = Math.Abs(Math.Min(Camera.Location.X, 0));
+            int y = Math.Abs(Math.Min(Camera.Location.Y, 0));
+            int width = screenWidth - x;
+            int height = screenHeight - y;
+            // Above will need to be changed if we want to make worlds that are smaller than the screen
+            Sprite spr = new Sprite(new Point(x, y), new Point(width, height), null);
+            // TODO: Correct position based on camera
+            return spr;
+        }
     }
 }
