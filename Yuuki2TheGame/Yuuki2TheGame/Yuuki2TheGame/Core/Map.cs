@@ -7,7 +7,7 @@ using System.Text;
 namespace Yuuki2TheGame.Core
 {
     /// <summary>
-    /// Please note that block array coordinates are x, y, 0 is lower left.
+    /// Please note that block array coordinates are x, y, 0 is upper left.
     /// </summary>
     class Map : IUpdateable
     {
@@ -73,7 +73,7 @@ namespace Yuuki2TheGame.Core
                 List<Block> slice = new List<Block>();
                 for (int y = 0; y < Height; y++)
                 {
-                    if (y < Height / 2)
+                    if (y > Height / 2)
                     {
                         slice.Add(new Block(1)); //Uses Blocks of ID = 1 for the time being.
                     }
@@ -102,6 +102,11 @@ namespace Yuuki2TheGame.Core
             }
         }
 
+        /// <summary>
+        /// Returns the Block at the given coordinates relative to map origin (lower left).
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
         public Block BlockAt(Point p)
         {
             return world[p.X][p.Y];
