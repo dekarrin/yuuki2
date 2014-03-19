@@ -167,7 +167,7 @@ namespace Yuuki2TheGame.Core
             }
             else{ MaxStack = 0;}
             Equipable = isEquipable;
-            Use = ItemAction;
+            //Use = ItemAction;
         }
 
         public void Use(Map m, Point p)
