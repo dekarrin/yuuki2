@@ -177,6 +177,8 @@ namespace Yuuki2TheGame.Core
 
         public event MovedEventHandler OnMoved = null;
 
+        public string Texture { get; private set; }
+
         public GameCharacter(string name, Point pixelLocation, Point size, int health, int baseAttack, int baseArmor)
         {
             this.Name = name;

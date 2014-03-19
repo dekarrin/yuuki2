@@ -11,6 +11,6 @@ namespace Yuuki2TheGame.Physics
         /// <summary>
         /// 
         /// </summary>
-        public Rectangle BoundingBox { get; }
+        Rectangle BoundingBox { get; }
     }
 }

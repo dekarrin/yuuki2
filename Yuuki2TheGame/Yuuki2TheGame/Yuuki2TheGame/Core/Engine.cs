@@ -26,7 +26,7 @@ namespace Yuuki2TheGame.Core
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);
-            Camera = new Camera(Player, new Point(-20, 0));
+            Camera = new Camera(Player, new Point(-100, -300));
         }
 
         public void Update(GameTime gameTime)
@@ -106,9 +106,15 @@ namespace Yuuki2TheGame.Core
             // TODO: OPTIMIZE! We should be using quadtrees or something...
             Rectangle view = new Rectangle(Camera.Location.X, Camera.Location.Y, screenWidth, screenHeight);
             IList<Sprite> chars = new List<Sprite>();
-            foreach (GameCharacter gc in _characters)
+            foreach (GameCharacter c in _characters)
             {
-
+                if (c.BoundingBox.Intersects(view))
+                {
+                    Point position = new Point(c.BoundingBox.X - Camera.Location.X, c.BoundingBox.Y - Camera.Location.Y);
+                    Point size = new Point(c.Width, c.Height);
+                    Sprite spr = new Sprite(position, size, c.Texture);
+                    chars.Add(spr);
+                }
             }
             return chars;
         }
