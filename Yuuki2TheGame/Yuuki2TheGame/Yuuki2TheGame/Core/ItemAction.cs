@@ -8,17 +8,14 @@ namespace Yuuki2TheGame.Core
 {
     class ItemAction
     {
-        
-        int correctDamage = 50; //damage done if the item is of the right type.
         static void AxeAction(Map m, Point p)
         {
-
             Block b = m.BlockAt(p);
             if (m.BlockAt(p).Type == "wood")
             {
                 int health;
                 int CurrentHealth = m.BlockAt(p).MiningHealth;
-                health = CurrentHealth - Damage;
+                health = CurrentHealth - 50;
                 if (health <= 0)
                 {
                     //make the block at the point null;
@@ -37,7 +34,7 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        static void PickAxeAction(Map m, Point p)
+        static void PickAction(Map m, Point p)
         {
 
             Block b = m.BlockAt(p);
@@ -45,7 +42,39 @@ namespace Yuuki2TheGame.Core
             {
                 int health;
                 int CurrentHealth = m.BlockAt(p).MiningHealth;
-                health = CurrentHealth - Damage;
+                health = CurrentHealth - 50;
+                if (health <= 0)
+                {
+                    //make the block at the point null;
+                }
+                else
+                {
+                    m.BlockAt(p).MiningHealth = health;
+                }
+            }
+            else
+            {
+                int health;
+                int CurrentHealth = m.BlockAt(p).MiningHealth;
+                health = CurrentHealth - 10;
+                m.BlockAt(p).MiningHealth = health;
+            }
+        }
+
+        static void BombAction(Map m, Point p)
+        {
+            //explodes and destroys a radius of blocks around it.
+        }
+
+        static void ShovelAction(Map m, Point p)
+        {
+
+            Block b = m.BlockAt(p);
+            if (m.BlockAt(p).Type == "dirt")
+            {
+                int health;
+                int CurrentHealth = m.BlockAt(p).MiningHealth;
+                health = CurrentHealth - 50;
                 if (health <= 0)
                 {
                     //make the block at the point null;
@@ -65,12 +94,6 @@ namespace Yuuki2TheGame.Core
         }
 
 
-
-
-        static void BombAction(Map m, Point p)
-        {
-            for(p.)
-        }
         
     }
 }
