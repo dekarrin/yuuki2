@@ -33,7 +33,7 @@ namespace Yuuki2TheGame
         private int levelrequired;
         private int blockhealth;
         private int id;
-
+        private string type;
         private int _updateOrder = 0;
 
         public int UpdateOrder
@@ -76,6 +76,11 @@ namespace Yuuki2TheGame
 
         public event EventHandler<EventArgs> EnabledChanged = null;
 
+        public string Type
+        {
+            get { return type; }
+            set { type = value; }
+        }
         public int LevelRequired
         {
             get { return levelrequired; }
@@ -99,11 +104,12 @@ namespace Yuuki2TheGame
             set { id = value; }
         }
 
-        public Block(int ID)
+        public Block(int ID, string BlockType)
         {
             this.ID = ID;
             levelrequired = 0;
-            blockhealth = 1;
+            blockhealth = 100;
+            type = BlockType;
         }
     }
 }

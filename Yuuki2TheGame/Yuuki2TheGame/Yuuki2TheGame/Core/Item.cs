@@ -145,7 +145,7 @@ namespace Yuuki2TheGame.Core
         }
         
 
-        public Item(int number, string ItemName, string ItemType, int ToolLevel, bool isStacakable, bool isEquipable, OnUse ItemAction)
+        public Item(int number, string ItemName, string ItemType, int ToolLevel, bool isStacakable, bool isEquipable)
         {
             ID = number;
             Name = ItemName;
@@ -167,7 +167,7 @@ namespace Yuuki2TheGame.Core
             }
             else{ MaxStack = 0;}
             Equipable = isEquipable;
-            Use = ItemAction;
+            //Use = ItemAction;
         }
 
         public void Use(Map m, Point p)
