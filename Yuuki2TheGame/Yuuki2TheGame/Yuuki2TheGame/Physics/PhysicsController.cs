@@ -8,12 +8,7 @@ namespace Yuuki2TheGame.Physics
 {
     class PhysicsController
     {
-        private IList<IPhysical> phobs;
-
-        public PhysicsController()
-        {
-
-        }
+        private IList<IPhysical> phobs = new List<IPhysical>();
 
         public void Update(GameTime time)
         {
@@ -26,5 +21,8 @@ namespace Yuuki2TheGame.Physics
         }
 
         public void RemovePhob(IPhysical obj)
+        {
+            phobs.Remove(obj);
+        }
     }
 }
