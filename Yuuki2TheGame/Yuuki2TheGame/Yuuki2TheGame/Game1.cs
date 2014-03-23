@@ -22,6 +22,10 @@ namespace Yuuki2TheGame
         Engine gameEngine;
         Texture2D defaultTexture;
 
+        Background MyBackground;
+        Sky MySky;
+
+
         public const int WORLD_WIDTH = 100;
         public const int WORLD_HEIGHT = 100;
 
@@ -45,6 +49,9 @@ namespace Yuuki2TheGame
             Content.RootDirectory = "Content";
             blocksOnScreen = new Point (GAME_WIDTH / BLOCK_WIDTH + 1, GAME_HEIGHT / BLOCK_HEIGHT + 1);
             gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
+
+            MyBackground = new Background();
+            MySky = new Sky();
         }
 
         /// <summary>
@@ -71,8 +78,14 @@ namespace Yuuki2TheGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
+
             Tile.BlockSpriteSheet = Content.Load<Texture2D>("Tiles/BlockSprites_v1");
             CharacterSprite.CharacterSpriteSheet = Content.Load<Texture2D>("Character/CharacterSprites_v1");
+
+            Sky.sky = Content.Load<Texture2D>("Biomes/Plains/TOD_v4");
+            Sky.clockFont = Content.Load<SpriteFont>("Fonts/MyFont");
+
+            Background.PlainsBackdrop = Content.Load<Texture2D>("Biomes/Plains/BackdropPlains_v2");
 
         }
 
@@ -96,9 +109,19 @@ namespace Yuuki2TheGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
+
+
+            MySky.Update(gameTime);
+            MyBackground.Update();
+
+
+
+
             // TODO: Add your update logic here
             gameEngine.Update(gameTime);
             base.Update(gameTime);
+
+
         }
 
         /// <summary>
@@ -112,12 +135,26 @@ namespace Yuuki2TheGame
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
+
+
+            MySky.DrawSky(spriteBatch);
+            MyBackground.Draw(spriteBatch);
+
+            
             foreach (Tile t in drawn)
             {
                 if(t.Block != null)
                     spriteBatch.Draw(Tile.BlockSpriteSheet, new Rectangle((int)t.Location.X,(int)t.Location.Y, BLOCK_WIDTH, BLOCK_HEIGHT), t.TextureFromID(t.Block.SpriteID), Color.White);
             }
+
+
+            MySky.DrawLight(spriteBatch);
+
+
             spriteBatch.End();
+
+
+
             base.Draw(gameTime);
         }
 
