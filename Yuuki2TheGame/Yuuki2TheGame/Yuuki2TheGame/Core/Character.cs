@@ -11,8 +11,12 @@ namespace Yuuki2TheGame.Core
         public GameCharacter Actor { get; set; }
     }
 
-    class GameCharacter : IUpdateable, IPixelLocatable
+    /// <summary>
+    /// NOTE: Pixel coordinates is relative to lower left of character!
+    /// </summary>
+    class GameCharacter : IUpdateable, IPixelLocatable, Yuuki2TheGame.Physics.ICollidable
     {
+
         private int _updateOrder = 0;
 
         public int UpdateOrder
@@ -124,6 +128,18 @@ namespace Yuuki2TheGame.Core
             }
         }
 
+        public int Width { get; set; }
+
+        public int Height { get; set; }
+
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                return new Rectangle(PixelX, PixelY - Height, Width, Height);
+            }
+        }
+
         public int MaxHealth { get; private set; }
 
         public int Health {
@@ -161,10 +177,14 @@ namespace Yuuki2TheGame.Core
 
         public event MovedEventHandler OnMoved = null;
 
-        public GameCharacter(string name, Point pixelLocation, int health, int baseAttack, int baseArmor)
+        public string Texture { get; private set; }
+
+        public GameCharacter(string name, Point pixelLocation, Point size, int health, int baseAttack, int baseArmor)
         {
             this.Name = name;
             this.PixelLocation = pixelLocation;
+            this.Width = size.X;
+            this.Height = size.Y;
             this.MaxHealth = health;
             this.Health = health;
             this.BaseArmor = baseArmor;

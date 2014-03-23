@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Yuuki2TheGame.Core;
+using Yuuki2TheGame.Graphics;
 
 namespace Yuuki2TheGame
 {
@@ -30,8 +31,6 @@ namespace Yuuki2TheGame
 
         public const int BLOCK_WIDTH = 16;
         public const int BLOCK_HEIGHT = 16;
-
-        private Nullable<Rectangle> TILE_SIZE = new Nullable<Rectangle>(new Rectangle(0, 0, BLOCK_WIDTH, BLOCK_HEIGHT));
 
         /// <summary>
         /// Contains the number of blocks that are on the screen.
@@ -107,26 +106,46 @@ namespace Yuuki2TheGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            IList<Tile> drawn = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y, BLOCK_WIDTH, BLOCK_HEIGHT);
-            ProcessTileGraphics(drawn);
+            Sprite bg = gameEngine.GetBackground(GAME_WIDTH, GAME_HEIGHT);
+            IList<Sprite> tiles = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y, BLOCK_WIDTH, BLOCK_HEIGHT);
+            IList<Sprite> chars = gameEngine.GetCharacters(GAME_WIDTH, GAME_HEIGHT);
+            bg.Texture = NameToTexture(bg.TextureID);
+            ProcessSpriteGraphics(tiles);
+            ProcessSpriteGraphics(chars);
             GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin();
-            foreach (Tile t in drawn)
+            // draw bg first ALWAYS!
+            spriteBatch.Draw(bg.Texture, bg.Destination, bg.Source, Color.Pink);
+            foreach (Sprite sp in tiles)
             {
-                spriteBatch.Draw(t.Texture, t.Location, TILE_SIZE, Color.White);
+                spriteBatch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
+            }
+            foreach (Sprite sp in chars)
+            {
+                spriteBatch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
             }
             spriteBatch.End();
             base.Draw(gameTime);
         }
 
-        private void ProcessTileGraphics(IList<Tile> tiles)
+        private void ProcessSpriteGraphics(IList<Sprite> sprites)
         {
-            foreach (Tile t in tiles)
+            foreach (Sprite spr in sprites)
             {
                 //TODO: use preloaded graphics
-                t.Texture = Content.Load<Texture2D>(t.TextureID != null ? t.TextureID : @"Tiles/default_tile");
+                spr.Texture = NameToTexture(spr.TextureID);
             }
+        }
+
+        /// <summary>
+        /// Attempts to convert the resource name into a texture. If resource name is null, default texture is used.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private Texture2D NameToTexture(string name)
+        {
+            return Content.Load<Texture2D>(name != null ? name : @"Tiles/default_tile");
         }
     }
 }

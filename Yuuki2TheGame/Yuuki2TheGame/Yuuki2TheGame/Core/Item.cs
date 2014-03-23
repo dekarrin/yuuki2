@@ -145,7 +145,7 @@ namespace Yuuki2TheGame.Core
         }
         
 
-        public Item(int number, string ItemName, string ItemType, int ToolLevel, bool isStacakable, bool isEquipable)
+        public Item(int number, string ItemName, string ItemType, int ToolLevel, bool isStacakable, bool isEquipable, OnUse ItemAction)
         {
             ID = number;
             Name = ItemName;

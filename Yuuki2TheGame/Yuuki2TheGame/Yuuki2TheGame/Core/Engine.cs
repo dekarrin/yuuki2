@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Yuuki2TheGame.Graphics;
 
 namespace Yuuki2TheGame.Core
 {
@@ -21,11 +22,11 @@ namespace Yuuki2TheGame.Core
         public Engine(Point size)
         {
             _map = new Map(size.X, size.Y);
-            spawn = new Point(0, 0);
+            spawn = new Point(0, (size.Y / 2) * Game1.BLOCK_HEIGHT);
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);
-            Camera = new Camera(Player, new Point(-20, 0));
+            Camera = new Camera(Player, new Point(-100, -300));
         }
 
         public void Update(GameTime gameTime)
@@ -49,11 +50,11 @@ namespace Yuuki2TheGame.Core
         /// <param name="tileWidth">Width of a tile.</param>
         /// <param name="tileHeight">Height of a tile.</param>
         /// <returns></returns>
-        public IList<Tile> GetView(int numX, int numY, int tileWidth, int tileHeight)
+        public IList<Sprite> GetView(int numX, int numY, int tileWidth, int tileHeight)
         {
             Point coords = Camera.Coordinates;
             Point offsets = Camera.Offsets;
-            IList<Tile> view = new List<Tile>();
+            IList<Sprite> view = new List<Sprite>();
             for (int i = 0; i < numX; i++)
             {
                 for (int j = 0; j < numY; j++)
@@ -61,10 +62,9 @@ namespace Yuuki2TheGame.Core
                     Point tilecoords = new Point(coords.X + i, coords.Y + j);
                     if (tilecoords.X >= 0 && tilecoords.Y >= 0 && _map.BlockAt(tilecoords) != null)
                     {
-                        Tile t = new Tile();
-                        t.Block = _map.BlockAt(tilecoords);
-                        t.Location = new Vector2(i * tileWidth - offsets.X, j * tileHeight - offsets.Y);
-                        view.Add(t);
+                        Point position = new Point(i * tileWidth - offsets.X, j * tileHeight - offsets.Y);
+                        Sprite spr = new Sprite(position, new Point(tileWidth, tileHeight), _map.BlockAt(tilecoords).Texture);
+                        view.Add(spr);
                     }
                 }
             }
@@ -87,6 +87,36 @@ namespace Yuuki2TheGame.Core
             {
                 return _items.AsReadOnly();
             }
+        }
+
+        public Sprite GetBackground(int screenWidth, int screenHeight)
+        {
+            int x = Math.Abs(Math.Min(Camera.Location.X, 0));
+            int y = Math.Abs(Math.Min(Camera.Location.Y, 0));
+            int width = screenWidth - x;
+            int height = screenHeight - y;
+            // Above will need to be changed if we want to make worlds that are smaller than the screen
+            Sprite spr = new Sprite(new Point(x, y), new Point(width, height), null);
+            // TODO: Correct position based on camera
+            return spr;
+        }
+
+        public IList<Sprite> GetCharacters(int screenWidth, int screenHeight)
+        {
+            // TODO: OPTIMIZE! We should be using quadtrees or something...
+            Rectangle view = new Rectangle(Camera.Location.X, Camera.Location.Y, screenWidth, screenHeight);
+            IList<Sprite> chars = new List<Sprite>();
+            foreach (GameCharacter c in _characters)
+            {
+                if (c.BoundingBox.Intersects(view))
+                {
+                    Point position = new Point(c.BoundingBox.X - Camera.Location.X, c.BoundingBox.Y - Camera.Location.Y);
+                    Point size = new Point(c.Width, c.Height);
+                    Sprite spr = new Sprite(position, size, c.Texture);
+                    chars.Add(spr);
+                }
+            }
+            return chars;
         }
     }
 }
