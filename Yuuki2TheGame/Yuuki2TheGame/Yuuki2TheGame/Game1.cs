@@ -25,6 +25,7 @@ namespace Yuuki2TheGame
         Background MyBackground;
         Sky MySky;
 
+        public string GAMEMODE;
 
         public const int WORLD_WIDTH = 100;
         public const int WORLD_HEIGHT = 100;
@@ -49,6 +50,10 @@ namespace Yuuki2TheGame
             Content.RootDirectory = "Content";
             blocksOnScreen = new Point (GAME_WIDTH / BLOCK_WIDTH + 1, GAME_HEIGHT / BLOCK_HEIGHT + 1);
             gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
+
+            GAMEMODE = "game_live";
+            // game_live, game_paused, setup, main, credits, splash, etc.
+
 
             MyBackground = new Background();
             MySky = new Sky();
@@ -106,19 +111,24 @@ namespace Yuuki2TheGame
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            if (Keyboard.GetState(PlayerIndex.One).IsKeyDown(Keys.Escape))
                 this.Exit();
 
 
+            switch (GAMEMODE)   // current mode based updates
+            {
+                case "game_live":
 
-            MySky.Update(gameTime);
-            MyBackground.Update();
+                                MySky.Update(gameTime);
+                                MyBackground.Update();
+                                gameEngine.Update(gameTime);
+                    break;
 
+                case "main":
 
+                    break;
+            }
 
-
-            // TODO: Add your update logic here
-            gameEngine.Update(gameTime);
             base.Update(gameTime);
 
 
@@ -136,37 +146,39 @@ namespace Yuuki2TheGame
 
             spriteBatch.Begin();
 
-
-            MySky.DrawSky(spriteBatch);
-            MyBackground.Draw(spriteBatch);
-
-            
-            foreach (Tile t in drawn)
+            switch (GAMEMODE)   // current mode based draws
             {
-                if(t.Block != null)
-                    spriteBatch.Draw(Tile.BlockSpriteSheet, new Rectangle((int)t.Location.X,(int)t.Location.Y, BLOCK_WIDTH, BLOCK_HEIGHT), t.TextureFromID(t.Block.SpriteID), Color.White);
+                case "game_live":
+
+                    MySky.DrawSky(spriteBatch);         // draw TOD
+                    MyBackground.Draw(spriteBatch);     // draw Background       
+                    foreach (Tile t in drawn)           // draw world
+                    {
+                        if(t.Block != null)
+                        spriteBatch.Draw(Tile.BlockSpriteSheet, new Rectangle((int)t.Location.X,(int)t.Location.Y, BLOCK_WIDTH, BLOCK_HEIGHT), t.TextureFromID(t.Block.SpriteID), Color.White);
+                    }
+                    MySky.DrawLight(spriteBatch);       // draw light
+
+                    break;
+
+                case "main":
+
+                    break;
             }
-
-
-            MySky.DrawLight(spriteBatch);
-
-
+      
             spriteBatch.End();
-
-
-
             base.Draw(gameTime);
         }
 
-        private void ProcessTileGraphics(IList<Tile> tiles)
-        {
+        //private void ProcessTileGraphics(IList<Tile> tiles)
+        //{
 
-            Tile.BlockSpriteSheet = Content.Load<Texture2D>("Tiles/BLockSprites_v1");
+            //Tile.BlockSpriteSheet = Content.Load<Texture2D>("Tiles/BLockSprites_v1");
             //foreach (Tile t in tiles)
             //{
                 //TODO: use preloaded graphics
                 //t.Texture = Content.Load<Texture2D>(t.TextureID != null ? t.TextureID : @"Tiles/default_tile");
             //}
-        }
+        //}
     }
 }
