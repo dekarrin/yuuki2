@@ -94,6 +94,63 @@ namespace Yuuki2TheGame
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
+            Control pressKey = new Control();
+            Inventory ic = new Inventory();
+            KeyboardState KeyState = new KeyboardState();
+            if (KeyState.IsKeyDown(Keys.A))
+            {
+                pressKey.moveLeft(gameTime);
+            }
+
+            // Press D to move sprite right.
+            if (KeyState.IsKeyDown(Keys.D))
+            {
+                pressKey.moveRight(gameTime);
+            }
+
+            // Press W to move sprite up.
+            if (KeyState.IsKeyDown(Keys.W))
+            {
+                pressKey.moveUp(gameTime);
+            }
+
+            // Press S to move sprite down               
+            if (KeyState.IsKeyDown(Keys.S))
+            {
+                pressKey.moveDown(gameTime);
+            }
+            if (KeyState.IsKeyDown(Keys.Space))
+            {
+                pressKey.jump();
+            }
+
+            if (KeyState.IsKeyDown(Keys.Right))
+            {
+
+            }
+
+            if (KeyState.IsKeyDown(Keys.Left))
+            {
+
+            }
+
+            if (KeyState.IsKeyDown(Keys.Tab))
+            {
+                //
+            }
+            if (KeyState.IsKeyDown(Keys.Escape))
+            {
+
+            }
+            if (KeyState.IsKeyDown(Keys.Q))
+            {
+
+            }
+            if (KeyState.IsKeyDown(Keys.E))
+            {
+
+            }
+
 
             // TODO: Add your update logic here
             gameEngine.Update(gameTime);
