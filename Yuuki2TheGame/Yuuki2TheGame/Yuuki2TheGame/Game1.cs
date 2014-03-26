@@ -119,33 +119,44 @@ namespace Yuuki2TheGame
             {
                 pressKey.moveDown(gameTime);
             }
+
+            // Press space to move jump sprite.
             if (KeyState.IsKeyDown(Keys.Space))
             {
                 pressKey.jump();
             }
 
+            // Press Right arrow to move sprite right.
             if (KeyState.IsKeyDown(Keys.Right))
             {
 
             }
 
+            // Press Left arrow to move sprite right.
             if (KeyState.IsKeyDown(Keys.Left))
             {
 
             }
 
+            // Press Tab to move sprite right.
             if (KeyState.IsKeyDown(Keys.Tab))
             {
-                //
+                
             }
+
+            // Press Escape to move sprite right.
             if (KeyState.IsKeyDown(Keys.Escape))
             {
 
             }
+
+            // Press Q to move sprite right.
             if (KeyState.IsKeyDown(Keys.Q))
             {
 
             }
+
+            // Press E to move sprite right.
             if (KeyState.IsKeyDown(Keys.E))
             {
 
