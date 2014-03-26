@@ -3,6 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Yuuki2TheGame.Physics;
+using FarseerPhysics;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
 
 namespace Yuuki2TheGame
 {
@@ -27,7 +31,7 @@ namespace Yuuki2TheGame
         Liquid,
         Solid,
     }
-    class Block : IUpdateable
+    class Block : IUpdateable, IPhysical
     {
 
         private int levelrequired;
@@ -60,6 +64,8 @@ namespace Yuuki2TheGame
         /// </summary>
         /// <returns></returns>
         public string Texture { get; set; }
+
+        public Body Body { get; private set; }
 
         public bool Enabled
         {
@@ -105,11 +111,43 @@ namespace Yuuki2TheGame
             set { id = value; }
         }
 
-        public Block(int ID)
+        public Block(int ID, Vector2 p)
         {
             this.ID = ID;
             levelrequired = 0;
             blockhealth = 1;
+            Position = p;
+        }
+
+        private Vector2 _position;
+
+        public Vector2 Position
+        {
+            get
+            {
+                return _position;
+            }
+            set
+            {
+                _position = value;
+                if (this.Body != null)
+                {
+                    Body.Position = ConvertUnits.ToSimUnits(Position);
+                }
+            }
+        }
+
+        public void SetWorld(World w)
+        {
+            if (w != null)
+            {
+                this.Body = BodyFactory.CreateRectangle(w, ConvertUnits.ToSimUnits(Game1.BLOCK_WIDTH), ConvertUnits.ToSimUnits(Game1.BLOCK_HEIGHT), 1f);
+                this.Body.Position = ConvertUnits.ToSimUnits(Position);
+            }
+            else
+            {
+                this.Body = null;
+            }
         }
     }
 }
