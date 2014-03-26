@@ -125,7 +125,7 @@ namespace Yuuki2TheGame.Physics
                 int my = _rect.Y + mh;
                 if (item.BoundingBox.X < mx)
                 {
-                    if (item.BoundingBox.Y < my && _upLeft._rect.Contains(ic.BoundingBox))
+                    if (item.BoundingBox.Y < my && _upLeft._rect.Contains(item.BoundingBox))
                     {
                         return _upLeft.GetQuad(item);
                     }
