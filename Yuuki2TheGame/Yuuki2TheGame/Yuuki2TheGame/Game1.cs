@@ -97,6 +97,7 @@ namespace Yuuki2TheGame
             Control pressKey = new Control();
             Inventory ic = new Inventory();
             KeyboardState KeyState = new KeyboardState();
+            MouseState mouseState = Mouse.GetState();
 
             // Press A or left arrow to move sprite left.
             if (KeyState.IsKeyDown(Keys.A) || KeyState.IsKeyDown(Keys.Left))
@@ -122,14 +123,14 @@ namespace Yuuki2TheGame
                 pressKey.jump();
             }
 
-            // Press Right click arrow to move sprite right.
-            if (KeyState.IsKeyDown(Keys.Right))
+            // Press Left click to interact with currently selected item.
+            if (mouseState.LeftButton == ButtonState.Pressed)
             {
 
             }
 
-            // Press Left click arrow to move sprite right.
-            if (KeyState.IsKeyDown(Keys.Left))
+            // Press Right click to interact with currently selected item.
+            if (mouseState.RightButton == ButtonState.Pressed)
             {
 
             }
@@ -146,13 +147,13 @@ namespace Yuuki2TheGame
 
             }
 
-            // Press Q to move sprite right.
+            // Press Q to Quick use slot 1, use the item in the quick use slot 1.
             if (KeyState.IsKeyDown(Keys.Q))
             {
 
             }
 
-            // Press E to move sprite right.
+            // Press E to Quick use slot 2, use the item in the quick use slot 2.
             if (KeyState.IsKeyDown(Keys.E))
             {
 
