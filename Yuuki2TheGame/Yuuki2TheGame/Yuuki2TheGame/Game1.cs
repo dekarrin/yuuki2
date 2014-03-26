@@ -97,54 +97,50 @@ namespace Yuuki2TheGame
             Control pressKey = new Control();
             Inventory ic = new Inventory();
             KeyboardState KeyState = new KeyboardState();
-            if (KeyState.IsKeyDown(Keys.A))
+
+            // Press A or left arrow to move sprite left.
+            if (KeyState.IsKeyDown(Keys.A) || KeyState.IsKeyDown(Keys.Left))
             {
                 pressKey.moveLeft(gameTime);
             }
 
-            // Press D to move sprite right.
-            if (KeyState.IsKeyDown(Keys.D))
+            // Press D or Right arrow to move sprite right.
+            if (KeyState.IsKeyDown(Keys.D) || KeyState.IsKeyDown(Keys.Right))
             {
                 pressKey.moveRight(gameTime);
             }
 
-            // Press W to move sprite up.
-            if (KeyState.IsKeyDown(Keys.W))
+            // Press S or Down arrow to move sprite down               
+            if (KeyState.IsKeyDown(Keys.S) || KeyState.IsKeyDown(Keys.Down))
             {
-                pressKey.moveUp(gameTime);
+                // do nothing.
             }
 
-            // Press S to move sprite down               
-            if (KeyState.IsKeyDown(Keys.S))
-            {
-                pressKey.moveDown(gameTime);
-            }
-
-            // Press space to move jump sprite.
-            if (KeyState.IsKeyDown(Keys.Space))
+            // Press W or Space or Up arrow to move jump sprite.
+            if (KeyState.IsKeyDown(Keys.W) || KeyState.IsKeyDown(Keys.Up) || KeyState.IsKeyDown(Keys.Space))
             {
                 pressKey.jump();
             }
 
-            // Press Right arrow to move sprite right.
+            // Press Right click arrow to move sprite right.
             if (KeyState.IsKeyDown(Keys.Right))
             {
 
             }
 
-            // Press Left arrow to move sprite right.
+            // Press Left click arrow to move sprite right.
             if (KeyState.IsKeyDown(Keys.Left))
             {
 
             }
 
-            // Press Tab to move sprite right.
+            // Press Tab to open Inventory.
             if (KeyState.IsKeyDown(Keys.Tab))
             {
                 
             }
 
-            // Press Escape to move sprite right.
+            // Press Escape to open options menu.
             if (KeyState.IsKeyDown(Keys.Escape))
             {
 
