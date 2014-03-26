@@ -126,7 +126,7 @@ namespace Yuuki2TheGame
             // Press Left click to interact with currently selected item.
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
-
+                
             }
 
             // Press Right click to interact with currently selected item.
