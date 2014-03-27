@@ -57,6 +57,14 @@ namespace Yuuki2TheGame
             }
         }
 
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                return new Rectangle((int)Position.X, (int)Position.Y - Game1.BLOCK_HEIGHT, Game1.BLOCK_WIDTH, Game1.BLOCK_HEIGHT);
+            }
+        }
+
         private bool _enabled = true;
 
         /// <summary>
@@ -143,6 +151,7 @@ namespace Yuuki2TheGame
             {
                 this.Body = BodyFactory.CreateRectangle(w, ConvertUnits.ToSimUnits(Game1.BLOCK_WIDTH), ConvertUnits.ToSimUnits(Game1.BLOCK_HEIGHT), 1f);
                 this.Body.Position = ConvertUnits.ToSimUnits(Position);
+                this.Body.IsStatic = true;
             }
             else
             {
