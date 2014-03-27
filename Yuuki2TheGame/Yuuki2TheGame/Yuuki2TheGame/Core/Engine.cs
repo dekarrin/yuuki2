@@ -26,6 +26,7 @@ namespace Yuuki2TheGame.Core
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);
+
             Camera = new Camera(Player, new Point(-100, -300));
         }
 

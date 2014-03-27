@@ -90,7 +90,6 @@
     <Compile Include="Physics\ICollidable.cs" />
     <Compile Include="Physics\IPhysical.cs" />
     <Compile Include="Physics\PhysicsController.cs" />
-    <Compile Include="Physics\QuadTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
@@ -99,6 +98,7 @@
     <Content Include="FarseerPhysicsXNA.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="FarseerPhysicsXNA.xml" />
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png">
       <XnaPlatformSpecific>true</XnaPlatformSpecific>
