@@ -12,7 +12,7 @@ namespace Yuuki2TheGame.Core
     {
         public const float PHYS_WIND = 0f;
 
-        public const float PHYS_GRAVITY = 9.806f;
+        public const float PHYS_GRAVITY = 0f;
 
         public const float PHYS_TIMESCALE = 1.0f;
 
