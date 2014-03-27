@@ -66,7 +66,7 @@ namespace Yuuki2TheGame.Core
             {
                 this.Body = BodyFactory.CreateRectangle(w, ConvertUnits.ToSimUnits(Game1.BLOCK_WIDTH), ConvertUnits.ToSimUnits(Game1.BLOCK_HEIGHT), 1f);
                 this.Body.Position = ConvertUnits.ToSimUnits(PixelX, PixelY);
-                this.Body.BodyType = BodyType.Kinematic;
+                this.Body.BodyType = BodyType.Dynamic;
             }
             else
             {
@@ -109,6 +109,10 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
+                if (Body != null)
+                {
+                    _pixelx = (int)Math.Round(ConvertUnits.ToDisplayUnits(Body.Position.X));
+                }
                 return _pixelx;
             }
             set
@@ -130,6 +134,10 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
+                if (Body != null)
+                {
+                    _pixely = (int)Math.Round(ConvertUnits.ToDisplayUnits(Body.Position.Y));
+                }
                 return _pixely;
             }
             set

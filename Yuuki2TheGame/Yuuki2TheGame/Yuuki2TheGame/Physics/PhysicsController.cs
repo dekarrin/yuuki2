@@ -15,10 +15,14 @@ namespace Yuuki2TheGame.Physics
 
         private IList<IPhysical> phobs = new List<IPhysical>();
 
-        private World model = new World(new Vector2(0, GRAVITY));
+        private World model;
 
-        public PhysicsController()
+        private float timescale;
+
+        public PhysicsController(float wind, float gravity, float timescale)
         {
+            model = new World(new Vector2(wind, gravity));
+            this.timescale = timescale;
             ConvertUnits.SetDisplayUnitToSimUnitRatio((float)Game1.BLOCK_WIDTH);
         }
 
@@ -41,7 +45,7 @@ namespace Yuuki2TheGame.Physics
 
         public void Update(GameTime time)
         {
-            model.Step((float)time.ElapsedGameTime.Milliseconds);
+            model.Step((float)time.ElapsedGameTime.Milliseconds * timescale);
         }
 
         public void AddPhob(IPhysical obj)
