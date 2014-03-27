@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using FarseerPhysics;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
 
 namespace Yuuki2TheGame.Core
 {
@@ -14,7 +17,7 @@ namespace Yuuki2TheGame.Core
     /// <summary>
     /// NOTE: Pixel coordinates is relative to lower left of character!
     /// </summary>
-    class GameCharacter : IUpdateable, IPixelLocatable, Yuuki2TheGame.Physics.ICollidable
+    class GameCharacter : IUpdateable, IPixelLocatable, Yuuki2TheGame.Physics.IPhysical
     {
 
         private int _updateOrder = 0;
@@ -52,6 +55,21 @@ namespace Yuuki2TheGame.Core
                 {
                     EnabledChanged(this, new EventArgs());
                 }
+            }
+        }
+
+        public Body Body { get; private set; }
+
+        public void SetWorld(World w)
+        {
+            if (w != null)
+            {
+                this.Body = BodyFactory.CreateRectangle(w, ConvertUnits.ToSimUnits(Game1.BLOCK_WIDTH), ConvertUnits.ToSimUnits(Game1.BLOCK_HEIGHT), 1f);
+                this.Body.Position = ConvertUnits.ToSimUnits(PixelX, PixelY);
+            }
+            else
+            {
+                this.Body = null;
             }
         }
 
@@ -189,6 +207,13 @@ namespace Yuuki2TheGame.Core
             this.Health = health;
             this.BaseArmor = baseArmor;
             this.BaseAttack = baseAttack;
+            this.OnMoved += new MovedEventHandler(delegate(Object o, MovedEventArgs e)
+                {
+                    if (Body != null)
+                    {
+                        Body.Position = ConvertUnits.ToSimUnits(PixelX, PixelY);
+                    }
+                });
         }
 
         /// <summary>
