@@ -119,12 +119,12 @@ namespace Yuuki2TheGame
             set { id = value; }
         }
 
-        public Block(int ID, Vector2 p)
+        public Block(int ID, int mapx, int mapy)
         {
             this.ID = ID;
             levelrequired = 0;
             blockhealth = 1;
-            Position = p;
+            Position = new Vector2(mapx, mapy);
         }
 
         private Vector2 _position;
