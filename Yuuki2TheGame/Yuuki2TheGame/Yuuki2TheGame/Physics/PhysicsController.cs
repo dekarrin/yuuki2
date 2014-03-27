@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using FarseerPhysics;
 using FarseerPhysics.Dynamics;
+using Yuuki2TheGame.Core;
 
 namespace Yuuki2TheGame.Physics
 {
@@ -19,6 +20,23 @@ namespace Yuuki2TheGame.Physics
         public PhysicsController()
         {
             ConvertUnits.SetDisplayUnitToSimUnitRatio((float)Game1.BLOCK_WIDTH);
+        }
+
+        public void AddMap(Yuuki2TheGame.Core.Map map)
+        {
+            Point coords = new Point();
+            Block block = null;
+            for (coords.X = 0; coords.X < map.Width; coords.X++)
+            {
+                for (coords.Y = 0; coords.Y < map.Height; coords.Y++)
+                {
+                    block = map.BlockAt(coords);
+                    if (block != null)
+                    {
+                        AddPhob(map.BlockAt(coords));
+                    }
+                }
+            }
         }
 
         public void Update(GameTime time)

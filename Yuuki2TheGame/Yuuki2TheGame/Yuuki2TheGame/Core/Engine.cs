@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Yuuki2TheGame.Graphics;
+using Yuuki2TheGame.Physics;
 
 namespace Yuuki2TheGame.Core
 {
@@ -17,6 +18,8 @@ namespace Yuuki2TheGame.Core
 
         private Point spawn;
 
+        private PhysicsController physics;
+
         public Camera Camera { get; set; }
 
         public Engine(Point size)
@@ -26,8 +29,10 @@ namespace Yuuki2TheGame.Core
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);
-
             Camera = new Camera(Player, new Point(-100, -300));
+            physics = new PhysicsController();
+            physics.AddMap(_map);
+            physics.AddPhob(Player);
         }
 
         public void Update(GameTime gameTime)
@@ -41,6 +46,7 @@ namespace Yuuki2TheGame.Core
                 i.Update(gameTime);
             }
             _map.Update(gameTime);
+            physics.Update(gameTime);
         }
 
         /// <summary>

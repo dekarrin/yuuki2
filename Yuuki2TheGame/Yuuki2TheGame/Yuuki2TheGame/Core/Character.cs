@@ -66,6 +66,7 @@ namespace Yuuki2TheGame.Core
             {
                 this.Body = BodyFactory.CreateRectangle(w, ConvertUnits.ToSimUnits(Game1.BLOCK_WIDTH), ConvertUnits.ToSimUnits(Game1.BLOCK_HEIGHT), 1f);
                 this.Body.Position = ConvertUnits.ToSimUnits(PixelX, PixelY);
+                this.Body.BodyType = BodyType.Kinematic;
             }
             else
             {
