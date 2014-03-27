@@ -61,7 +61,7 @@ namespace Yuuki2TheGame
         {
             get
             {
-                return new Rectangle((int)Position.X, (int)Position.Y - Game1.BLOCK_HEIGHT, Game1.BLOCK_WIDTH, Game1.BLOCK_HEIGHT);
+                return new Rectangle((int)Position.X * Game1.BLOCK_WIDTH, ((int)Position.Y * Game1.BLOCK_HEIGHT) - Game1.BLOCK_HEIGHT, Game1.BLOCK_WIDTH, Game1.BLOCK_HEIGHT);
             }
         }
 
