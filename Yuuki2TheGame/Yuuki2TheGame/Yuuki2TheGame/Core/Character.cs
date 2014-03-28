@@ -134,7 +134,7 @@ namespace Yuuki2TheGame.Core
                 _pixelx = value;
                 if (Body != null)
                 {
-                    Body.Position = ConvertUnits.ToSimUnits(value, Body.Position.Y);
+                    Body.Position = ConvertUnits.ToSimUnits(value, ConvertUnits.ToDisplayUnits(Body.Position.Y));
                 }
             }
         }
@@ -163,7 +163,7 @@ namespace Yuuki2TheGame.Core
                 _pixely = value;
                 if (Body != null)
                 {
-                    Body.Position = ConvertUnits.ToSimUnits(Body.Position.X, value);
+                    Body.Position = ConvertUnits.ToSimUnits(ConvertUnits.ToDisplayUnits(Body.Position.X), value);
                 }
             }
         }
