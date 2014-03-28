@@ -6,26 +6,24 @@ using System.Text;
 
 namespace Yuuki2TheGame
 {
-    enum BlockType
+    enum DirtType
     {
-        Dirt,
-        Stone,
-        Copper,
-        Iron,
-        Sand,
-        Ice,
-        Swamp,
-        Wood,
-        Smoothstone,
-        Brick,
-        Titanite,
-        Twinkling,
+        LevelRequired = 1,
+        Health = 100,
+        Type = 1
+        
     }
-
-    enum PhysicsType
+    enum GroundType
     {
-        Liquid,
-        Solid,
+       LevelRequired = 1,
+       Health = 200,
+       Type = 2
+    }
+    enum WoodType
+    {
+        LevelRequired = 2,
+        Health = 250,
+        Type = 3
     }
     class Block : IUpdateable
     {
@@ -33,8 +31,14 @@ namespace Yuuki2TheGame
         private int levelrequired;
         private int blockhealth;
         private int id;
-        private string type;
         private int _updateOrder = 0;
+        private int type;
+
+        public int Type
+        {
+            get { return type; }
+            set { type = value; }
+        }
 
         public int UpdateOrder
         {
@@ -82,11 +86,7 @@ namespace Yuuki2TheGame
 
         public event EventHandler<EventArgs> EnabledChanged = null;
 
-        public string Type
-        {
-            get { return type; }
-            set { type = value; }
-        }
+        
         public int LevelRequired
         {
             get { return levelrequired; }
@@ -110,12 +110,29 @@ namespace Yuuki2TheGame
             set { id = value; }
         }
 
-        public Block(int ID, string BlockType)
+        public Block(int id)
         {
-            this.ID = ID;
-            levelrequired = 0;
-            blockhealth = 100;
-            type = BlockType;
+            this.ID = id;
+
+
+            //TODO Have correct implementation 
+            if (ID <= 16){
+                this.LevelRequired = (int)DirtType.LevelRequired;
+                this.MiningHealth = (int)DirtType.Health;
+                this.Type = (int)DirtType.Type;
+            }
+            
+            if (ID > 16 && ID < 32){
+                this.LevelRequired = (int)WoodType.LevelRequired;
+                this.MiningHealth = (int)WoodType.Health;
+                this.Type = (int)DirtType.Type;
+            }
+
+            if(ID >= 32){
+                this.LevelRequired = (int)GroundType.LevelRequired;
+                this.MiningHealth = (int)GroundType.Health;
+                this.Type = (int)DirtType.Type;
+            }
         }
     }
 }

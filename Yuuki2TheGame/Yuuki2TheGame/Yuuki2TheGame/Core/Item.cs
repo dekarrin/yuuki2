@@ -8,20 +8,16 @@ namespace Yuuki2TheGame.Core
 {
     enum ItemType
     {
-        Block,
-        Weapon,
-        Armor,
+        Block = 1,
         Axe,
         PickAxe,
-        Gun,
         Shovel,
-        Decoration,
     }
     class Item : IUpdateable
     {
         private int id;
         private string name;
-        private string type;
+        private int type;
         private int level;
         private bool stack;
         private int _maxstack;
@@ -72,7 +68,7 @@ namespace Yuuki2TheGame.Core
 
         public event EventHandler<EventArgs> EnabledChanged = null;
 
-        public delegate void OnUse(Map m);
+        public delegate void OnUse(Map m, Point p);
 
         public void Update(GameTime gameTime) {
 
@@ -138,30 +134,55 @@ namespace Yuuki2TheGame.Core
             get { return name; }
             set { name = value; }
         }
-        public string Type
+        public int Type
         {
             get { return type; }
             set { type = value; }
         }
         
 
-        public Item(int number, string ItemName, string ItemType, int ToolLevel, bool isStacakable, bool isEquipable, OnUse ItemAction)
+        public Item(int number, string ItemName, int ToolLevel, bool isStacakable, bool isEquipable)
         {
             ID = number;
             Name = ItemName;
-            Type = ItemType;
             Level = ToolLevel;
             Stackable = isStacakable;
+            ItemAction ia = new ItemAction();
+            
+            
+            if (ID <= 8){
+                this.Type = (int)ItemType.Block;
+            }
+            
+            if (ID > 16 && ID < 24){
+                this.Type = (int)ItemType.Axe;
+                OnUse = ia.
+            }
+
+            if (ID >= 24 && ID < 32)
+            {
+                this.Type = (int)ItemType.Shovel;
+            }
+
+            if (ID >= 32) 
+            {
+                this.Type = (int)ItemType.PickAxe;
+            }
+            
+            
             if (Stackable){
                switch(Type){
-                   case "block":
+                   case (int)ItemType.Block:
                        MaxStack = 200;
                        break;
-                   case "tool":
+                   case (int)ItemType.Axe:
                        MaxStack = 10;
                        break;
-                   case "powerup":
-                       MaxStack = 2;
+                   case (int)ItemType.PickAxe:
+                       MaxStack = 30;
+                       break;
+                   case (int)ItemType.Shovel:
+                       MaxStack = 2000;
                        break;
                }
             }
@@ -170,16 +191,6 @@ namespace Yuuki2TheGame.Core
             
         }
 
-        public void Use(Map m, Point p)
-        {
-            int health = m.BlockAt(p).MiningHealth;
-       
-            if (m.BlockAt(p) != null)
-            {
-                health =- this.BlockDamage;
-                m.BlockAt(p).MiningHealth = health;
-            }
-        }
 
         public void ChangeName(string DesiredName)
         {

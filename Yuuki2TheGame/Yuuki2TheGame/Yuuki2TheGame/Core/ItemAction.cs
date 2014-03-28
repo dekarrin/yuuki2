@@ -8,10 +8,10 @@ namespace Yuuki2TheGame.Core
 {
     class ItemAction
     {
-        static void AxeAction(Map m, Point p)
+        public static void AxeAction(Map m, Point p)
         {
             Block b = m.BlockAt(p);
-            if (m.BlockAt(p).Type == "wood")
+            if (m.BlockAt(p).Type == (int)WoodType.Type)
             {
                 int health;
                 int CurrentHealth = m.BlockAt(p).MiningHealth;
@@ -34,11 +34,11 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        static void PickAction(Map m, Point p)
+        public static void PickAction(Map m, Point p)
         {
 
             Block b = m.BlockAt(p);
-            if (m.BlockAt(p).Type == "earth")
+            if (m.BlockAt(p).Type == (int)GroundType.Type)
             {
                 int health;
                 int CurrentHealth = m.BlockAt(p).MiningHealth;
@@ -61,16 +61,16 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        static void BombAction(Map m, Point p)
+        public static void BombAction(Map m, Point p)
         {
             //explodes and destroys a radius of blocks around it.
         }
 
-        static void ShovelAction(Map m, Point p)
+        public static void ShovelAction(Map m, Point p)
         {
 
             Block b = m.BlockAt(p);
-            if (m.BlockAt(p).Type == "dirt")
+            if (m.BlockAt(p).Type == (int)DirtType.Type)
             {
                 int health;
                 int CurrentHealth = m.BlockAt(p).MiningHealth;
@@ -90,6 +90,15 @@ namespace Yuuki2TheGame.Core
                 int CurrentHealth = m.BlockAt(p).MiningHealth;
                 health = CurrentHealth - 10;
                 m.BlockAt(p).MiningHealth = health;
+            }
+        }
+
+        public static void PotionAction(GameCharacter c)
+        {
+            int currentHealth = c.Health;
+            if (currentHealth + 50 > 100)
+            {
+                c.Health = 100;
             }
         }
 
