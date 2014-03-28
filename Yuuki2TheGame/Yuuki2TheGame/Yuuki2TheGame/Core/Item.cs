@@ -24,6 +24,7 @@ namespace Yuuki2TheGame.Core
         private bool equipable;
         private int count;
         private int blockdamage;
+        OnUse action;
 
 
         private int _updateOrder = 0;
@@ -150,23 +151,27 @@ namespace Yuuki2TheGame.Core
             ItemAction ia = new ItemAction();
             
             
-            if (ID <= 8){
+            if (ID <= 8)
+            {
                 this.Type = (int)ItemType.Block;
             }
             
-            if (ID > 16 && ID < 24){
+            if (ID > 16 && ID < 24)
+            {
                 this.Type = (int)ItemType.Axe;
-                OnUse = ia.
+                OnUse action = ia.AxeAction;
             }
 
             if (ID >= 24 && ID < 32)
             {
                 this.Type = (int)ItemType.Shovel;
+                action = ia.ShovelAction;
             }
 
             if (ID >= 32) 
             {
                 this.Type = (int)ItemType.PickAxe;
+                action = ia.PickAction;
             }
             
             

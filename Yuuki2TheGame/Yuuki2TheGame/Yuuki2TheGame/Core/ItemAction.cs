@@ -8,7 +8,7 @@ namespace Yuuki2TheGame.Core
 {
     class ItemAction
     {
-        public static void AxeAction(Map m, Point p)
+        public void AxeAction(Map m, Point p)
         {
             Block b = m.BlockAt(p);
             if (m.BlockAt(p).Type == (int)WoodType.Type)
@@ -34,7 +34,7 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public static void PickAction(Map m, Point p)
+        public void PickAction(Map m, Point p)
         {
 
             Block b = m.BlockAt(p);
@@ -61,12 +61,12 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public static void BombAction(Map m, Point p)
+        public void BombAction(Map m, Point p)
         {
             //explodes and destroys a radius of blocks around it.
         }
 
-        public static void ShovelAction(Map m, Point p)
+        public void ShovelAction(Map m, Point p)
         {
 
             Block b = m.BlockAt(p);
@@ -93,7 +93,7 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public static void PotionAction(GameCharacter c)
+        public void PotionAction(GameCharacter c)
         {
             int currentHealth = c.Health;
             if (currentHealth + 50 > 100)
