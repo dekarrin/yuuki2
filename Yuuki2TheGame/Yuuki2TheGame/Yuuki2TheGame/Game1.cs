@@ -126,37 +126,37 @@ namespace Yuuki2TheGame
             // Press Left click to interact with currently selected item.
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                
+                // functionality has not been implemented yet
             }
 
             // Press Right click to interact with currently selected item.
             if (mouseState.RightButton == ButtonState.Pressed)
             {
-
+                //functionality has not been implemented yet
             }
 
             // Press Tab to open Inventory.
             if (KeyState.IsKeyDown(Keys.Tab))
             {
-                
+                //functionality has not been implemented yet
             }
 
             // Press Escape to open options menu.
             if (KeyState.IsKeyDown(Keys.Escape))
             {
-
+                //functionality has not been implemented yet
             }
 
             // Press Q to Quick use slot 1, use the item in the quick use slot 1.
             if (KeyState.IsKeyDown(Keys.Q))
             {
-
+                //functionality has not been implemented yet
             }
 
             // Press E to Quick use slot 2, use the item in the quick use slot 2.
             if (KeyState.IsKeyDown(Keys.E))
             {
-
+                //functionality has not been implemented yet
             }
 
 
