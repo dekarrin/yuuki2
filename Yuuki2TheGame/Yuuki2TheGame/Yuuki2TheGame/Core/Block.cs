@@ -83,7 +83,7 @@ namespace Yuuki2TheGame.Core
                 _pixely = value.Y;
                 if (Body != null)
                 {
-                    Body.Position = ConvertUnits.ToSimUnits(value.X, value.Y);
+                    Body.Position = ConvertUnits.ToSimUnits(value.X + (Game1.BLOCK_WIDTH / 2), value.Y + (Game1.BLOCK_HEIGHT / 2));
                 }
             }
         }
@@ -94,7 +94,7 @@ namespace Yuuki2TheGame.Core
             {
                 if (Body != null)
                 {
-                    PixelX = (int)Math.Round(ConvertUnits.ToDisplayUnits(Body.Position.X));
+                    PixelX = (int)Math.Round(ConvertUnits.ToDisplayUnits(Body.Position.X)) - (Game1.BLOCK_WIDTH / 2);
                 }
                 return _pixelx;
             }
@@ -112,7 +112,7 @@ namespace Yuuki2TheGame.Core
                 _pixelx = value;
                 if (Body != null)
                 {
-                    Body.Position = ConvertUnits.ToSimUnits(value, ConvertUnits.ToDisplayUnits(Body.Position.Y));
+                    Body.Position = ConvertUnits.ToSimUnits(value + (Game1.BLOCK_WIDTH / 2), ConvertUnits.ToDisplayUnits(Body.Position.Y));
                 }
             }
         }
@@ -123,7 +123,7 @@ namespace Yuuki2TheGame.Core
             {
                 if (Body != null)
                 {
-                    PixelY = (int)Math.Round(ConvertUnits.ToDisplayUnits(Body.Position.Y));
+                    PixelY = (int)Math.Round(ConvertUnits.ToDisplayUnits(Body.Position.Y)) - (Game1.BLOCK_HEIGHT / 2);
                 }
                 return _pixely;
             }
@@ -141,7 +141,7 @@ namespace Yuuki2TheGame.Core
                 _pixely = value;
                 if (Body != null)
                 {
-                    Body.Position = ConvertUnits.ToSimUnits(ConvertUnits.ToDisplayUnits(Body.Position.X), value);
+                    Body.Position = ConvertUnits.ToSimUnits(ConvertUnits.ToDisplayUnits(Body.Position.X), value + (Game1.BLOCK_HEIGHT / 2));
                 }
             }
         }
@@ -223,7 +223,7 @@ namespace Yuuki2TheGame.Core
             {
                 Point pos = PixelLocation; // must get before setting body
                 Body = BodyFactory.CreateRectangle(w, ConvertUnits.ToSimUnits(Game1.BLOCK_WIDTH), ConvertUnits.ToSimUnits(Game1.BLOCK_HEIGHT), 1f);
-                Body.Position = ConvertUnits.ToSimUnits(pos.X, pos.Y);
+                Body.Position = ConvertUnits.ToSimUnits(pos.X + (Game1.BLOCK_WIDTH / 2), pos.Y + (Game1.BLOCK_WIDTH / 2));
                 Body.IsStatic = true;
                 Body.BodyType = BodyType.Static;
             }
