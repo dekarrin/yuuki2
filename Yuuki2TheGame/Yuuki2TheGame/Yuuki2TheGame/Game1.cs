@@ -94,11 +94,30 @@ namespace Yuuki2TheGame
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
-
+            KeyboardState keyState = new KeyboardState();
+            if (keyState.IsKeyDown(Keys.A) || keyState.IsKeyDown(Keys.Left))
+            {
+                gameEngine.Player.MoveLeft();
+            }
+            else if (keyState.IsKeyDown(Keys.D) || keyState.IsKeyDown(Keys.Right))
+            {
+                gameEngine.Player.MoveRight();
+            }
+            if (!pressedJump && (keyState.IsKeyDown(Keys.W) || keyState.IsKeyDown(Keys.Space) || keyState.IsKeyDown(Keys.Up)))
+            {
+                gameEngine.Player.Jump();
+                pressedJump = true;
+            }
+            else if (pressedJump && (keyState.IsKeyUp(Keys.W) || keyState.IsKeyUp(Keys.Space) || keyState.IsKeyUp(Keys.Up)))
+            {
+                pressedJump = false;
+            }
             // TODO: Add your update logic here
             gameEngine.Update(gameTime);
             base.Update(gameTime);
         }
+
+        bool pressedJump = false;
 
         /// <summary>
         /// This is called when the game should draw itself.
