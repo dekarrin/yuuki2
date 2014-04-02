@@ -251,23 +251,22 @@ namespace Yuuki2TheGame.Core
         /// <param name="ts">Amount of time passed since last update.</param>
         public void Update(GameTime ts)
         {
-
             
         }
 
         public void MoveLeft()
         {
-            // can't fill out until we have engine details
+            Body.ApplyLinearImpulse(new Vector2(-0.25f, 0));
         }
 
         public void MoveRight()
         {
-            // can't fill out until we have engine details
+            Body.ApplyLinearImpulse(new Vector2(0.25f, 0));
         }
 
         public void Jump()
         {
-            // can't fill out until we have engine details
+            Body.ApplyLinearImpulse(new Vector2(0, -10));
         }
 
 
