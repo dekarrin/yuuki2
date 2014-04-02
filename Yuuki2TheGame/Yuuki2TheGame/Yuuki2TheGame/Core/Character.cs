@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using FarseerPhysics;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
 
 namespace Yuuki2TheGame.Core
 {
@@ -14,7 +17,7 @@ namespace Yuuki2TheGame.Core
     /// <summary>
     /// NOTE: Pixel coordinates is relative to lower left of character!
     /// </summary>
-    class GameCharacter : IUpdateable, IPixelLocatable, Yuuki2TheGame.Physics.ICollidable
+    class GameCharacter : IUpdateable, IPixelLocatable, Yuuki2TheGame.Physics.IPhysical
     {
 
         private int _updateOrder = 0;
@@ -55,6 +58,23 @@ namespace Yuuki2TheGame.Core
             }
         }
 
+        public Body Body { get; private set; }
+
+        public void SetWorld(World w)
+        {
+            if (w != null)
+            {
+                Point currentPos = PixelLocation; // must get before setting body
+                this.Body = BodyFactory.CreateRectangle(w, ConvertUnits.ToSimUnits(Width), ConvertUnits.ToSimUnits(Height), 1f);
+                this.Body.Position = ConvertUnits.ToSimUnits(currentPos.X + (Width / 2), currentPos.Y + (Height / 2));
+                this.Body.BodyType = BodyType.Dynamic;
+            }
+            else
+            {
+                this.Body = null;
+            }
+        }
+
         public event EventHandler<EventArgs> UpdateOrderChanged = null;
 
         public event EventHandler<EventArgs> EnabledChanged = null;
@@ -83,6 +103,10 @@ namespace Yuuki2TheGame.Core
                 }
                 _pixelx = value.X;
                 _pixely = value.Y;
+                if (Body != null)
+                {
+                    Body.Position = ConvertUnits.ToSimUnits(value.X + (Width / 2), value.Y + (Height / 2));
+                }
             }
         }
 
@@ -90,6 +114,10 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
+                if (Body != null)
+                {
+                    PixelX = (int)Math.Round(ConvertUnits.ToDisplayUnits(Body.Position.X)) - (Width / 2);
+                }
                 return _pixelx;
             }
             set
@@ -104,6 +132,10 @@ namespace Yuuki2TheGame.Core
                     OnMoved(this, mea);
                 }
                 _pixelx = value;
+                if (Body != null)
+                {
+                    Body.Position = ConvertUnits.ToSimUnits(value + (Width / 2), ConvertUnits.ToDisplayUnits(Body.Position.Y));
+                }
             }
         }
 
@@ -111,6 +143,10 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
+                if (Body != null)
+                {
+                    PixelY = (int)Math.Round(ConvertUnits.ToDisplayUnits(Body.Position.Y)) - (Height / 2);
+                }
                 return _pixely;
             }
             set
@@ -125,6 +161,10 @@ namespace Yuuki2TheGame.Core
                     OnMoved(this, mea);
                 }
                 _pixely = value;
+                if (Body != null)
+                {
+                    Body.Position = ConvertUnits.ToSimUnits(ConvertUnits.ToDisplayUnits(Body.Position.X), value + (Height / 2));
+                }
             }
         }
 
@@ -136,7 +176,7 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return new Rectangle(PixelX, PixelY - Height, Width, Height);
+                return new Rectangle(PixelX, PixelY, Width, Height);
             }
         }
 
@@ -216,17 +256,17 @@ namespace Yuuki2TheGame.Core
 
         public void MoveLeft()
         {
-            // can't fill out until we have engine details
+            Body.ApplyLinearImpulse(new Vector2(-0.25f, 0));
         }
 
         public void MoveRight()
         {
-            // can't fill out until we have engine details
+            Body.ApplyLinearImpulse(new Vector2(0.25f, 0));
         }
 
         public void Jump()
         {
-            // can't fill out until we have engine details
+            Body.ApplyLinearImpulse(new Vector2(0, -10));
         }
 
 

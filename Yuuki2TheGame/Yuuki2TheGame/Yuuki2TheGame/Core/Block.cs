@@ -3,8 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Yuuki2TheGame.Physics;
+using FarseerPhysics;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
+using Yuuki2TheGame;
 
-namespace Yuuki2TheGame
+namespace Yuuki2TheGame.Core
 {
     enum DirtType
     {
@@ -25,7 +30,7 @@ namespace Yuuki2TheGame
         Health = 250,
         Type = 3
     }
-    class Block : IUpdateable
+    class Block : IUpdateable, IPhysical, IPixelLocatable
     {
 
         private int levelrequired;
@@ -57,6 +62,104 @@ namespace Yuuki2TheGame
             }
         }
 
+        private int _pixelx;
+
+        private int _pixely;
+
+        public Point PixelLocation
+        {
+            get
+            {
+                return new Point(PixelX, PixelY);
+            }
+            private set
+            {
+                if ((_pixelx != value.X || _pixely != value.Y) && OnMoved != null)
+                {
+                    Point oldV = new Point(_pixelx, _pixely);
+                    Point newV = new Point(value.X, value.Y);
+                    MovedEventArgs mea = new MovedEventArgs();
+                    mea.NewLocation = newV;
+                    mea.OldLocation = oldV;
+                    OnMoved(this, mea);
+                }
+                _pixelx = value.X;
+                _pixely = value.Y;
+                if (Body != null)
+                {
+                    Body.Position = ConvertUnits.ToSimUnits(value.X + (Game1.BLOCK_WIDTH / 2), value.Y + (Game1.BLOCK_HEIGHT / 2));
+                }
+            }
+        }
+
+        public int PixelX
+        {
+            get
+            {
+                if (Body != null)
+                {
+                    PixelX = (int)Math.Round(ConvertUnits.ToDisplayUnits(Body.Position.X)) - (Game1.BLOCK_WIDTH / 2);
+                }
+                return _pixelx;
+            }
+            set
+            {
+                if (_pixelx != value && OnMoved != null)
+                {
+                    Point oldV = new Point(_pixelx, _pixely);
+                    Point newV = new Point(value, _pixely);
+                    MovedEventArgs mea = new MovedEventArgs();
+                    mea.NewLocation = newV;
+                    mea.OldLocation = oldV;
+                    OnMoved(this, mea);
+                }
+                _pixelx = value;
+                if (Body != null)
+                {
+                    Body.Position = ConvertUnits.ToSimUnits(value + (Game1.BLOCK_WIDTH / 2), ConvertUnits.ToDisplayUnits(Body.Position.Y));
+                }
+            }
+        }
+
+        public int PixelY
+        {
+            get
+            {
+                if (Body != null)
+                {
+                    PixelY = (int)Math.Round(ConvertUnits.ToDisplayUnits(Body.Position.Y)) - (Game1.BLOCK_HEIGHT / 2);
+                }
+                return _pixely;
+            }
+            set
+            {
+                if (_pixely != value && OnMoved != null)
+                {
+                    Point oldV = new Point(_pixelx, _pixely);
+                    Point newV = new Point(_pixelx, value);
+                    MovedEventArgs mea = new MovedEventArgs();
+                    mea.NewLocation = newV;
+                    mea.OldLocation = oldV;
+                    OnMoved(this, mea);
+                }
+                _pixely = value;
+                if (Body != null)
+                {
+                    Body.Position = ConvertUnits.ToSimUnits(ConvertUnits.ToDisplayUnits(Body.Position.X), value + (Game1.BLOCK_HEIGHT / 2));
+                }
+            }
+        }
+
+        public event MovedEventHandler OnMoved = null;
+
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                return new Rectangle(PixelX, PixelY, Game1.BLOCK_WIDTH, Game1.BLOCK_HEIGHT);
+            }
+        }
+
         private bool _enabled = true;
 
         /// <summary>
@@ -64,6 +167,8 @@ namespace Yuuki2TheGame
         /// </summary>
         /// <returns></returns>
         public string Texture { get; set; }
+
+        public Body Body { get; private set; }
 
         public bool Enabled
         {
@@ -95,7 +200,6 @@ namespace Yuuki2TheGame
 
         public void Update(GameTime gt)
         {
-            // do physics of block here
         }
 
         public int MiningHealth
@@ -110,7 +214,7 @@ namespace Yuuki2TheGame
             set { id = value; }
         }
 
-        public Block(int id)
+        public Block(int id, int mapx, int mapy)
         {
             this.ID = id;
 
@@ -132,6 +236,23 @@ namespace Yuuki2TheGame
                 this.LevelRequired = (int)GroundType.LevelRequired;
                 this.MiningHealth = (int)GroundType.Health;
                 this.Type = (int)DirtType.Type;
+			}
+            PixelLocation = new Point(mapx * Game1.BLOCK_WIDTH, mapy * Game1.BLOCK_HEIGHT);
+		}
+
+        public void SetWorld(World w)
+        {
+            if (w != null)
+            {
+                Point pos = PixelLocation; // must get before setting body
+                Body = BodyFactory.CreateRectangle(w, ConvertUnits.ToSimUnits(Game1.BLOCK_WIDTH), ConvertUnits.ToSimUnits(Game1.BLOCK_HEIGHT), 1f);
+                Body.Position = ConvertUnits.ToSimUnits(pos.X + (Game1.BLOCK_WIDTH / 2), pos.Y + (Game1.BLOCK_WIDTH / 2));
+                Body.IsStatic = true;
+                Body.BodyType = BodyType.Static;
+            }
+            else
+            {
+                this.Body = null;
             }
         }
     }
