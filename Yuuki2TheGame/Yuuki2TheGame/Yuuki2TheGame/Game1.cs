@@ -103,6 +103,7 @@ namespace Yuuki2TheGame
             {
                 gameEngine.Player.MoveRight();
             }
+            // TODO: Individual key resets
             if (!pressedJump && (keyState.IsKeyDown(Keys.W) || keyState.IsKeyDown(Keys.Space) || keyState.IsKeyDown(Keys.Up)))
             {
                 gameEngine.Player.Jump();
