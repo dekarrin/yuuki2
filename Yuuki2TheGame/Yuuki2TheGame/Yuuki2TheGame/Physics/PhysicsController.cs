@@ -24,6 +24,7 @@ namespace Yuuki2TheGame.Physics
             model = new World(new Vector2(wind, gravity));
             this.timescale = timescale;
             ConvertUnits.SetDisplayUnitToSimUnitRatio((float)Game1.BLOCK_WIDTH);
+            
         }
 
         public void AddMap(Yuuki2TheGame.Core.Map map)

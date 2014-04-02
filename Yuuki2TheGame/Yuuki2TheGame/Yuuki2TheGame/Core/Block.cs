@@ -152,7 +152,7 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return new Rectangle(PixelX, PixelY - Game1.BLOCK_HEIGHT, Game1.BLOCK_WIDTH, Game1.BLOCK_HEIGHT);
+                return new Rectangle(PixelX, PixelY, Game1.BLOCK_WIDTH, Game1.BLOCK_HEIGHT);
             }
         }
 

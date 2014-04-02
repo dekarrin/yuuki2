@@ -65,7 +65,7 @@ namespace Yuuki2TheGame.Core
             if (w != null)
             {
                 Point currentPos = PixelLocation; // must get before setting body
-                this.Body = BodyFactory.CreateRectangle(w, ConvertUnits.ToSimUnits(Game1.BLOCK_WIDTH), ConvertUnits.ToSimUnits(Game1.BLOCK_HEIGHT), 1f);
+                this.Body = BodyFactory.CreateRectangle(w, ConvertUnits.ToSimUnits(Width), ConvertUnits.ToSimUnits(Height), 1f);
                 this.Body.Position = ConvertUnits.ToSimUnits(currentPos.X, currentPos.Y);
                 this.Body.BodyType = BodyType.Dynamic;
             }
@@ -176,7 +176,7 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return new Rectangle(PixelX, PixelY - Height, Width, Height);
+                return new Rectangle(PixelX, PixelY, Width, Height);
             }
         }
 
@@ -251,7 +251,7 @@ namespace Yuuki2TheGame.Core
         /// <param name="ts">Amount of time passed since last update.</param>
         public void Update(GameTime ts)
         {
-            
+
         }
 
         public void MoveLeft()
