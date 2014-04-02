@@ -4,11 +4,18 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Yuuki2TheGame.Graphics;
+using Yuuki2TheGame.Physics;
 
 namespace Yuuki2TheGame.Core
 {
     class Engine
     {
+        public const float PHYS_WIND = 0f;
+
+        public const float PHYS_GRAVITY = 9.806f;
+
+        public const float PHYS_TIMESCALE = 0.001f;
+
         private List<GameCharacter> _characters = new List<GameCharacter>();
 
         private List<Item> _items = new List<Item>();
@@ -17,20 +24,37 @@ namespace Yuuki2TheGame.Core
 
         private Point spawn;
 
+        private PhysicsController physics;
+
         public Camera Camera { get; set; }
 
         public Engine(Point size)
         {
             _map = new Map(size.X, size.Y);
-            spawn = new Point(0, (size.Y / 2) * Game1.BLOCK_HEIGHT);
+            spawn = new /*Point(0, (size.Y / 2) * Game1.BLOCK_HEIGHT - 30);*/ Point(3, -80);
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);
             Camera = new Camera(Player, new Point(-100, -300));
+            physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_TIMESCALE);
+            physics.AddMap(_map);
+            physics.AddPhob(Player);
+        }
+
+        private int TESTcycle = 0;
+
+        private void TESTCamMove()
+        {
+            TESTcycle = (TESTcycle + 1) % 60;
+            if (TESTcycle == 0)
+            {
+                Camera.TargetOffsetX += 1;
+            }
         }
 
         public void Update(GameTime gameTime)
         {
+            //TESTCamMove();
             foreach (GameCharacter c in _characters)
             {
                 c.Update(gameTime);
@@ -40,6 +64,7 @@ namespace Yuuki2TheGame.Core
                 i.Update(gameTime);
             }
             _map.Update(gameTime);
+            physics.Update(gameTime);
         }
 
         /// <summary>
