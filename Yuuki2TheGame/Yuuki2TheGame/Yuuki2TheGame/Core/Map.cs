@@ -77,9 +77,6 @@ namespace Yuuki2TheGame.Core
                     {
                         slice.Add(new Block(1, x, y)); //Uses Blocks of ID = 1 for the time being.
                     }
-                    else if (x == 0 && y == 0) {
-                        slice.Add(new Block(1, x, y));
-                    }
                     else
                     {
                         slice.Add(null);
