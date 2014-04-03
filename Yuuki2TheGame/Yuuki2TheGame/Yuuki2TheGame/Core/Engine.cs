@@ -80,9 +80,9 @@ namespace Yuuki2TheGame.Core
             Point coords = Camera.Coordinates;
             Point offsets = Camera.Offsets;
             IList<Sprite> view = new List<Sprite>();
-            for (int i = 0; i < numX; i++)
+            for (int i = 0; i < numX && coords.X + i < _map.Width; i++)
             {
-                for (int j = 0; j < numY; j++)
+                for (int j = 0; j < numY && coords.Y + j < _map.Height; j++)
                 {
                     Point tilecoords = new Point(coords.X + i, coords.Y + j);
                     if (tilecoords.X >= 0 && tilecoords.Y >= 0 && _map.BlockAt(tilecoords) != null)
