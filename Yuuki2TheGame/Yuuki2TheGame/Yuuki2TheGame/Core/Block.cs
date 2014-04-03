@@ -217,7 +217,7 @@ namespace Yuuki2TheGame.Core
         public Block(int id, int mapx, int mapy)
         {
             this.ID = id;
-
+            this.Texture = @"Tiles/dirt";
 
             //TODO Have correct implementation 
             if (ID <= 16){
