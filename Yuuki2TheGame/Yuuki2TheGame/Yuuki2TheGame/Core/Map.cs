@@ -111,5 +111,14 @@ namespace Yuuki2TheGame.Core
         {
             return world[p.X][p.Y];
         }
+
+        public Point PixeLoc(Point p){
+            return BlockAt(p).PixelLocation;
+        }
+
+        public void DestroyBlock(Point p)
+        {
+            world[p.X][p.Y] = null;
+        }
     }
 }

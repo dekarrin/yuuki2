@@ -95,6 +95,7 @@ namespace Yuuki2TheGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
             KeyboardState keyState = Keyboard.GetState();
+            MouseState mouseState = Mouse.GetState();
             if (keyState.IsKeyDown(Keys.A) || keyState.IsKeyDown(Keys.Left))
             {
                 gameEngine.Player.MoveLeft();
@@ -113,7 +114,15 @@ namespace Yuuki2TheGame
             {
                 pressedJump = false;
             }
-            
+
+            if (mouseState.LeftButton == ButtonState.Pressed)
+            {
+                Point p = new Point(mouseState.X, mouseState.Y);
+                if (p == gameEngine._map.BlockAt(p).PixelLocation)
+                {
+                    gameEngine._map.DestroyBlock(p);
+                }
+            }
 
             // TODO: Add your update logic here
             gameEngine.Update(gameTime);
@@ -159,14 +168,9 @@ namespace Yuuki2TheGame
 
             spriteBatch.Draw(bg.Texture, pos, Color.White);
 
-
-
-
             spriteBatch.End();
             base.Draw(gameTime);
-
   
-
             
         }
 

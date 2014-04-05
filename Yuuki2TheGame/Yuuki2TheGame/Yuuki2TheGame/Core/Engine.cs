@@ -20,7 +20,7 @@ namespace Yuuki2TheGame.Core
 
         private List<Item> _items = new List<Item>();
 
-        private Map _map;
+        public Map _map; ///shhhh just let it happen
 
         private Point spawn;
 
