@@ -113,12 +113,17 @@ namespace Yuuki2TheGame
             {
                 pressedJump = false;
             }
+            
+
             // TODO: Add your update logic here
             gameEngine.Update(gameTime);
             base.Update(gameTime);
-        }
 
+
+        }
+      
         private bool pressedJump = false;
+       
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -145,8 +150,24 @@ namespace Yuuki2TheGame
             {
                 spriteBatch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
             }
+
+
+            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            MouseState currentMouse = Mouse.GetState();
+            Vector2 pos = new Vector2(currentMouse.X, currentMouse.Y);
+
+            spriteBatch.Draw(bg.Texture, pos, Color.White);
+
+
+
+
             spriteBatch.End();
             base.Draw(gameTime);
+
+  
+
+            
         }
 
         private void ProcessSpriteGraphics(IList<Sprite> sprites)
