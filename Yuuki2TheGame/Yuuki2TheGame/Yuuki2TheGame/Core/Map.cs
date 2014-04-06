@@ -116,5 +116,10 @@ namespace Yuuki2TheGame.Core
         {
             world[p.X][p.Y] = null;
         }
+
+        public void AddBlock(Point p)
+        {
+            world[p.X][p.Y] = new Block(1, p.X, p.Y);
+        }
     }
 }

@@ -118,19 +118,26 @@ namespace Yuuki2TheGame
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
                 int globalx = (mouseState.X + gameEngine.Camera.Location.X) / BLOCK_WIDTH;
-                int globaly = (mouseState.Y + gameEngine.Camera.Location.Y) / BLOCK_HEIGHT; 
+                int globaly = (mouseState.Y + gameEngine.Camera.Location.Y) / BLOCK_HEIGHT;
                 Point p = new Point(globalx, globaly);
 
-                if (gameEngine._map.BlockAt(p) != null)
+                if (globalx <= WORLD_WIDTH && globalx >= 0 && globaly <= WORLD_HEIGHT && globaly >= 0)
                 {
-                    gameEngine._map.DestroyBlock(p);
+                    if (gameEngine._map.BlockAt(p) != null)
+                    {
+                        gameEngine._map.DestroyBlock(p);
+                    }
+                    else
+                    {
+                        gameEngine._map.AddBlock(p);
+                    }
                 }
+
+
+                // TODO: Add your update logic here
+                gameEngine.Update(gameTime);
+                base.Update(gameTime);
             }
-
-            // TODO: Add your update logic here
-            gameEngine.Update(gameTime);
-            base.Update(gameTime);
-
 
         }
       
