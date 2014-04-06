@@ -117,8 +117,11 @@ namespace Yuuki2TheGame
 
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                Point p = new Point(mouseState.X, mouseState.Y);
-                if (p == gameEngine._map.BlockAt(p).PixelLocation)
+                int globalx = (mouseState.X + gameEngine.Camera.Location.X) / BLOCK_WIDTH;
+                int globaly = (mouseState.Y + gameEngine.Camera.Location.Y) / BLOCK_HEIGHT; 
+                Point p = new Point(globalx, globaly);
+
+                if (gameEngine._map.BlockAt(p) != null)
                 {
                     gameEngine._map.DestroyBlock(p);
                 }
