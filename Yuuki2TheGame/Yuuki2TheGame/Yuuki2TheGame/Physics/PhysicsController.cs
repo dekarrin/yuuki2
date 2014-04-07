@@ -57,6 +57,7 @@ namespace Yuuki2TheGame.Physics
 
         public void RemovePhob(IPhysical obj)
         {
+            model.RemoveBody(obj.Body);
             obj.SetWorld(null);
             phobs.Remove(obj);
         }

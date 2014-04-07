@@ -67,6 +67,16 @@ namespace Yuuki2TheGame.Core
             physics.Update(gameTime);
         }
 
+        public void RemovePhysical(IPhysical phob)
+        {
+            physics.RemovePhob(phob);
+        }
+
+        public void AddPhysical(IPhysical phob)
+        {
+            physics.AddPhob(phob);
+        }
+
         /// <summary>
         /// Gets all tiles that need to be displayed.
         /// </summary>

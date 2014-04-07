@@ -115,31 +115,43 @@ namespace Yuuki2TheGame
                 pressedJump = false;
             }
 
-            if (mouseState.LeftButton == ButtonState.Pressed)
+            if (mouseState.LeftButton == ButtonState.Pressed && !mouseLeftLocked)
             {
+                mouseLeftLocked = true;
                 int globalx = (mouseState.X + gameEngine.Camera.Location.X) / BLOCK_WIDTH;
                 int globaly = (mouseState.Y + gameEngine.Camera.Location.Y) / BLOCK_HEIGHT;
                 Point p = new Point(globalx, globaly);
 
                 if (globalx <= WORLD_WIDTH && globalx >= 0 && globaly <= WORLD_HEIGHT && globaly >= 0)
                 {
-                    if (gameEngine._map.BlockAt(p) != null)
+                    Block block = gameEngine._map.BlockAt(p);
+                    //TODO: Make gameEngine responsible with a single method!
+                    if (block != null)
                     {
                         gameEngine._map.DestroyBlock(p);
+                        gameEngine.RemovePhysical(block);
                     }
                     else
                     {
                         gameEngine._map.AddBlock(p);
+                        block = gameEngine._map.BlockAt(p);
+                        gameEngine.AddPhysical(block);
                     }
                 }
-
-
-                // TODO: Add your update logic here
-                gameEngine.Update(gameTime);
-                base.Update(gameTime);
+            }
+            else if (mouseState.LeftButton == ButtonState.Released)
+            {
+                mouseLeftLocked = false;
             }
 
+
+            // TODO: Add your update logic here
+            gameEngine.Update(gameTime);
+            base.Update(gameTime);
+
         }
+
+        private bool mouseLeftLocked = false;
       
         private bool pressedJump = false;
        
