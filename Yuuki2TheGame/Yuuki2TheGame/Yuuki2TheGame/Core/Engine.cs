@@ -20,7 +20,7 @@ namespace Yuuki2TheGame.Core
 
         private List<Item> _items = new List<Item>();
 
-        private Map _map;
+        public Map _map; ///shhhh just let it happen
 
         private Point spawn;
 
@@ -65,6 +65,16 @@ namespace Yuuki2TheGame.Core
             }
             _map.Update(gameTime);
             physics.Update(gameTime);
+        }
+
+        public void RemovePhysical(IPhysical phob)
+        {
+            physics.RemovePhob(phob);
+        }
+
+        public void AddPhysical(IPhysical phob)
+        {
+            physics.AddPhob(phob);
         }
 
         /// <summary>

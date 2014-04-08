@@ -95,6 +95,7 @@ namespace Yuuki2TheGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
             KeyboardState keyState = Keyboard.GetState();
+            MouseState mouseState = Mouse.GetState();
             if (keyState.IsKeyDown(Keys.A) || keyState.IsKeyDown(Keys.Left))
             {
                 gameEngine.Player.MoveLeft();
@@ -113,12 +114,47 @@ namespace Yuuki2TheGame
             {
                 pressedJump = false;
             }
+
+            if (mouseState.LeftButton == ButtonState.Pressed && !mouseLeftLocked)
+            {
+                mouseLeftLocked = true;
+                int globalx = (mouseState.X + gameEngine.Camera.Location.X) / BLOCK_WIDTH;
+                int globaly = (mouseState.Y + gameEngine.Camera.Location.Y) / BLOCK_HEIGHT;
+                Point p = new Point(globalx, globaly);
+
+                if (globalx <= WORLD_WIDTH && globalx >= 0 && globaly <= WORLD_HEIGHT && globaly >= 0)
+                {
+                    Block block = gameEngine._map.BlockAt(p);
+                    //TODO: Make gameEngine responsible with a single method!
+                    if (block != null)
+                    {
+                        gameEngine._map.DestroyBlock(p);
+                        gameEngine.RemovePhysical(block);
+                    }
+                    else
+                    {
+                        gameEngine._map.AddBlock(p);
+                        block = gameEngine._map.BlockAt(p);
+                        gameEngine.AddPhysical(block);
+                    }
+                }
+            }
+            else if (mouseState.LeftButton == ButtonState.Released)
+            {
+                mouseLeftLocked = false;
+            }
+
+
             // TODO: Add your update logic here
             gameEngine.Update(gameTime);
             base.Update(gameTime);
+
         }
 
+        private bool mouseLeftLocked = false;
+      
         private bool pressedJump = false;
+       
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -145,8 +181,19 @@ namespace Yuuki2TheGame
             {
                 spriteBatch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
             }
+
+
+            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            MouseState currentMouse = Mouse.GetState();
+            Vector2 pos = new Vector2(currentMouse.X, currentMouse.Y);
+
+            spriteBatch.Draw(bg.Texture, pos, Color.White);
+
             spriteBatch.End();
             base.Draw(gameTime);
+  
+            
         }
 
         private void ProcessSpriteGraphics(IList<Sprite> sprites)
