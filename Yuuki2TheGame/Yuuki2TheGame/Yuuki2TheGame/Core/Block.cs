@@ -8,6 +8,7 @@ using FarseerPhysics;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using Yuuki2TheGame;
+using Yuuki2TheGame.Data;
 
 namespace Yuuki2TheGame.Core
 {
@@ -37,9 +38,9 @@ namespace Yuuki2TheGame.Core
         private int blockhealth;
         private int id;
         private int _updateOrder = 0;
-        private int type;
+        private string type;
 
-        public int Type
+        public string Type
         {
             get { return type; }
             set { type = value; }
@@ -216,27 +217,13 @@ namespace Yuuki2TheGame.Core
 
         public Block(int id, int mapx, int mapy)
         {
-            this.ID = id;
+            GameObjectData temp = Engine.items[id - 1];
+            this.ID = temp.ID;
+            this.LevelRequired = temp.Level;
+            this.MiningHealth = temp.Health;
+            this.Type = temp.Type;
 
-
-            //TODO Have correct implementation 
-            if (ID <= 16){
-                this.LevelRequired = (int)DirtType.LevelRequired;
-                this.MiningHealth = (int)DirtType.Health;
-                this.Type = (int)DirtType.Type;
-            }
-            
-            if (ID > 16 && ID < 32){
-                this.LevelRequired = (int)WoodType.LevelRequired;
-                this.MiningHealth = (int)WoodType.Health;
-                this.Type = (int)DirtType.Type;
-            }
-
-            if(ID >= 32){
-                this.LevelRequired = (int)GroundType.LevelRequired;
-                this.MiningHealth = (int)GroundType.Health;
-                this.Type = (int)DirtType.Type;
-			}
+			
             PixelLocation = new Point(mapx * Game1.BLOCK_WIDTH, mapy * Game1.BLOCK_HEIGHT);
 		}
 

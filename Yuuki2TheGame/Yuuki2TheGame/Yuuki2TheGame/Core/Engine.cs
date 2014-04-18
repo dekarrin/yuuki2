@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Yuuki2TheGame.Graphics;
 using Yuuki2TheGame.Physics;
+using FileHelpers;
+using Yuuki2TheGame.Data;
 
 namespace Yuuki2TheGame.Core
 {
@@ -15,6 +17,8 @@ namespace Yuuki2TheGame.Core
         public const float PHYS_GRAVITY = 9.806f;
 
         public const float PHYS_TIMESCALE = 0.001f;
+
+        public static List<GameObjectData> items = new List<GameObjectData>();
 
         private List<GameCharacter> _characters = new List<GameCharacter>();
 
@@ -30,6 +34,15 @@ namespace Yuuki2TheGame.Core
 
         public Engine(Point size)
         {
+            FileHelperEngine e = new FileHelperEngine(typeof(GameObjectData));
+            GameObjectData[] temp = (GameObjectData[])e.ReadFile(@"ObjectData.csv");
+
+            foreach (GameObjectData record in temp)
+            {
+                items.Add(record);
+            }
+
+
             _map = new Map(size.X, size.Y);
             spawn = new Point(0, (size.Y / 2) * Game1.BLOCK_HEIGHT - 30);
             // temp vars until we can meet with the team
@@ -39,6 +52,8 @@ namespace Yuuki2TheGame.Core
             physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_TIMESCALE);
             physics.AddMap(_map);
             physics.AddPhob(Player);
+
+
         }
 
         private int TESTcycle = 0;

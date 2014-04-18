@@ -11,7 +11,7 @@ namespace Yuuki2TheGame.Core
         public void AxeAction(Map m, Point p)
         {
             Block b = m.BlockAt(p);
-            if (m.BlockAt(p).Type == (int)WoodType.Type)
+            if (m.BlockAt(p).Type == "wood")
             {
                 int health;
                 int CurrentHealth = m.BlockAt(p).MiningHealth;
@@ -38,7 +38,7 @@ namespace Yuuki2TheGame.Core
         {
 
             Block b = m.BlockAt(p);
-            if (m.BlockAt(p).Type == (int)GroundType.Type)
+            if (m.BlockAt(p).Type == "ground")
             {
                 int health;
                 int CurrentHealth = m.BlockAt(p).MiningHealth;
@@ -70,7 +70,7 @@ namespace Yuuki2TheGame.Core
         {
 
             Block b = m.BlockAt(p);
-            if (m.BlockAt(p).Type == (int)DirtType.Type)
+            if (m.BlockAt(p).Type == "Dirt")
             {
                 int health;
                 int CurrentHealth = m.BlockAt(p).MiningHealth;
