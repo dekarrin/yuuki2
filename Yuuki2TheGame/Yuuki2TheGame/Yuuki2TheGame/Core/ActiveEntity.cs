@@ -139,6 +139,18 @@ namespace Yuuki2TheGame.Core
 
         #endregion
 
+        public ActiveEntity(Point size)
+            : base(size)
+        { }
+
+        public ActiveEntity(Point size, Point position)
+            : base(size, position)
+        { }
+
+        public ActiveEntity(Point size, Point position, string texture)
+            : base(size, position, texture)
+        { }
+
         private void SetVelocity(GameTime time)
         {
             Velocity = Velocity + Acceleration * (time.ElapsedGameTime.Milliseconds * 1000.0f);
