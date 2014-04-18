@@ -303,7 +303,13 @@ namespace Yuuki2TheGame.Core
             _x = position.X;
             _y = position.Y;
             Texture = texture;
-            OnMoved = 
+            OnMoved = delegate(Object sender, MovedEventArgs mea)
+            {
+                if (IsOnGround && mea.NewPosition.Y != mea.OldPosition.Y)
+                {
+                    IsOnGround = false;
+                }
+            };
         }
     }
 }
