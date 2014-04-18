@@ -156,7 +156,7 @@ namespace Yuuki2TheGame.Core
             Velocity = Velocity + Acceleration * secs;
         }
 
-        private void SetPosition(GameTime time)
+        private void SetPosition(float secs)
         {
             Vector2 ds = Velocity * secs;
             BlockPosition = new Vector2(BlockX + ds.X, BlockY + ds.Y);
