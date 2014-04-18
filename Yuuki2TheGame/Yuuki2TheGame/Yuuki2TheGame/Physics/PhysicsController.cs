@@ -23,8 +23,6 @@ namespace Yuuki2TheGame.Physics
 
         private QuadTree<IQuadObject> landTree = new QuadTree<IQuadObject>(new Point(MIN_QUAD_SIZE, MIN_QUAD_SIZE), MAX_ITEMS_PER_QUAD_LEAF, false);
 
-        public const double CONVERSION_FACTOR = 1 / Game1.BLOCK_WIDTH;
-
         private float timescale;
 
         public PhysicsController(float wind, float gravity, float timescale)
@@ -58,6 +56,10 @@ namespace Yuuki2TheGame.Physics
 
         public void Update(GameTime time)
         {
+            foreach (IPhysical phob in phobs)
+            {
+                phob.UpdatePhysics(time.ElapsedGameTime.Milliseconds / 1000.0f);
+            }
         }
 
         public void AddPhob(IPhysical obj)

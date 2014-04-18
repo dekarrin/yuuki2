@@ -133,9 +133,9 @@ namespace Yuuki2TheGame.Core
             IList<Sprite> chars = new List<Sprite>();
             foreach (GameCharacter c in _characters)
             {
-                if (c.BoundingBox.Intersects(view))
+                if (c.Bounds.Intersects(view))
                 {
-                    Point position = new Point(c.BoundingBox.X - Camera.Location.X, c.BoundingBox.Y - Camera.Location.Y);
+                    Point position = new Point(c.Bounds.X - Camera.Location.X, c.Bounds.Y - Camera.Location.Y);
                     Point size = new Point(c.Width, c.Height);
                     Sprite spr = new Sprite(position, size, c.Texture);
                     chars.Add(spr);

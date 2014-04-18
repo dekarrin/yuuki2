@@ -19,7 +19,7 @@ namespace Yuuki2TheGame.Physics
 
         Vector2 Dampening { get; set; }
 
-        void UpdatePhysics(GameTime time);
+        void UpdatePhysics(float secs);
 
         void AddForce(Vector2 force);
 
