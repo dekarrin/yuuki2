@@ -17,6 +17,10 @@ namespace Yuuki2TheGame.Physics
 
         private IList<IPhysical> phobs = new List<IPhysical>();
 
+        private IList<IPhysical> grounded = new List<IPhysical>();
+
+        private IList<IPhysical> airborne = new List<IPhysical>();
+
         private IList<IQuadObject> lands = new List<IQuadObject>();
 
         private QuadTree<IPhysical> phobTree = new QuadTree<IPhysical>(new Point(MIN_QUAD_SIZE, MIN_QUAD_SIZE), MAX_ITEMS_PER_QUAD_LEAF, false);
@@ -60,11 +64,42 @@ namespace Yuuki2TheGame.Physics
             {
                 phob.UpdatePhysics(time.ElapsedGameTime.Milliseconds / 1000.0f);
             }
+            // now do ground collisions
+            IList<IPhysical> toGround = new List<IPhysical>();
+            foreach (IPhysical phob in airborne)
+            {
+                List<IQuadObject> objs = landTree.Query(phob.Bounds);
+                if (objs.Count() > 0)
+                {
+                    phob.IsOnGround = true;
+                    toGround.Add(phob);
+                }
+            }
+            // check if any ground based is now airborne
+            IList<IPhysical> toAir = new List<IPhysical>();
+            foreach (IPhysical phob in grounded)
+            {
+                if (!phob.IsOnGround)
+                {
+                    toAir.Add(phob);
+                }
+            }
+            foreach (IPhysical phob in toGround)
+            {
+                grounded.Add(phob);
+                airborne.Remove(phob);
+            }
+            foreach (IPhysical phob in toAir)
+            {
+                airborne.Add(phob);
+                grounded.Remove(phob);
+            }
         }
 
         public void AddPhob(IPhysical obj)
         {
             phobs.Add(obj);
+            airborne.Add(obj);
             phobTree.Insert(obj);
         }
 

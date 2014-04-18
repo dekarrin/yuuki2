@@ -9,6 +9,9 @@ namespace Yuuki2TheGame.Physics
 
     interface IPhysical : IQuadObject
     {
+
+        bool IsOnGround { get; set; }
+
         Vector2 Force { get; }
 
         Vector2 Velocity { get; set; }

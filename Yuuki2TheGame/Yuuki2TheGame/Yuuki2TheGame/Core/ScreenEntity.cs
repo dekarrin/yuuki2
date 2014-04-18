@@ -48,8 +48,7 @@ namespace Yuuki2TheGame.Core
             {
                 return new Rectangle(X, Y, Width, Height);
             }
-        }
-        
+        }        
 
         public Point Position
         {
@@ -140,6 +139,8 @@ namespace Yuuki2TheGame.Core
                 _height = value;
             }
         }
+
+        public bool IsOnGround { get; set; }
 
         public Vector2 BlockPosition
         {
@@ -302,6 +303,7 @@ namespace Yuuki2TheGame.Core
             _x = position.X;
             _y = position.Y;
             Texture = texture;
+            OnMoved = 
         }
     }
 }
