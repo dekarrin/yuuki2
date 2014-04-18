@@ -10,6 +10,8 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Yuuki2TheGame.Core;
 using Yuuki2TheGame.Graphics;
+using Yuuki2TheGame.Data;
+using FileHelpers;
 
 namespace Yuuki2TheGame
 {
@@ -22,6 +24,7 @@ namespace Yuuki2TheGame
         SpriteBatch spriteBatch;
         Engine gameEngine;
         Texture2D defaultTexture;
+        public List<GameObjectData> items = new List<GameObjectData>();
 
         public const int WORLD_WIDTH = 100;
         public const int WORLD_HEIGHT = 100;
@@ -59,6 +62,16 @@ namespace Yuuki2TheGame
             // TODO: Add your initialization logic here
             int butts = 0;
             butts++;
+            butts++;
+
+            //Loads the item/block data from the saved file
+            FileHelperEngine e = new FileHelperEngine(typeof(GameObjectData));
+            GameObjectData[] temp = (GameObjectData[])e.ReadFile(@"ObjectData.csv");
+
+            foreach (GameObjectData record in temp)
+            {
+                items.Add(record);
+            }
             base.Initialize();
         }
 
