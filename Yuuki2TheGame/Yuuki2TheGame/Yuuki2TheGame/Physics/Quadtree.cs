@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 
-namespace CSharpQuadTree
+namespace Yuuki2TheGame.Physics
 {
     public class QuadTree<T> where T : class, IQuadObject
     {

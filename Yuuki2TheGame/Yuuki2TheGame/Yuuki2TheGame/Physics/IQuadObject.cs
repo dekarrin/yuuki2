@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 
-namespace CSharpQuadTree
+namespace Yuuki2TheGame.Physics
 {
     public interface IQuadObject
     {

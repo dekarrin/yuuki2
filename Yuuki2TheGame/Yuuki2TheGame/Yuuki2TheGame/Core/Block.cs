@@ -79,8 +79,8 @@ namespace Yuuki2TheGame.Core
                     Point oldV = new Point(_pixelx, _pixely);
                     Point newV = new Point(value.X, value.Y);
                     MovedEventArgs mea = new MovedEventArgs();
-                    mea.NewLocation = newV;
-                    mea.OldLocation = oldV;
+                    mea.NewPosition = newV;
+                    mea.OldPosition = oldV;
                     OnMoved(this, mea);
                 }
                 _pixelx = value.X;
@@ -109,8 +109,8 @@ namespace Yuuki2TheGame.Core
                     Point oldV = new Point(_pixelx, _pixely);
                     Point newV = new Point(value, _pixely);
                     MovedEventArgs mea = new MovedEventArgs();
-                    mea.NewLocation = newV;
-                    mea.OldLocation = oldV;
+                    mea.NewPosition = newV;
+                    mea.OldPosition = oldV;
                     OnMoved(this, mea);
                 }
                 _pixelx = value;
@@ -138,8 +138,8 @@ namespace Yuuki2TheGame.Core
                     Point oldV = new Point(_pixelx, _pixely);
                     Point newV = new Point(_pixelx, value);
                     MovedEventArgs mea = new MovedEventArgs();
-                    mea.NewLocation = newV;
-                    mea.OldLocation = oldV;
+                    mea.NewPosition = newV;
+                    mea.OldPosition = oldV;
                     OnMoved(this, mea);
                 }
                 _pixely = value;

@@ -9,7 +9,7 @@ namespace Yuuki2TheGame.Core
     class Camera
     {
 
-        private IPixelLocatable _follow;
+        private ScreenEntity _follow;
 
         private int _x;
 
@@ -38,7 +38,7 @@ namespace Yuuki2TheGame.Core
                 _targetx = value;
                 if (_follow != null)
                 {
-                    _x = _follow.PixelLocation.X + _targetx;
+                    _x = _follow.Position.X + _targetx;
                 }
             }
         }
@@ -54,12 +54,12 @@ namespace Yuuki2TheGame.Core
                 _targety = value;
                 if (_follow != null)
                 {
-                    _y = _follow.PixelLocation.Y + _targety;
+                    _y = _follow.Position.Y + _targety;
                 }
             }
         }
 
-        public IPixelLocatable Target {
+        public ScreenEntity Target {
             get
             {
                 return _follow;
@@ -74,8 +74,8 @@ namespace Yuuki2TheGame.Core
                 if (_follow != null)
                 {
                     _follow.OnMoved += HandleMovement;
-                    _x = _follow.PixelLocation.X + TargetOffsetX;
-                    _y = _follow.PixelLocation.Y + TargetOffsetY;
+                    _x = _follow.Position.X + TargetOffsetX;
+                    _y = _follow.Position.Y + TargetOffsetY;
                 }
             }
         }
@@ -104,7 +104,7 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public Camera(IPixelLocatable gc, Point offset)
+        public Camera(ScreenEntity gc, Point offset)
         {
             TargetOffsetX = offset.X; // must set targetoffset before target!
             TargetOffsetY = offset.Y;
@@ -113,8 +113,8 @@ namespace Yuuki2TheGame.Core
 
         public void HandleMovement(object sender, MovedEventArgs e)
         {
-            _x = e.NewLocation.X + TargetOffsetX;
-            _y = e.NewLocation.Y + TargetOffsetY;
+            _x = e.NewPosition.X + TargetOffsetX;
+            _y = e.NewPosition.Y + TargetOffsetY;
         }
 
     }

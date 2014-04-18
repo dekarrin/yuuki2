@@ -3,33 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using FarseerPhysics;
-using FarseerPhysics.Dynamics;
-using FarseerPhysics.Collision.Shapes;
 using Yuuki2TheGame.Core;
 
 namespace Yuuki2TheGame.Physics
 {
     class PhysicsController
     {
-        public const float GRAVITY = 9.806f;
+        private Vector2 globalForce;
+
+        private const int MAX_ITEMS_PER_QUAD_LEAF = 20;
+
+        private const int MIN_QUAD_SIZE = 256;
 
         private IList<IPhysical> phobs = new List<IPhysical>();
 
-        private IList<IPhysical> land = new List<IPhysical>();
+        private IList<IQuadObject> lands = new List<IQuadObject>();
 
-        private World model;
+        private QuadTree<IPhysical> phobTree = new QuadTree<IPhysical>(new Point(MIN_QUAD_SIZE, MIN_QUAD_SIZE), MAX_ITEMS_PER_QUAD_LEAF, false);
 
-        private Shape land = new PolygonShape()
+        private QuadTree<IQuadObject> landTree = new QuadTree<IQuadObject>(new Point(MIN_QUAD_SIZE, MIN_QUAD_SIZE), MAX_ITEMS_PER_QUAD_LEAF, false);
+
+        public const double CONVERSION_FACTOR = 1 / Game1.BLOCK_WIDTH;
 
         private float timescale;
 
         public PhysicsController(float wind, float gravity, float timescale)
         {
-            model = new World(new Vector2(wind, gravity));
             this.timescale = timescale;
-            ConvertUnits.SetDisplayUnitToSimUnitRatio((float)Game1.BLOCK_WIDTH);
-            
+            this.globalForce = new Vector2(wind, gravity);
         }
 
         public void AddMap(Yuuki2TheGame.Core.Map map)
@@ -49,20 +50,24 @@ namespace Yuuki2TheGame.Physics
             }
         }
 
+        public void AddLand(IQuadObject land)
+        {
+            lands.Add(land);
+            landTree.Insert(land);
+        }
+
         public void Update(GameTime time)
         {
-            model.Step((float)time.ElapsedGameTime.Milliseconds * timescale);
         }
 
         public void AddPhob(IPhysical obj)
         {
-            obj.SetWorld(model);
             phobs.Add(obj);
+            phobTree.Insert(obj);
         }
 
         public void RemovePhob(IPhysical obj)
         {
-            obj.SetWorld(null);
             phobs.Remove(obj);
         }
     }
