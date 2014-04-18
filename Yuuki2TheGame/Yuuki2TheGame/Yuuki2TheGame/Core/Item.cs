@@ -25,7 +25,7 @@ namespace Yuuki2TheGame.Core
         private bool equipable;
         private int count;
         private int blockdamage;
-        OnUse action;
+        //OnUse action;
 
 
         private int _updateOrder = 0;

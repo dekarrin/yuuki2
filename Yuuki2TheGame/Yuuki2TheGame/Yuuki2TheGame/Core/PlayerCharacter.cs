@@ -11,7 +11,7 @@ namespace Yuuki2TheGame.Core
         public const int WIDTH = Game1.BLOCK_WIDTH * 1;
         public const int HEIGHT = Game1.BLOCK_HEIGHT * 2;
 
-        public static Inventory inventory;
+        public static Inventory inventory = new Inventory();
         
         //when no item is equipped it is represent by null
         private Item SelectedItem = null;

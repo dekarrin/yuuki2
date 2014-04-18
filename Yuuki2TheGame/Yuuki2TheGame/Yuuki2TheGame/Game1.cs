@@ -25,6 +25,7 @@ namespace Yuuki2TheGame
         Engine gameEngine;
         Texture2D defaultTexture;
         public List<GameObjectData> items = new List<GameObjectData>();
+        public static SoundEffect bgMusic;
 
         public const int WORLD_WIDTH = 100;
         public const int WORLD_HEIGHT = 100;
@@ -83,7 +84,7 @@ namespace Yuuki2TheGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            bgMusic = Content.Load<SoundEffect>("bgm01");
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
 
         }
@@ -105,6 +106,11 @@ namespace Yuuki2TheGame
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
+            SoundEffectInstance i = Game1.bgMusic.CreateInstance();
+            i.IsLooped = true;
+            Game1.bgMusic.Play();
+
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
             KeyboardState keyState = Keyboard.GetState();

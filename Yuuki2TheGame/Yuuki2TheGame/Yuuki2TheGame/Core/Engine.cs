@@ -7,6 +7,7 @@ using Yuuki2TheGame.Graphics;
 using Yuuki2TheGame.Physics;
 using FileHelpers;
 using Yuuki2TheGame.Data;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Yuuki2TheGame.Core
 {
@@ -30,10 +31,14 @@ namespace Yuuki2TheGame.Core
 
         private PhysicsController physics;
 
+        
+
         public Camera Camera { get; set; }
 
         public Engine(Point size)
         {
+            
+
             FileHelperEngine e = new FileHelperEngine(typeof(GameObjectData));
             GameObjectData[] temp = (GameObjectData[])e.ReadFile(@"ObjectData.csv");
 
@@ -52,7 +57,6 @@ namespace Yuuki2TheGame.Core
             physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_TIMESCALE);
             physics.AddMap(_map);
             physics.AddPhob(Player);
-
 
         }
 
