@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Yuuki2TheGame.Data;
 
 namespace Yuuki2TheGame.Core
 {
@@ -17,7 +18,7 @@ namespace Yuuki2TheGame.Core
     {
         private int id;
         private string name;
-        private int type;
+        private string type;
         private int level;
         private bool stack;
         private int _maxstack;
@@ -135,65 +136,22 @@ namespace Yuuki2TheGame.Core
             get { return name; }
             set { name = value; }
         }
-        public int Type
+        public string Type
         {
             get { return type; }
             set { type = value; }
         }
         
 
-        public Item(int number, string ItemName, int ToolLevel, bool isStacakable, bool isEquipable)
+        public Item(int id)
         {
-            ID = number;
-            Name = ItemName;
-            Level = ToolLevel;
-            Stackable = isStacakable;
-            ItemAction ia = new ItemAction();
-            
-            
-            if (ID <= 8)
-            {
-                this.Type = (int)ItemType.Block;
-            }
-            
-            if (ID > 16 && ID < 24)
-            {
-                this.Type = (int)ItemType.Axe;
-                OnUse action = ia.AxeAction;
-            }
-
-            if (ID >= 24 && ID < 32)
-            {
-                this.Type = (int)ItemType.Shovel;
-                action = ia.ShovelAction;
-            }
-
-            if (ID >= 32) 
-            {
-                this.Type = (int)ItemType.PickAxe;
-                action = ia.PickAction;
-            }
-            
-            
-            if (Stackable){
-               switch(Type){
-                   case (int)ItemType.Block:
-                       MaxStack = 200;
-                       break;
-                   case (int)ItemType.Axe:
-                       MaxStack = 10;
-                       break;
-                   case (int)ItemType.PickAxe:
-                       MaxStack = 30;
-                       break;
-                   case (int)ItemType.Shovel:
-                       MaxStack = 2000;
-                       break;
-               }
-            }
-            else{ MaxStack = 0;}
-            Equipable = isEquipable;
-            
+            GameObjectData temp = Engine.items[id - 1];
+            this.ID = temp.ID;
+            this.Level = temp.Level;
+            this.Name = temp.Name;
+            this.Type = temp.Type;
+            this.Stack = temp.Stack;
+            this.MaxStack = temp.MaxStack;
         }
 
 
