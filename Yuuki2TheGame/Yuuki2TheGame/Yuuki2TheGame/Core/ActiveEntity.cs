@@ -18,7 +18,7 @@ namespace Yuuki2TheGame.Core
             public Vector2 force;
             public long time;
             public string name;
-            public ForceListing(Vector2 force, long time, string Name)
+            public ForceListing(Vector2 force, long time, string name)
             {
                 this.force = force;
                 this.time = time;
@@ -130,11 +130,11 @@ namespace Yuuki2TheGame.Core
             AddForce(force, "impulse", 1);
         }
 
-        public void UpdatePhysics(GameTime time)
+        public void UpdatePhysics(float secs)
         {
-            SetForce(time);
-            SetVelocity(time);
-            SetPosition(time);
+            SetForce(secs);
+            SetVelocity(secs);
+            SetPosition(secs);
         }
 
         #endregion
@@ -151,20 +151,20 @@ namespace Yuuki2TheGame.Core
             : base(size, position, texture)
         { }
 
-        private void SetVelocity(GameTime time)
+        private void SetVelocity(float secs)
         {
-            Velocity = Velocity + Acceleration * (time.ElapsedGameTime.Milliseconds * 1000.0f);
+            Velocity = Velocity + Acceleration * secs;
         }
 
         private void SetPosition(GameTime time)
         {
-            Vector2 ds = Velocity * (time.ElapsedGameTime.Milliseconds * 1000.0f);
-            Position = new Point((int)Math.Round(X + ds.X), (int)Math.Round(Y + ds.Y));
+            Vector2 ds = Velocity * secs;
+            BlockPosition = new Vector2(BlockX + ds.X, BlockY + ds.Y);
         }
 
-        private void SetForce(GameTime time)
+        private void SetForce(float secs)
         {
-            Dampen(time);
+            Dampen(secs);
             IList<string> toRemove = new List<string>();
             foreach (ForceListing fl in forces.Values)
             {
@@ -174,16 +174,16 @@ namespace Yuuki2TheGame.Core
                 }
                 else
                 {
-                    fl.time -= time.ElapsedGameTime.Milliseconds;
+                    fl.time -= (int) Math.Round(secs * 1000);
                 }
             }
         }
 
-        private void Dampen(GameTime time)
+        private void Dampen(float secs)
         {
             foreach (ForceListing fl in forces.Values)
             {
-                fl.force -= Dampening * time.ElapsedGameTime.Seconds;
+                fl.force -= Dampening * secs;
                 if (fl.force.X < 0)
                 {
                     fl.force.X = 0;
