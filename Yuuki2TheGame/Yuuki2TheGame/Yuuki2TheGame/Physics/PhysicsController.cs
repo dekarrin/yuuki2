@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using FarseerPhysics;
 using FarseerPhysics.Dynamics;
+using FarseerPhysics.Collision.Shapes;
 using Yuuki2TheGame.Core;
 
 namespace Yuuki2TheGame.Physics
@@ -15,7 +16,11 @@ namespace Yuuki2TheGame.Physics
 
         private IList<IPhysical> phobs = new List<IPhysical>();
 
+        private IList<IPhysical> land = new List<IPhysical>();
+
         private World model;
+
+        private Shape land = new PolygonShape()
 
         private float timescale;
 
@@ -38,7 +43,7 @@ namespace Yuuki2TheGame.Physics
                     block = map.BlockAt(coords);
                     if (block != null)
                     {
-                        AddPhob(map.BlockAt(coords));
+                        AddLand(block);
                     }
                 }
             }
