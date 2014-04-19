@@ -11,6 +11,8 @@ using Microsoft.Xna.Framework.Media;
 using Yuuki2TheGame.Core;
 using Yuuki2TheGame.Graphics;
 
+
+
 namespace Yuuki2TheGame
 {
     /// <summary>
@@ -32,14 +34,34 @@ namespace Yuuki2TheGame
         public const int BLOCK_WIDTH = 16;
         public const int BLOCK_HEIGHT = 16;
 
+
+        public enum GameState
+        {
+            NewGame,
+            LoadGame,
+            Options,
+            Exit
+           
+        }
+        
         /// <summary>
         /// Contains the number of blocks that are on the screen.
         /// </summary>
         private Point blocksOnScreen;
-
+        public GameState gamestate = GameState.NewGame;
+        List<MainMenu> menuButtons = new List<MainMenu>();
+        Texture2D mainmenuTexture;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+
+
+            menuButtons.Add(new MainMenu(new Rectangle(400, 45, 100, 14), "NewGame"));
+            menuButtons.Add(new MainMenu(new Rectangle(400, 75, 100, 14), "LoadGame"));
+            menuButtons.Add(new MainMenu(new Rectangle(400, 105, 100, 14), "Options"));
+            menuButtons.Add(new MainMenu(new Rectangle(400, 135, 100, 14), "Exit"));
+
+
             graphics.PreferredBackBufferWidth = GAME_WIDTH;
             graphics.PreferredBackBufferHeight = GAME_HEIGHT;
             graphics.ApplyChanges();
@@ -70,7 +92,7 @@ namespace Yuuki2TheGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            mainmenuTexture = Content.Load<Texture2D>(@"Images/Minecraft");
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
 
         }
@@ -92,6 +114,7 @@ namespace Yuuki2TheGame
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
             KeyboardState keyState = Keyboard.GetState();
