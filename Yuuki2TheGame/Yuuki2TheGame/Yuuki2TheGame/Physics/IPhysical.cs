@@ -14,6 +14,8 @@ namespace Yuuki2TheGame.Physics
 
         Vector2 Force { get; }
 
+        Vector2 PhysPosition { get; set; }
+
         Vector2 Velocity { get; set; }
 
         Vector2 Acceleration { get; set; }
@@ -21,6 +23,10 @@ namespace Yuuki2TheGame.Physics
         float Mass { get; set; }
 
         Vector2 Dampening { get; set; }
+
+        PhysicsController PhysicsEngine { get; set; }
+
+        Vector2 GlobalForce { get; set; }
 
         void UpdatePhysics(float secs);
 

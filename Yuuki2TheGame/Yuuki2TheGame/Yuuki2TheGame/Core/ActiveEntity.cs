@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Yuuki2TheGame.Physics;
 
 namespace Yuuki2TheGame.Core
 {
@@ -28,15 +29,32 @@ namespace Yuuki2TheGame.Core
 
         #region implementation instance vars
 
-        private Vector2 _dampening = new Vector2(0, 0);
+        private Vector2 _dampening = Vector2.Zero;
         
         private IDictionary<string, ForceListing> forces = new Dictionary<string, ForceListing>();
 
-        private Vector2 _velocity = new Vector2(0, 0);
+        private Vector2 _velocity = Vector2.Zero;
+
+        private Vector2 _position = Vector2.Zero;
 
         #endregion
 
         #region properties
+
+        public PhysicsController PhysicsEngine { get; set; }
+
+        public Vector2 PhysPosition
+        {
+            get
+            {
+                return _position;
+            }
+            set
+            {
+                _position = value;
+                BlockPosition = new Vector2(value.X, value.Y);
+            }
+        }
 
         public bool IsOnGround { get; set; }
 
@@ -61,7 +79,7 @@ namespace Yuuki2TheGame.Core
             }
             set
             {
-                _velocity = new Vector2(value.X, value.Y);
+                _velocity = value;
             }
         }
 
@@ -169,7 +187,13 @@ namespace Yuuki2TheGame.Core
         private void SetPosition(float secs)
         {
             Vector2 ds = Velocity * secs;
-            BlockPosition = new Vector2(BlockX + ds.X, BlockY + ds.Y);
+
+            // if we were on the ground, and we're still on the ground, we'd better stay on the ground!
+            if (IsOnGround && ds.Y > 0 && PhysicsEngine.BoxIsOnGround(Bounds))
+            {
+                ds.Y = 0;
+            }
+            PhysPosition = new Vector2(PhysPosition.X + ds.X, PhysPosition.Y + ds.Y);
         }
 
         private void SetForce(float secs)
