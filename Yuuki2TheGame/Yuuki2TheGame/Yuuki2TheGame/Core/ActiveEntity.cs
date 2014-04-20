@@ -38,6 +38,8 @@ namespace Yuuki2TheGame.Core
 
         #region properties
 
+        public bool IsOnGround { get; set; }
+
         public Vector2 Force {
             get
             {
@@ -140,16 +142,24 @@ namespace Yuuki2TheGame.Core
         #endregion
 
         public ActiveEntity(Point size)
-            : base(size)
+            : this(size, new Point(0, 0))
         { }
 
         public ActiveEntity(Point size, Point position)
-            : base(size, position)
+            : this(size, position, null)
         { }
 
         public ActiveEntity(Point size, Point position, string texture)
             : base(size, position, texture)
-        { }
+        {
+            OnMoved += delegate(Object sender, MovedEventArgs mea)
+            {
+                if (IsOnGround && mea.NewPosition.Y != mea.OldPosition.Y)
+                {
+                    IsOnGround = false;
+                }
+            };
+        }
 
         private void SetVelocity(float secs)
         {

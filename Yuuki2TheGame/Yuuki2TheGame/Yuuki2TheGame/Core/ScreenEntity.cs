@@ -140,8 +140,6 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public bool IsOnGround { get; set; }
-
         public Vector2 BlockPosition
         {
             get
@@ -303,13 +301,6 @@ namespace Yuuki2TheGame.Core
             _x = position.X;
             _y = position.Y;
             Texture = texture;
-            OnMoved += delegate(Object sender, MovedEventArgs mea)
-            {
-                if (IsOnGround && mea.NewPosition.Y != mea.OldPosition.Y)
-                {
-                    IsOnGround = false;
-                }
-            };
         }
     }
 }
