@@ -28,20 +28,30 @@ namespace Yuuki2TheGame.Core
         }
 
         #region implementation instance vars
-
-        private Vector2 _dampening = Vector2.Zero;
         
         private IDictionary<string, ForceListing> forces = new Dictionary<string, ForceListing>();
 
-        private Vector2 _velocity = Vector2.Zero;
-
         private Vector2 _position = Vector2.Zero;
+
+        private Vector2 _global_force = Vector2.Zero;
 
         #endregion
 
         #region properties
 
         public PhysicsController PhysicsEngine { get; set; }
+
+        public Vector2 GlobalForce
+        {
+            get
+            {
+                return _global_force;
+            }
+            set
+            {
+                _global_force = value;
+            }
+        }
 
         public Vector2 PhysPosition
         {
@@ -52,7 +62,7 @@ namespace Yuuki2TheGame.Core
             set
             {
                 _position = value;
-                BlockPosition = new Vector2(value.X, value.Y);
+                BlockPosition = value;
             }
         }
 
@@ -67,21 +77,13 @@ namespace Yuuki2TheGame.Core
                     sum.X += fl.force.X;
                     sum.Y += fl.force.Y;
                 }
+                sum.X += _global_force.X;
+                sum.Y += _global_force.Y;
                 return sum;
             }
         }
 
-        public Vector2 Velocity
-        {
-            get
-            {
-                return _velocity;
-            }
-            set
-            {
-                _velocity = value;
-            }
-        }
+        public Vector2 Velocity { get; set; }
 
         public Vector2 Acceleration
         {
@@ -96,17 +98,7 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public Vector2 Dampening
-        {
-            get
-            {
-                return _dampening;
-            }
-            set
-            {
-                _dampening = new Vector2(value.X, value.Y);
-            }
-        }
+        public Vector2 Dampening { get; set; }
 
         public float Mass { get; set; }
 
@@ -143,6 +135,7 @@ namespace Yuuki2TheGame.Core
         public void RemoveAllForce()
         {
             forces.Clear();
+            GlobalForce = Vector2.Zero;
         }
 
         public void ApplyImpulse(Vector2 force)

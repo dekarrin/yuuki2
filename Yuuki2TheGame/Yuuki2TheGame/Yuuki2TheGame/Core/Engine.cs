@@ -35,7 +35,7 @@ namespace Yuuki2TheGame.Core
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);
-            Camera = new Camera(Player, new Point(-100, -300));
+            Camera = new Camera(new Point(Game1.GAME_WIDTH, Game1.GAME_HEIGHT), Player, new Point(-100, -300));
             physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_TIMESCALE);
             physics.AddMap(_map);
             physics.AddPhob(Player);
@@ -77,8 +77,9 @@ namespace Yuuki2TheGame.Core
         /// <returns></returns>
         public IList<Sprite> GetView(int numX, int numY, int tileWidth, int tileHeight)
         {
-            Point coords = Camera.Coordinates;
-            Point offsets = Camera.Offsets;
+            Vector2 pos = Camera.BlockPosition;
+            Point coords = new Point((int) pos.X, (int) pos.Y);
+            Point offsets = Camera.BlockOffsets;
             IList<Sprite> view = new List<Sprite>();
             for (int i = 0; i < numX && coords.X + i < _map.Width; i++)
             {
@@ -116,8 +117,8 @@ namespace Yuuki2TheGame.Core
 
         public Sprite GetBackground(int screenWidth, int screenHeight)
         {
-            int x = Math.Abs(Math.Min(Camera.Location.X, 0));
-            int y = Math.Abs(Math.Min(Camera.Location.Y, 0));
+            int x = Math.Abs(Math.Min(Camera.Position.X, 0));
+            int y = Math.Abs(Math.Min(Camera.Position.Y, 0));
             int width = screenWidth - x;
             int height = screenHeight - y;
             // Above will need to be changed if we want to make worlds that are smaller than the screen
@@ -129,13 +130,13 @@ namespace Yuuki2TheGame.Core
         public IList<Sprite> GetCharacters(int screenWidth, int screenHeight)
         {
             // TODO: OPTIMIZE! We should be using quadtrees or something...
-            Rectangle view = new Rectangle(Camera.Location.X, Camera.Location.Y, screenWidth, screenHeight);
+            Rectangle view = Camera.Bounds;
             IList<Sprite> chars = new List<Sprite>();
             foreach (GameCharacter c in _characters)
             {
                 if (c.Bounds.Intersects(view))
                 {
-                    Point position = new Point(c.Bounds.X - Camera.Location.X, c.Bounds.Y - Camera.Location.Y);
+                    Point position = new Point(c.Bounds.X - Camera.Position.X, c.Bounds.Y - Camera.Position.Y);
                     Point size = new Point(c.Width, c.Height);
                     Sprite spr = new Sprite(position, size, c.Texture);
                     chars.Add(spr);

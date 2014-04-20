@@ -26,6 +26,9 @@ namespace Yuuki2TheGame.Physics
 
         PhysicsController PhysicsEngine { get; set; }
 
+        /// <summary>
+        /// Force imparted that cannot be removed except by explicitly setting GlobalForce.
+        /// </summary>
         Vector2 GlobalForce { get; set; }
 
         void UpdatePhysics(float secs);
