@@ -81,6 +81,8 @@ namespace Yuuki2TheGame.Physics
                             top = iqo;
                         }
                     }
+                    // bump them out of the ground
+                    phob.PhysPosition = new Vector2(phob.PhysPosition.X, top.Bounds.Top - phob.Bounds.Height);
                     phob.IsOnGround = true;
                     toGround.Add(phob);
                 }
