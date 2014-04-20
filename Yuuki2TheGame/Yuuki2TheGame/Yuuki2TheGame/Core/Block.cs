@@ -33,7 +33,6 @@ namespace Yuuki2TheGame.Core
         private int levelrequired;
         private int blockhealth;
         private int id;
-        private int _updateOrder = 0;
         private int type;
 
         public int Type
