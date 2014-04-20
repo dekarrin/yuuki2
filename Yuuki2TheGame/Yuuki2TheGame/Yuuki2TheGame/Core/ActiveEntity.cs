@@ -17,13 +17,15 @@ namespace Yuuki2TheGame.Core
 
         private class ForceListing {
             public Vector2 force;
-            public long time;
+            public long duration;
             public string name;
+            public bool timed;
             public ForceListing(Vector2 force, long time, string name)
             {
                 this.force = force;
-                this.time = time;
+                this.duration = time;
                 this.name = name;
+                this.timed = time != 0;
             }
         }
 
@@ -98,7 +100,7 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public Vector2 Dampening { get; set; }
+        public Vector2 Damping { get; set; }
 
         public float Mass { get; set; }
 
@@ -124,7 +126,7 @@ namespace Yuuki2TheGame.Core
             }
             ForceListing fl = forces[null];
             fl.force += force;
-            fl.time += time;
+            fl.duration += time;
         }
 
         public void RemoveForce(string name)
@@ -175,6 +177,7 @@ namespace Yuuki2TheGame.Core
         private void SetVelocity(float secs)
         {
             Velocity = Velocity + Acceleration * secs;
+            Dampen(secs);
         }
 
         private void SetPosition(float secs)
@@ -191,35 +194,25 @@ namespace Yuuki2TheGame.Core
 
         private void SetForce(float secs)
         {
-            Dampen(secs);
             IList<string> toRemove = new List<string>();
             foreach (ForceListing fl in forces.Values)
             {
-                if (fl.time <= 0 || fl.force == Vector2.Zero)
+                if (fl.timed && fl.duration <= 0)
                 {
                     toRemove.Add(fl.name);
                 }
                 else
                 {
-                    fl.time -= (int) Math.Round(secs * 1000);
+                    fl.duration -= (int) Math.Round(secs * 1000);
                 }
             }
         }
 
         private void Dampen(float secs)
         {
-            foreach (ForceListing fl in forces.Values)
-            {
-                fl.force -= Dampening * secs;
-                if (fl.force.X < 0)
-                {
-                    fl.force.X = 0;
-                }
-                if (fl.force.Y < 0)
-                {
-                    fl.force.Y = 0;
-                }
-            }
+            int multX = (Velocity.X == 0) ? 0 : (Velocity.X < 0) ? -1 : 1;
+            int multY = (Velocity.Y == 0) ? 0 : (Velocity.Y < 0) ? -1 : 1;
+            Velocity = new Vector2(Velocity.X - (multX * Damping.X), Velocity.Y - (multY * Damping.Y)) * secs;
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Yuuki2TheGame.Physics
 
         float Mass { get; set; }
 
-        Vector2 Dampening { get; set; }
+        Vector2 Damping { get; set; }
 
         PhysicsController PhysicsEngine { get; set; }
 
