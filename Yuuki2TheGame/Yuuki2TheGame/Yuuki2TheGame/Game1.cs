@@ -37,8 +37,15 @@ namespace Yuuki2TheGame
         /// </summary>
         private Point blocksOnScreen;
 
+        public bool DebugMode { get; set; }
+
+        private bool debugKeyLocked = false;
+
+        private SpriteFont font;
+
         public Game1()
         {
+            DebugMode = true;
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = GAME_WIDTH;
             graphics.PreferredBackBufferHeight = GAME_HEIGHT;
@@ -72,7 +79,7 @@ namespace Yuuki2TheGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
-
+            font = Content.Load<SpriteFont>("SegoeUI");
         }
 
         /// <summary>
@@ -113,6 +120,15 @@ namespace Yuuki2TheGame
             {
                 pressedJump = false;
             }
+            if (!debugKeyLocked && keyState.IsKeyDown(Keys.F4))
+            {
+                debugKeyLocked = true;
+            }
+            else if (debugKeyLocked && keyState.IsKeyUp(Keys.F4))
+            {
+                debugKeyLocked = false;
+                DebugMode = !DebugMode;
+            }
             // TODO: Add your update logic here
             gameEngine.Update(gameTime);
             base.Update(gameTime);
@@ -145,8 +161,17 @@ namespace Yuuki2TheGame
             {
                 spriteBatch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
             }
+            if (DebugMode)
+            {
+                DrawDebugInfo();
+            }
             spriteBatch.End();
             base.Draw(gameTime);
+        }
+
+        private void DrawDebugInfo()
+        {
+            spriteBatch.DrawString(font, "Position: (" + gameEngine.Player.Position.X + ", " + gameEngine.Player.Position.Y + ")", new Vector2(10, 10), Color.Red);
         }
 
         private void ProcessSpriteGraphics(IList<Sprite> sprites)

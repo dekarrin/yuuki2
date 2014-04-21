@@ -151,7 +151,7 @@ namespace Yuuki2TheGame.Core
             {
                 forces[name] = new ForceListing(new Vector2(0, 0), 0, name);
             }
-            ForceListing fl = forces[null];
+            ForceListing fl = forces[name];
             fl.force += force;
             fl.duration += time;
         }
