@@ -129,6 +129,7 @@ namespace Yuuki2TheGame.Core
 
         public IList<Sprite> GetCharacters(int screenWidth, int screenHeight)
         {
+            // TODO: OPTIMIZE! We should be using quadtrees or something...
             Rectangle view = Camera.Bounds;
             IList<Sprite> chars = new List<Sprite>();
             foreach (GameCharacter c in _characters)
