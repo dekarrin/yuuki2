@@ -35,6 +35,12 @@ namespace Yuuki2TheGame.Core
 
         private Vector2 _position = Vector2.Zero;
 
+        /// <summary>
+        /// Necessary because there will be such a huge difference in exponents of position and velocity that
+        /// updating pos with velocity every time step completely loses all digits from velocity.
+        /// </summary>
+        private Vector2 _stored_delta_s = Vector2.Zero;
+
         private Vector2 _global_force = Vector2.Zero;
 
         private float _mass = 0.0f;
@@ -211,7 +217,27 @@ namespace Yuuki2TheGame.Core
             {
                 ds.Y = 0;
             }
-            PhysPosition = new Vector2(PhysPosition.X + ds.X, PhysPosition.Y + ds.Y);
+            float newX = PhysPosition.X + ds.X + _stored_delta_s.X;
+            float newY = PhysPosition.Y + ds.Y + _stored_delta_s.Y;
+            // due to float (and even double) precision, we may lose all digits in ds.
+            // Check if this has happened, and if so, store it for next update.
+            if (newX == PhysPosition.X)
+            {
+                _stored_delta_s.X += ds.X;
+            }
+            else
+            {
+                _stored_delta_s.X = 0f;
+            }
+            if (newY == PhysPosition.Y)
+            {
+                _stored_delta_s.Y += ds.Y;
+            }
+            else
+            {
+                _stored_delta_s.Y = 0f;
+            }
+            PhysPosition = new Vector2(newX, newY);
         }
 
         private void SetForce(float secs)

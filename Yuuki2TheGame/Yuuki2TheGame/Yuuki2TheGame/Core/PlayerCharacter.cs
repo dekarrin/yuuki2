@@ -17,6 +17,7 @@ namespace Yuuki2TheGame.Core
 
         new public void UpdatePhysics(float secs)
         {
+            System.Diagnostics.Debug.WriteLine("Wat");
             base.UpdatePhysics(secs);
         }
     }
