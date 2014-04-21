@@ -66,48 +66,10 @@ namespace Yuuki2TheGame.Physics
             {
                 phob.UpdatePhysics((time.ElapsedGameTime.Milliseconds / 1000.0f) * timescale);
             }
-            // now do ground collision checking using post-collide algo
-            IList<IPhysical> toGround = new List<IPhysical>();
-            foreach (IPhysical phob in airborne)
-            {
-                List<IQuadObject> objs = landTree.Query(phob.Bounds);
-                if (objs.Count() > 0)
-                {
-                    IQuadObject top = null;
-                    foreach (IQuadObject iqo in objs)
-                    {
-                        if (top == null || top.Bounds.Top < iqo.Bounds.Top)
-                        {
-                            top = iqo;
-                        }
-                    }
-                    // bump them out of the ground
-                    phob.PhysPosition = new Vector2(phob.PhysPosition.X, top.Bounds.Top - phob.Bounds.Height);
-                    phob.IsOnGround = true;
-                    toGround.Add(phob);
-                }
-            }
-            // check if any ground based is now airborne
-            IList<IPhysical> toAir = new List<IPhysical>();
-            foreach (IPhysical phob in grounded)
-            {
-                if (!phob.IsOnGround)
-                {
-                    toAir.Add(phob);
-                }
-            }
-            // take ones going to ground and add them to ground list and remove from air list
-            foreach (IPhysical phob in toGround)
-            {
-                grounded.Add(phob);
-                airborne.Remove(phob);
-            }
-            // take ones going to air and add them to air list and remove from ground list
-            foreach (IPhysical phob in toAir)
-            {
-                airborne.Add(phob);
-                grounded.Remove(phob);
-            }
+            IList<IPhysical> toGround = GetLandingPhobs();
+            IList<IPhysical> toAir = GetLaunchingPhobs();
+            MoveToGrounded(toGround);
+            MoveToAirborne(toAir);
         }
 
         public void AddPhob(IPhysical obj)
@@ -139,6 +101,74 @@ namespace Yuuki2TheGame.Physics
         {
             Rectangle queryBounds = new Rectangle(rect.X, rect.Y + rect.Height, rect.Width, GROUND_EPSILON);
             return landTree.Query(queryBounds).Any();
+        }
+
+        /// <summary>
+        /// Returns list of previously grounded phobs that have left the ground.
+        /// </summary>
+        /// <returns></returns>
+        private IList<IPhysical> GetLaunchingPhobs()
+        {
+            IList<IPhysical> toAir = new List<IPhysical>();
+            foreach (IPhysical phob in grounded)
+            {
+                if (!phob.IsOnGround)
+                {
+                    toAir.Add(phob);
+                }
+            }
+            return toAir;
+        }
+
+        /// <summary>
+        /// Returns list of previously airborne phobs that have collided with the ground.
+        /// </summary>
+        /// <returns></returns>
+        private IList<IPhysical> GetLandingPhobs()
+        {
+            IList<IPhysical> toGround = new List<IPhysical>();
+            foreach (IPhysical phob in airborne)
+            {
+                List<IQuadObject> objs = landTree.Query(phob.Bounds);
+                if (objs.Count() > 0)
+                {
+                    IQuadObject top = null;
+                    foreach (IQuadObject iqo in objs)
+                    {
+                        if (top == null || top.Bounds.Top < iqo.Bounds.Top)
+                        {
+                            top = iqo;
+                        }
+                    }
+                    CorrectGroundCollision(phob, top.Bounds);
+                    toGround.Add(phob);
+                }
+            }
+            return toGround;
+        }
+
+        private void CorrectGroundCollision(IPhysical phob, Rectangle groundBounds)
+        {
+            phob.PhysPosition = new Vector2(phob.PhysPosition.X, groundBounds.Top - phob.Bounds.Height);
+            phob.IsOnGround = true;
+        }
+
+        private void MoveToGrounded(IList<IPhysical> phobs)
+        {
+            foreach (IPhysical phob in phobs)
+            {
+                grounded.Add(phob);
+                airborne.Remove(phob);
+            }
+        }
+
+        private void MoveToAirborne(IList<IPhysical> phobs)
+        {
+            foreach (IPhysical phob in phobs)
+            {
+                airborne.Add(phob);
+                grounded.Remove(phob);
+            }
         }
     }
 }
