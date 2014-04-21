@@ -14,7 +14,7 @@ namespace Yuuki2TheGame.Core
 
         public const float PHYS_GRAVITY = 9.806f;
 
-        public const float PHYS_TIMESCALE = 0.001f;
+        public const float PHYS_TIMESCALE = 1.0f;
 
         private List<GameCharacter> _characters = new List<GameCharacter>();
 

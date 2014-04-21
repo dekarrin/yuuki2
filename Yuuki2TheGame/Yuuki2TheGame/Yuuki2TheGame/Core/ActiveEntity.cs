@@ -201,7 +201,6 @@ namespace Yuuki2TheGame.Core
                 }
             };
         }
-
         private void SetVelocity(float secs)
         {
             Velocity = Velocity + Acceleration * secs;
@@ -217,27 +216,7 @@ namespace Yuuki2TheGame.Core
             {
                 ds.Y = 0;
             }
-            float newX = PhysPosition.X + ds.X + _stored_delta_s.X;
-            float newY = PhysPosition.Y + ds.Y + _stored_delta_s.Y;
-            // due to float (and even double) precision, we may lose all digits in ds.
-            // Check if this has happened, and if so, store it for next update.
-            if (newX == PhysPosition.X)
-            {
-                _stored_delta_s.X += ds.X;
-            }
-            else
-            {
-                _stored_delta_s.X = 0f;
-            }
-            if (newY == PhysPosition.Y)
-            {
-                _stored_delta_s.Y += ds.Y;
-            }
-            else
-            {
-                _stored_delta_s.Y = 0f;
-            }
-            PhysPosition = new Vector2(newX, newY);
+            PhysPosition = new Vector2(PhysPosition.X + ds.X, PhysPosition.Y + ds.Y);
         }
 
         private void SetForce(float secs)
@@ -260,7 +239,7 @@ namespace Yuuki2TheGame.Core
         {
             int multX = (Velocity.X == 0) ? 0 : (Velocity.X < 0) ? -1 : 1;
             int multY = (Velocity.Y == 0) ? 0 : (Velocity.Y < 0) ? -1 : 1;
-            Velocity = new Vector2(Velocity.X - (multX * Damping.X), Velocity.Y - (multY * Damping.Y)) * secs;
+            Velocity -= new Vector2(multX * Damping.X, multY * Damping.Y) * secs;
         }
     }
 }
