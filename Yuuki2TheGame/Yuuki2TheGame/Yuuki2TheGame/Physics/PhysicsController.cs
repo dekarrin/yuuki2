@@ -147,9 +147,19 @@ namespace Yuuki2TheGame.Physics
             return toGround;
         }
 
+        private float PixelsToPhysicalUnits(int pixels)
+        {
+            return pixels / (float) Game1.BLOCK_WIDTH;
+        }
+
+        private int PhysicalUnitsToPixels(float physUnits)
+        {
+            return (int) Math.Round(physUnits * Game1.BLOCK_WIDTH);
+        }
+
         private void CorrectGroundCollision(IPhysical phob, Rectangle groundBounds)
         {
-            phob.PhysPosition = new Vector2(phob.PhysPosition.X, groundBounds.Top - phob.Bounds.Height);
+            phob.PhysPosition = new Vector2(phob.PhysPosition.X, PixelsToPhysicalUnits(groundBounds.Top - phob.Bounds.Height));
             phob.IsOnGround = true;
         }
 
