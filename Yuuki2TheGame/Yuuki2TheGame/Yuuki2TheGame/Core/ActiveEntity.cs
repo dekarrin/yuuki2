@@ -37,6 +37,8 @@ namespace Yuuki2TheGame.Core
 
         private Vector2 _global_force = Vector2.Zero;
 
+        private float _mass = 0.0f;
+
         #endregion
 
         #region properties
@@ -102,7 +104,26 @@ namespace Yuuki2TheGame.Core
 
         public Vector2 Damping { get; set; }
 
-        public float Mass { get; set; }
+        /// <summary>
+        /// If this is never set or is set to 0 (which is physically impossible), it will be assumed that the item has
+        /// a density of 50kg / m^2 and the mass will be set appropriately.
+        /// </summary>
+        public float Mass
+        {
+            get
+            {
+                if (_mass == 0.0f)
+                {
+                    float area = BlockSize.X * BlockSize.Y;
+                    _mass = 50.0f * area;
+                }
+                return _mass;
+            }
+            set
+            {
+                _mass = value;
+            }
+        }
 
         #endregion
 
@@ -165,6 +186,7 @@ namespace Yuuki2TheGame.Core
         public ActiveEntity(Point size, Point position, string texture)
             : base(size, position, texture)
         {
+            _position = BlockPosition;
             OnMoved += delegate(Object sender, MovedEventArgs mea)
             {
                 if (IsOnGround && mea.NewPosition.Y != mea.OldPosition.Y)

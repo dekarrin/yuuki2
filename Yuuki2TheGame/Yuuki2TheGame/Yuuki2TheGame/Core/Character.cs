@@ -76,13 +76,20 @@ namespace Yuuki2TheGame.Core
             }
         }
 
+        int timePassed = 0;
+
         /// <summary>
         /// Called by game engine; tells instance to update self.
         /// </summary>
         /// <param name="ts">Amount of time passed since last update.</param>
         public void Update(GameTime ts)
         {
-
+            timePassed += ts.ElapsedGameTime.Milliseconds;
+            if (timePassed > 1000)
+            {
+                System.Diagnostics.Debug.WriteLine("Yo");
+            }
+            timePassed %= 1000;
         }
 
         public void MoveLeft()
