@@ -15,6 +15,8 @@ namespace Yuuki2TheGame.Core
 
         private const string DEFAULT_FORCE_NAME = "__DEFAULT__";
 
+        private const float DAMPING_MAX = 100f;
+
         private class ForceListing {
             public Vector2 originalForce;
             public Vector2 force;
@@ -291,9 +293,20 @@ namespace Yuuki2TheGame.Core
 
         private void Dampen(float secs)
         {
-            int multX = (Velocity.X == 0) ? 0 : (Velocity.X < 0) ? -1 : 1;
-            int multY = (Velocity.Y == 0) ? 0 : (Velocity.Y < 0) ? -1 : 1;
-            Velocity -= new Vector2(multX * Damping.X, multY * Damping.Y) * secs;
+            if (Force == _global_force)
+            {
+                Vector2 damp = CalcDamping();
+                int multX = (Velocity.X == 0) ? 0 : (Velocity.X < 0) ? -1 : 1;
+                int multY = (Velocity.Y == 0) ? 0 : (Velocity.Y < 0) ? -1 : 1;
+                Velocity -= new Vector2(multX * Damping.X, multY * Damping.Y) * secs;
+            }
+        }
+
+        private Vector2 CalcDamping()
+        {
+            float x = (float)(Math.Pow(2, (2 * Math.Abs(Velocity.X)) / DAMPING_MAX) - 1.0) / 6.0f;
+            float y = (float)(Math.Pow(2, (2 * Math.Abs(Velocity.Y)) / DAMPING_MAX) - 1.0) / 6.0f;
+            return new Vector2(Damping.X * x, Damping.Y * y);
         }
     }
 }
