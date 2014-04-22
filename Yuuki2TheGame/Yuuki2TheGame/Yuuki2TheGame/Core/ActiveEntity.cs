@@ -160,7 +160,11 @@ namespace Yuuki2TheGame.Core
             }
             ForceListing fl = forces[name];
             fl.force += force;
-            fl.duration += time;
+            if (time != 0)
+            {
+                fl.duration += time;
+                fl.timed = true;
+            }
         }
 
         public void AddForce(Vector2 force, string name, Vector2 maxVelocity)
@@ -223,17 +227,16 @@ namespace Yuuki2TheGame.Core
         private void SetVelocity(float secs)
         {
             Velocity = Velocity + Acceleration * secs;
+            if (IsOnGround && Velocity.Y > 0 && CheckGroundContact != null && CheckGroundContact(this.Bounds))
+            {
+                Velocity = new Vector2(Velocity.X, 0);
+            }
             Dampen(secs);
         }
 
         private void SetPosition(float secs)
         {
             Vector2 ds = Velocity * secs;
-            // if we were on the ground, and we're still on the ground, we'd better stay on the ground!
-            if (IsOnGround && ds.Y > 0 && CheckGroundContact != null && CheckGroundContact(Bounds))
-            {
-                ds.Y = 0;
-            }
             PhysPosition = new Vector2(PhysPosition.X + ds.X, PhysPosition.Y + ds.Y);
         }
 
@@ -254,6 +257,10 @@ namespace Yuuki2TheGame.Core
                     }
                     LimitByVelocity(fl);
                 }
+            }
+            foreach (string forceName in toRemove)
+            {
+                forces.Remove(forceName);
             }
         }
 
