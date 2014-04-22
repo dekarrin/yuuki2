@@ -104,11 +104,19 @@ namespace Yuuki2TheGame
             KeyboardState keyState = Keyboard.GetState();
             if (keyState.IsKeyDown(Keys.A) || keyState.IsKeyDown(Keys.Left))
             {
-                gameEngine.Player.MoveLeft();
+                gameEngine.Player.StartMovingLeft();
             }
             else if (keyState.IsKeyDown(Keys.D) || keyState.IsKeyDown(Keys.Right))
             {
-                gameEngine.Player.MoveRight();
+                gameEngine.Player.StartMovingRight();
+            }
+            if (keyState.IsKeyUp(Keys.A) || keyState.IsKeyUp(Keys.Left))
+            {
+                gameEngine.Player.StopMovingLeft();
+            }
+            if (keyState.IsKeyUp(Keys.D) || keyState.IsKeyUp(Keys.Right))
+            {
+                gameEngine.Player.StopMovingRight();
             }
             // TODO: Individual key resets
             if (!pressedJump && (keyState.IsKeyDown(Keys.W) || keyState.IsKeyDown(Keys.Space) || keyState.IsKeyDown(Keys.Up)))
@@ -171,7 +179,14 @@ namespace Yuuki2TheGame
 
         private void DrawDebugInfo()
         {
-            spriteBatch.DrawString(font, "Position: (" + gameEngine.Player.Position.X + ", " + gameEngine.Player.Position.Y + ")", new Vector2(10, 10), Color.Red);
+            PlayerCharacter pc = gameEngine.Player;
+            Vector2 s = pc.PhysPosition;
+            Vector2 v = pc.Velocity;
+            Vector2 a = pc.Acceleration;
+            Vector2 f = pc.Force;
+            string debug = "P:({0}, {1})  V:({2}, {3})  A:({4}, {5})  F:({6}, {7})  M:{8}";
+            string output = string.Format(debug, s.X, s.Y, v.X, v.Y, a.X, a.Y, f.X, f.Y, pc.Mass);
+            spriteBatch.DrawString(font, output, new Vector2(10, 10), Color.Red);
         }
 
         private void ProcessSpriteGraphics(IList<Sprite> sprites)

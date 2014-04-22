@@ -84,19 +84,24 @@ namespace Yuuki2TheGame.Core
         {
         }
 
-        public void MoveLeft()
+        public virtual void StartMovingLeft()
         {
-            ApplyImpulse(new Vector2(-0.25f, 0));
         }
 
-        public void MoveRight()
+        public virtual void StartMovingRight()
         {
-            ApplyImpulse(new Vector2(0.25f, 0));
         }
 
-        public void Jump()
+        public virtual void StopMovingLeft()
         {
-            ApplyImpulse(new Vector2(0, -10));
+        }
+
+        public virtual void StopMovingRight()
+        {
+        }
+
+        public virtual void Jump()
+        {
         }
 
 

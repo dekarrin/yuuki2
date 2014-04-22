@@ -39,6 +39,7 @@ namespace Yuuki2TheGame.Core
             physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_TIMESCALE);
             physics.AddMap(_map);
             physics.AddPhob(Player);
+            Player.ApplyImpulse(new Vector2(100, 0));
         }
 
         private int TESTcycle = 0;
