@@ -16,13 +16,16 @@ namespace Yuuki2TheGame.Core
         private const string DEFAULT_FORCE_NAME = "__DEFAULT__";
 
         private class ForceListing {
+            public Vector2 originalForce;
             public Vector2 force;
             public long duration;
             public string name;
             public bool timed;
+            public bool hasMaxVelocity = false;
+            public Vector2 maxVelocity = Vector2.Zero;
             public ForceListing(Vector2 force, long time, string name)
             {
-                this.force = force;
+                this.force = originalForce = force;
                 this.duration = time;
                 this.name = name;
                 this.timed = time != 0;
@@ -160,6 +163,17 @@ namespace Yuuki2TheGame.Core
             fl.duration += time;
         }
 
+        public void AddForce(Vector2 force, string name, Vector2 maxVelocity)
+        {
+            if (!forces.ContainsKey(name))
+            {
+                forces[name] = new ForceListing(new Vector2(0, 0), 0, name);
+            }
+            ForceListing fl = forces[name];
+            fl.force += force;
+            fl.maxVelocity = maxVelocity;
+        }
+
         public void RemoveForce(string name)
         {
             forces.Remove(name);
@@ -214,7 +228,6 @@ namespace Yuuki2TheGame.Core
         private void SetPosition(float secs)
         {
             Vector2 ds = Velocity * secs;
-
             // if we were on the ground, and we're still on the ground, we'd better stay on the ground!
             if (IsOnGround && ds.Y > 0 && CheckGroundContact != null && CheckGroundContact(Bounds))
             {
@@ -234,7 +247,36 @@ namespace Yuuki2TheGame.Core
                 }
                 else
                 {
-                    fl.duration -= (int) Math.Round(secs * 1000);
+                    if (fl.timed)
+                    {
+                        fl.duration -= (int)Math.Round(secs * 1000);
+                    }
+                    LimitByVelocity(fl);
+                }
+            }
+        }
+
+        private void LimitByVelocity(ForceListing fl)
+        {
+            if (fl.hasMaxVelocity && (fl.maxVelocity.X != 0 || fl.maxVelocity.Y != 0))
+            {
+                bool xIsAffected = (fl.maxVelocity.X > 0 && Velocity.X > fl.maxVelocity.X) || (fl.maxVelocity.X < 0 && Velocity.X < fl.maxVelocity.X);
+                bool yIsAffected = (fl.maxVelocity.Y > 0 && Velocity.Y > fl.maxVelocity.Y) || (fl.maxVelocity.Y < 0 && Velocity.Y < fl.maxVelocity.Y);
+                if (xIsAffected)
+                {
+                    fl.force.X = 0;
+                }
+                else
+                {
+                    fl.force.X = fl.originalForce.X;
+                }
+                if (yIsAffected)
+                {
+                    fl.force.Y = 0;
+                }
+                else
+                {
+                    fl.force.Y = fl.originalForce.Y;
                 }
             }
         }

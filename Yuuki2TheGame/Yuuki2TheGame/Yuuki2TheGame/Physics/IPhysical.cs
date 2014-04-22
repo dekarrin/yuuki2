@@ -41,6 +41,8 @@ namespace Yuuki2TheGame.Physics
 
         void AddForce(Vector2 force, string name, long duration);
 
+        void AddForce(Vector2 force, string name, Vector2 maxVelocity)
+
         void ApplyImpulse(Vector2 force);
 
         void RemoveForce(string name);
