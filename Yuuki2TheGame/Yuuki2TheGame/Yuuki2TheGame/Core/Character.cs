@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using FarseerPhysics;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
+using Microsoft.Xna.Framework.Input;
 
 namespace Yuuki2TheGame.Core
 {
@@ -21,6 +22,7 @@ namespace Yuuki2TheGame.Core
     {
 
         private int _updateOrder = 0;
+        private double lastJump = 0;
 
         public int UpdateOrder
         {
@@ -219,6 +221,14 @@ namespace Yuuki2TheGame.Core
 
         public string Texture { get; private set; }
 
+        public bool IsInAir
+        {
+            get
+            {
+                return !Engine.ObjectIsOnGround(this.BoundingBox);
+            }
+        }
+
         public GameCharacter(string name, Point pixelLocation, Point size, int health, int baseAttack, int baseArmor)
         {
             this.Name = name;
@@ -248,10 +258,29 @@ namespace Yuuki2TheGame.Core
         /// <summary>
         /// Called by game engine; tells instance to update self.
         /// </summary>
-        /// <param name="ts">Amount of time passed since last update.</param>
-        public void Update(GameTime ts)
+        /// <param name="gameTime">Amount of time passed since last update.</param>
+        public void Update(GameTime gameTime)
         {
+            KeyboardState state = Keyboard.GetState();
+            if (state.IsKeyDown(Keys.A) || state.IsKeyDown(Keys.Left))
+            {
+                this.MoveLeft();
+            }
+            else if (state.IsKeyDown(Keys.D) || state.IsKeyDown(Keys.Right))
+            {
+                this.MoveRight();
+            }
+            // TODO: Individual key resets
+            if ((state.IsKeyDown(Keys.Up) || state.IsKeyDown(Keys.W) || state.IsKeyDown(Keys.Space)) && this.CanJump(gameTime))
+            {
+                this.Jump();
+                this.lastJump = gameTime.TotalGameTime.TotalMilliseconds;
+            }
+        }
 
+        private bool CanJump(GameTime gameTime)
+        {
+            return gameTime.TotalGameTime.TotalMilliseconds - this.lastJump > 500 && !this.IsInAir;
         }
 
         public void MoveLeft()
@@ -266,9 +295,7 @@ namespace Yuuki2TheGame.Core
 
         public void Jump()
         {
-            Body.ApplyLinearImpulse(new Vector2(0, -10));
+            Body.ApplyLinearImpulse(new Vector2(0, -20));
         }
-
-
     }
 }

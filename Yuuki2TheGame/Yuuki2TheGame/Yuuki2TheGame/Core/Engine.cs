@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Yuuki2TheGame.Graphics;
 using Yuuki2TheGame.Physics;
 
@@ -16,11 +17,13 @@ namespace Yuuki2TheGame.Core
 
         public const float PHYS_TIMESCALE = 0.001f;
 
+        private static Map _map;
+
         private List<GameCharacter> _characters = new List<GameCharacter>();
 
         private List<Item> _items = new List<Item>();
 
-        public Map _map; ///shhhh just let it happen
+        private bool mouseLeftLocked;
 
         private Point spawn;
 
@@ -54,7 +57,8 @@ namespace Yuuki2TheGame.Core
 
         public void Update(GameTime gameTime)
         {
-            //TESTCamMove();
+            this.UpdateBlockInput(gameTime);
+
             foreach (GameCharacter c in _characters)
             {
                 c.Update(gameTime);
@@ -65,6 +69,39 @@ namespace Yuuki2TheGame.Core
             }
             _map.Update(gameTime);
             physics.Update(gameTime);
+        }
+
+        private void UpdateBlockInput(GameTime gameTime)
+        {
+            MouseState mouseState = Mouse.GetState();
+            if (mouseState.LeftButton == ButtonState.Pressed && !mouseLeftLocked)
+            {
+                mouseLeftLocked = true;
+                int globalx = (mouseState.X + this.Camera.Location.X) / Game1.BLOCK_WIDTH;
+                int globaly = (mouseState.Y + this.Camera.Location.Y) / Game1.BLOCK_HEIGHT;
+                Point p = new Point(globalx, globaly);
+
+                if (globalx <= Game1.WORLD_WIDTH && globalx >= 0 && globaly <= Game1.WORLD_HEIGHT && globaly >= 0)
+                {
+                    Block block = _map.BlockAt(p);
+                    //TODO: Make this.responsible with a single method!
+                    if (block != null)
+                    {
+                        _map.DestroyBlock(p);
+                        this.RemovePhysical(block);
+                    }
+                    else
+                    {
+                        _map.AddBlock(p);
+                        block = _map.BlockAt(p);
+                        this.AddPhysical(block);
+                    }
+                }
+            }
+            else if (mouseState.LeftButton == ButtonState.Released)
+            {
+                mouseLeftLocked = false;
+            }
         }
 
         public void RemovePhysical(IPhysical phob)
@@ -152,6 +189,25 @@ namespace Yuuki2TheGame.Core
                 }
             }
             return chars;
+        }
+
+        /// <summary>
+        /// Determines whether the provided bounding box is touching the ground.
+        /// </summary>
+        /// <param name="boundingBox">The bounding box to check.</param>
+        /// <returns>A Boolean value that indicates whether the specified bounding box is touching the ground.</returns>
+        public static bool ObjectIsOnGround(Rectangle boundingBox)
+         {
+            for (int x = boundingBox.Left; x <= boundingBox.Right; x++)
+            {
+                Block block = _map.BlockAtCoordinate(x, boundingBox.Bottom);
+                if (block != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

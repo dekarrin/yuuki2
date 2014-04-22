@@ -121,5 +121,20 @@ namespace Yuuki2TheGame.Core
         {
             world[p.X][p.Y] = new Block(1, p.X, p.Y);
         }
+
+        public Block BlockAtCoordinate(int x, int y)
+        {
+            int indexX = (int)(x/Game1.BLOCK_WIDTH);
+            int indexY = (int)(y/Game1.BLOCK_HEIGHT);
+            
+            if (indexX < this.world.Count && indexX >= 0 && indexY > 0 && indexY < this.world[indexX].Count)
+            {
+                return this.world[indexX][indexY];
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

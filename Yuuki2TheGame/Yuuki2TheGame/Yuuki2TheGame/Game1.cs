@@ -94,56 +94,6 @@ namespace Yuuki2TheGame
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
-            KeyboardState keyState = Keyboard.GetState();
-            MouseState mouseState = Mouse.GetState();
-            if (keyState.IsKeyDown(Keys.A) || keyState.IsKeyDown(Keys.Left))
-            {
-                gameEngine.Player.MoveLeft();
-            }
-            else if (keyState.IsKeyDown(Keys.D) || keyState.IsKeyDown(Keys.Right))
-            {
-                gameEngine.Player.MoveRight();
-            }
-            // TODO: Individual key resets
-            if (!pressedJump && (keyState.IsKeyDown(Keys.W) || keyState.IsKeyDown(Keys.Space) || keyState.IsKeyDown(Keys.Up)))
-            {
-                gameEngine.Player.Jump();
-                pressedJump = true;
-            }
-            else if (pressedJump && (keyState.IsKeyUp(Keys.W) && keyState.IsKeyUp(Keys.Space) && keyState.IsKeyUp(Keys.Up)))
-            {
-                pressedJump = false;
-            }
-
-            if (mouseState.LeftButton == ButtonState.Pressed && !mouseLeftLocked)
-            {
-                mouseLeftLocked = true;
-                int globalx = (mouseState.X + gameEngine.Camera.Location.X) / BLOCK_WIDTH;
-                int globaly = (mouseState.Y + gameEngine.Camera.Location.Y) / BLOCK_HEIGHT;
-                Point p = new Point(globalx, globaly);
-
-                if (globalx <= WORLD_WIDTH && globalx >= 0 && globaly <= WORLD_HEIGHT && globaly >= 0)
-                {
-                    Block block = gameEngine._map.BlockAt(p);
-                    //TODO: Make gameEngine responsible with a single method!
-                    if (block != null)
-                    {
-                        gameEngine._map.DestroyBlock(p);
-                        gameEngine.RemovePhysical(block);
-                    }
-                    else
-                    {
-                        gameEngine._map.AddBlock(p);
-                        block = gameEngine._map.BlockAt(p);
-                        gameEngine.AddPhysical(block);
-                    }
-                }
-            }
-            else if (mouseState.LeftButton == ButtonState.Released)
-            {
-                mouseLeftLocked = false;
-            }
-
 
             // TODO: Add your update logic here
             gameEngine.Update(gameTime);
