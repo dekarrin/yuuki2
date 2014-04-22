@@ -7,6 +7,8 @@ using Microsoft.Xna.Framework;
 namespace Yuuki2TheGame.Physics
 {
 
+    delegate bool GroundContactChecker(Rectangle bounds);
+
     interface IPhysical : IQuadObject
     {
 
@@ -24,12 +26,12 @@ namespace Yuuki2TheGame.Physics
 
         Vector2 Damping { get; set; }
 
-        PhysicsController PhysicsEngine { get; set; }
-
         /// <summary>
-        /// Force imparted that cannot be removed except by explicitly setting GlobalForce.
+        /// Acceleration imparted that cannot be removed except by explicitly setting GlobalAcceleration.
         /// </summary>
-        Vector2 GlobalForce { get; set; }
+        Vector2 GlobalAcceleration { get; set; }
+
+        GroundContactChecker CheckGroundContact;
 
         void UpdatePhysics(float secs);
 

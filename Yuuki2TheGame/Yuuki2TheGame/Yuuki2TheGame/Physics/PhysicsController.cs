@@ -9,7 +9,7 @@ namespace Yuuki2TheGame.Physics
 {
     class PhysicsController
     {
-        private Vector2 globalForce;
+        private Vector2 globalAcceleration;
 
         private const int GROUND_EPSILON = 1;
 
@@ -34,7 +34,7 @@ namespace Yuuki2TheGame.Physics
         public PhysicsController(float wind, float gravity, float timescale)
         {
             this.timescale = timescale;
-            this.globalForce = new Vector2(wind, gravity);
+            this.globalAcceleration = new Vector2(wind, gravity);
         }
 
         public void AddMap(Yuuki2TheGame.Core.Map map)
@@ -74,8 +74,12 @@ namespace Yuuki2TheGame.Physics
 
         public void AddPhob(IPhysical obj)
         {
-            obj.GlobalForce = globalForce;
-            obj.PhysicsEngine = this;
+            obj.GlobalAcceleration = globalAcceleration;
+            obj.CheckGroundContact = delegate(Rectangle bounds)
+            {
+                Rectangle queryBounds = new Rectangle(bounds.X, bounds.Y + bounds.Height, bounds.Width, GROUND_EPSILON);
+                return landTree.Query(queryBounds).Any();
+            };
             phobs.Add(obj);
             airborne.Add(obj);
             phobTree.Insert(obj);
@@ -87,22 +91,10 @@ namespace Yuuki2TheGame.Physics
             airborne.Remove(obj);
             grounded.Remove(obj);
             phobTree.Remove(obj);
-            obj.GlobalForce = Vector2.Zero;
-            obj.PhysicsEngine = null;
+            obj.GlobalAcceleration = Vector2.Zero;
+            obj.CheckGroundContact = null;
         }
-
-        /// <summary>
-        /// Checks if the given rect lies within epsilon pixels of a ground object. The tolerance, epsilon, is defined
-        /// in this class as a constant.
-        /// </summary>
-        /// <param name="rect"></param>
-        /// <returns></returns>
-        public bool BoxIsOnGround(Rectangle rect)
-        {
-            Rectangle queryBounds = new Rectangle(rect.X, rect.Y + rect.Height, rect.Width, GROUND_EPSILON);
-            return landTree.Query(queryBounds).Any();
-        }
-
+        
         /// <summary>
         /// Returns list of previously grounded phobs that have left the ground.
         /// </summary>
@@ -147,19 +139,19 @@ namespace Yuuki2TheGame.Physics
             return toGround;
         }
 
-        private float PixelsToPhysicalUnits(int pixels)
+        private float PixelsToMeters(int pixels)
         {
             return pixels / (float) Game1.BLOCK_WIDTH;
         }
 
-        private int PhysicalUnitsToPixels(float physUnits)
+        private int MetersToPixels(float physUnits)
         {
             return (int) Math.Round(physUnits * Game1.BLOCK_WIDTH);
         }
 
         private void CorrectGroundCollision(IPhysical phob, Rectangle groundBounds)
         {
-            phob.PhysPosition = new Vector2(phob.PhysPosition.X, PixelsToPhysicalUnits(groundBounds.Top - phob.Bounds.Height));
+            phob.PhysPosition = new Vector2(phob.PhysPosition.X, PixelsToMeters(groundBounds.Top - phob.Bounds.Height));
             phob.IsOnGround = true;
         }
 

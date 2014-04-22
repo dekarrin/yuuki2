@@ -35,13 +35,9 @@ namespace Yuuki2TheGame.Core
 
         private Vector2 _position = Vector2.Zero;
 
-        /// <summary>
-        /// Necessary because there will be such a huge difference in exponents of position and velocity that
-        /// updating pos with velocity every time step completely loses all digits from velocity.
-        /// </summary>
-        private Vector2 _stored_delta_s = Vector2.Zero;
-
         private Vector2 _global_force = Vector2.Zero;
+
+        private Vector2 _global_accel = Vector2.Zero;
 
         private float _mass = 0.0f;
 
@@ -49,17 +45,16 @@ namespace Yuuki2TheGame.Core
 
         #region properties
 
-        public PhysicsController PhysicsEngine { get; set; }
-
-        public Vector2 GlobalForce
+        public Vector2 GlobalAcceleration
         {
             get
             {
-                return _global_force;
+                return _global_accel;
             }
             set
             {
-                _global_force = value;
+                _global_accel = value;
+                _global_force = value * Mass;
             }
         }
 
@@ -127,13 +122,22 @@ namespace Yuuki2TheGame.Core
             }
             set
             {
+                float oldMass = _mass;
                 _mass = value;
+                float newMass = Mass; // so we get error checking in case mass was set to 0.
+                if (newMass != oldMass && GlobalAcceleration != Vector2.Zero)
+                {
+                    // we must recalculate global force
+                    _global_force = _global_accel * newMass;
+                }
             }
         }
 
         #endregion
 
         #region public methods
+
+        public GroundContactChecker CheckGroundContact;
 
         public void AddForce(Vector2 force)
         {
@@ -164,7 +168,7 @@ namespace Yuuki2TheGame.Core
         public void RemoveAllForce()
         {
             forces.Clear();
-            GlobalForce = Vector2.Zero;
+            GlobalAcceleration = Vector2.Zero;
         }
 
         public void ApplyImpulse(Vector2 force)
@@ -212,7 +216,7 @@ namespace Yuuki2TheGame.Core
             Vector2 ds = Velocity * secs;
 
             // if we were on the ground, and we're still on the ground, we'd better stay on the ground!
-            if (IsOnGround && ds.Y > 0 && PhysicsEngine.BoxIsOnGround(Bounds))
+            if (IsOnGround && ds.Y > 0 && CheckGroundContact != null && CheckGroundContact(Bounds))
             {
                 ds.Y = 0;
             }
