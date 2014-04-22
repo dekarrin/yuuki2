@@ -257,7 +257,7 @@ namespace Yuuki2TheGame.Core
         /// passed to drawing functions. The Sprite simply takes the position, size and
         /// texture ID and combines them into one class.
         /// </summary>
-        public sealed Yuuki2TheGame.Graphics.Sprite Sprite
+        public Yuuki2TheGame.Graphics.Sprite Sprite
         {
             get
             {
@@ -268,7 +268,7 @@ namespace Yuuki2TheGame.Core
         /// <summary>
         /// The X-coordinate of this ScreenEntity, measured in meters.
         /// </summary>
-        public sealed float BlockX
+        public float BlockX
         {
             get
             {
@@ -284,7 +284,7 @@ namespace Yuuki2TheGame.Core
         /// <summary>
         /// The Y-coordinate of this ScreenEntity, measured in meters.
         /// </summary>
-        public sealed float BlockY
+        public float BlockY
         {
             get
             {
@@ -316,7 +316,7 @@ namespace Yuuki2TheGame.Core
         /// <summary>
         /// The height of this ScreenEntity, measured in meters.
         /// </summary>
-        public sealed float BlockHeight
+        public float BlockHeight
         {
             get
             {
@@ -334,7 +334,7 @@ namespace Yuuki2TheGame.Core
         /// be determined by referring to <see cref="Game1.BLOCK_WIDTH"/> and
         /// <see cref="Game1.BLOCK_HEIGHT"/>.
         /// </summary>
-        public sealed Vector2 BlockPosition
+        public Vector2 BlockPosition
         {
             get
             {
@@ -353,7 +353,7 @@ namespace Yuuki2TheGame.Core
         /// be determined by referring to <see cref="Game1.BLOCK_WIDTH"/> and
         /// <see cref="Game1.BLOCK_HEIGHT"/>.
         /// </summary>
-        public sealed Vector2 BlockSize
+        public Vector2 BlockSize
         {
             get
             {
@@ -376,7 +376,10 @@ namespace Yuuki2TheGame.Core
         /// </summary>
         public event PositionChangedEventHandler OnPositionChanged = delegate(ScreenEntity source, PositionChangedEventArgs args)
         {
-            source.OnBoundsChanged(source, null);
+            if (source.OnBoundsChanged != null)
+            {
+                source.OnBoundsChanged(source, null);
+            }
         };
         
         /// <summary>
@@ -384,7 +387,10 @@ namespace Yuuki2TheGame.Core
         /// </summary>
         public event SizeChangedEventHandler OnSizeChanged = delegate(ScreenEntity source, SizeChangedEventArgs args)
         {
-            source.OnBoundsChanged(source, null);
+            if (source.OnBoundsChanged != null)
+            {
+                source.OnBoundsChanged(source, null);
+            }
         };
         
         /// <summary>

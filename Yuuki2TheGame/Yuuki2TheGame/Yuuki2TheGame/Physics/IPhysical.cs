@@ -31,7 +31,7 @@ namespace Yuuki2TheGame.Physics
         /// </summary>
         Vector2 GlobalAcceleration { get; set; }
 
-        GroundContactChecker CheckGroundContact;
+        GroundContactChecker CheckGroundContact { get; set; }
 
         void UpdatePhysics(float secs);
 
@@ -41,7 +41,7 @@ namespace Yuuki2TheGame.Physics
 
         void AddForce(Vector2 force, string name, long duration);
 
-        void AddForce(Vector2 force, string name, Vector2 maxVelocity)
+        void AddForce(Vector2 force, string name, Vector2 maxVelocity);
 
         void ApplyImpulse(Vector2 force);
 

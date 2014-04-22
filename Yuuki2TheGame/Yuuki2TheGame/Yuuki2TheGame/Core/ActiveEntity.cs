@@ -136,11 +136,11 @@ namespace Yuuki2TheGame.Core
             }
         }
 
+        public GroundContactChecker CheckGroundContact { get; set; }
+
         #endregion
 
         #region public methods
-
-        public GroundContactChecker CheckGroundContact;
 
         public void AddForce(Vector2 force)
         {
@@ -219,6 +219,7 @@ namespace Yuuki2TheGame.Core
                 }
             };
         }
+
         private void SetVelocity(float secs)
         {
             Velocity = Velocity + Acceleration * secs;
