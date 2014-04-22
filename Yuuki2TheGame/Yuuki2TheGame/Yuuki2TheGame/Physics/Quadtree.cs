@@ -214,7 +214,7 @@ namespace Yuuki2TheGame.Physics
                 QuadNode node = objectToNodeLookup[quadObject];
                 node.quadObjects.Remove(quadObject);
                 objectToNodeLookup.Remove(quadObject);
-                quadObject.BoundsChanged -= new EventHandler(quadObject_BoundsChanged);
+                quadObject.OnBoundsChanged -= new EventHandler(quadObject_BoundsChanged);
             }
         }
 
@@ -224,7 +224,7 @@ namespace Yuuki2TheGame.Physics
             {
                 node.quadObjects.Add(quadObject);
                 objectToNodeLookup.Add(quadObject, node);
-                quadObject.BoundsChanged += new EventHandler(quadObject_BoundsChanged);
+                quadObject.OnBoundsChanged += new EventHandler(quadObject_BoundsChanged);
             }
         }
 

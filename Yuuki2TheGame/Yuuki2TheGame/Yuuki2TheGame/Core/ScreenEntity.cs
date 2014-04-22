@@ -6,24 +6,57 @@ using Microsoft.Xna.Framework;
 
 namespace Yuuki2TheGame.Core
 {
-    public class MovedEventArgs : EventArgs
+    /// <summary>
+    /// Argument to a <see cref="PositionChangedEventHandler" />. Contains the new
+    /// and old positions of the object that generated the event.
+    /// </summary>
+    class PositionChangedEventArgs : EventArgs
     {
+        /// <summary>
+        /// The position of the object prior to the move.
+        /// </summary>
         public Point OldPosition { get; set; }
+
+        /// <summary>
+        /// The position of the object after the move.
+        /// </summary>
         public Point NewPosition { get; set; }
     }
     
-    public class SizeChangedEventArgs : EventArgs
+    /// <summary>
+    /// Argument to a <see cref="SizeChangedEventHandler" />. Contains the new
+    /// and old sizes of the object that generated the event.
+    /// </summary>
+    class SizeChangedEventArgs : EventArgs
     {
+        /// <summary>
+        /// The size of the object prior to the change.
+        /// </summary>
         public Point OldSize { get; set; }
+
+        /// <summary>
+        /// The size of the object after the change.
+        /// </summary>
         public Point NewSize { get; set; }
     }
 
-    delegate void MovedEventHandler(object source, MovedEventArgs e);
-
-    delegate void SizeChangedEventHandler(object source, SizeChangedEventArgs e);
+    /// <summary>
+    /// Event delegate for handling a change in position of a <see cref="ScreenEntity"/>.
+    /// </summary>
+    /// <param name="source">The <c>ScreenHandler</c> that generated the event.</param>
+    /// <param name="e">Contains the old position and the new position.</param>
+    delegate void PositionChangedEventHandler(ScreenEntity source, PositionChangedEventArgs e);
 
     /// <summary>
-    /// Appears on the screen. Has position and can get locatable.
+    /// Event delegate for handling a change in size of a <see cref="ScreenEntity"/>.
+    /// </summary>
+    /// <param name="source">The <c>ScreenHandler</c> that generated the event.</param>
+    /// <param name="e">Contains the old size and the new size.</param>
+    delegate void SizeChangedEventHandler(ScreenEntity source, SizeChangedEventArgs e);
+
+    /// <summary>
+    /// An object that exists on the screen. ScreenEntity instances have both size and position, as well
+    /// as a texture string that identifies what texture should be used to draw them.
     /// </summary>
     class ScreenEntity : Yuuki2TheGame.Physics.IQuadObject
     {
@@ -42,61 +75,64 @@ namespace Yuuki2TheGame.Core
 
         #region properties
 
-        public Rectangle Bounds
+        /// <summary>
+        /// The X-coordinate of the upper-left corner of this ScreenEntity, measured in
+        /// pixels. If subclasses override this, they must ensure that the setter calls
+        /// OnMoved when the new value differs from the old one.
+        /// </summary>
+        public virtual int X
         {
             get
             {
-                return new Rectangle(X, Y, Width, Height);
-            }
-        }        
-
-        public Point Position
-        {
-            get
-            {
-                return new Point(X, Y);
+                return _x;
             }
             set
             {
-                if ((_x != value.X || _y != value.Y) && OnMoved != null)
+                if (_x != value && OnPositionChanged != null)
                 {
                     Point oldV = new Point(_x, _y);
-                    Point newV = new Point(value.X, value.Y);
-                    MovedEventArgs mea = new MovedEventArgs();
+                    Point newV = new Point(value, _y);
+                    PositionChangedEventArgs mea = new PositionChangedEventArgs();
                     mea.NewPosition = newV;
                     mea.OldPosition = oldV;
-                    OnMoved(this, mea);
-                    BoundsChanged(this, null);
+                    OnPositionChanged(this, mea);
                 }
-                _x = value.X;
-                _y = value.Y;
+                _x = value;
             }
         }
 
-        public Point Size
+        /// <summary>
+        /// The Y-coordinate of the upper-left corner of this ScreenEntity, measured in
+        /// pixels. If subclasses override this, they must ensure that the setter calls
+        /// OnMoved when the new value differs from the old one.
+        /// </summary>
+        public virtual int Y
         {
             get
             {
-                return new Point(Width, Height);
+                return _y;
             }
             set
             {
-                if ((_width != value.X || _height != value.Y) && OnSizeChanged != null)
+                if (_y != value && OnPositionChanged != null)
                 {
-                    Point oldV = new Point(_width, _height);
-                    Point newV = new Point(value.X, value.Y);
-                    SizeChangedEventArgs mea = new SizeChangedEventArgs();
-                    mea.NewSize = newV;
-                    mea.OldSize = oldV;
-                    OnSizeChanged(this, mea);
-                    BoundsChanged(this, null);
+                    Point oldV = new Point(_x, _y);
+                    Point newV = new Point(_x, value);
+                    PositionChangedEventArgs mea = new PositionChangedEventArgs();
+                    mea.NewPosition = newV;
+                    mea.OldPosition = oldV;
+                    OnPositionChanged(this, mea);
                 }
-                _width = value.X;
-                _height = value.Y;
+                _y = value;
             }
         }
-
-        public int Width
+        
+        /// <summary>
+        /// The width of this ScreenEntity, measured in pixels. If subclasses override this, they
+        /// must ensure that the setter calls OnSizeChanged when the new value differs from the
+        /// old one.
+        /// </summary>
+        public virtual int Width
         {
             get
             {
@@ -112,13 +148,17 @@ namespace Yuuki2TheGame.Core
                     mea.NewSize = newV;
                     mea.OldSize = oldV;
                     OnSizeChanged(this, mea);
-                    BoundsChanged(this, null);
                 }
                 _width = value;
             }
         }
 
-        public int Height
+        /// <summary>
+        /// The height of this ScreenEntity, measured in pixels. If subclasses override this, they
+        /// must ensure that the setter calls OnSizeChanged when the new value differs from the old
+        /// one.
+        /// </summary>
+        public virtual int Height
         {
             get
             {
@@ -134,75 +174,132 @@ namespace Yuuki2TheGame.Core
                     mea.NewSize = newV;
                     mea.OldSize = oldV;
                     OnSizeChanged(this, mea);
-                    BoundsChanged(this, null);
                 }
                 _height = value;
             }
         }
 
-        public Vector2 BlockPosition
+        /// <summary>
+        /// The absolute pixel location (relative to the upper left of the map) of the
+        /// upper left corner of this ScreenEntity. If subclasses override this, they
+        /// must ensure that the setter calls OnMoved when either the X or Y of the value
+        /// differs from the current X or Y.
+        /// </summary>
+        public virtual Point Position
         {
             get
             {
-                return new Vector2(BlockX, BlockY);
+                return new Point(X, Y);
             }
             set
             {
-                int newX = (int)Math.Round(value.X * Game1.BLOCK_WIDTH);
-                int newY = (int)Math.Round(value.Y * Game1.BLOCK_HEIGHT);
-                Position = new Point(newX, newY);
-            }
-        }
-
-        public Vector2 BlockSize
-        {
-            get
-            {
-                return new Vector2(BlockWidth, BlockHeight);
-            }
-            set
-            {
-                int newX = (int)Math.Round(value.X * Game1.BLOCK_WIDTH);
-                int newY = (int)Math.Round(value.Y * Game1.BLOCK_HEIGHT);
-                Size = new Point(newX, newY);
-            }
-        }
-
-        public int X
-        {
-            get
-            {
-                return _x;
-            }
-            set
-            {
-                if (_x != value && OnMoved != null)
+                if ((_x != value.X || _y != value.Y) && OnPositionChanged != null)
                 {
                     Point oldV = new Point(_x, _y);
-                    Point newV = new Point(value, _y);
-                    MovedEventArgs mea = new MovedEventArgs();
+                    Point newV = new Point(value.X, value.Y);
+                    PositionChangedEventArgs mea = new PositionChangedEventArgs();
                     mea.NewPosition = newV;
                     mea.OldPosition = oldV;
-                    OnMoved(this, mea);
-                    BoundsChanged(this, null);
+                    OnPositionChanged(this, mea);
                 }
-                _x = value;
+                _x = value.X;
+                _y = value.Y;
             }
         }
 
-        public float BlockX
+        /// <summary>
+        /// The size of this ScreenEntity, measured in pixels. If subclasses override this, they
+        /// must ensure that the setter calls OnSizeChanged when either the X or Y of the new
+        /// value differs from the current Width and Height, respectively.
+        /// </summary>
+        public virtual Point Size
         {
             get
             {
-                return _x / (float) Game1.BLOCK_WIDTH;
+                return new Point(Width, Height);
             }
             set
             {
-                int newX = (int) Math.Round(value * Game1.BLOCK_WIDTH);
+                if ((_width != value.X || _height != value.Y) && OnSizeChanged != null)
+                {
+                    Point oldV = new Point(_width, _height);
+                    Point newV = new Point(value.X, value.Y);
+                    SizeChangedEventArgs mea = new SizeChangedEventArgs();
+                    mea.NewSize = newV;
+                    mea.OldSize = oldV;
+                    OnSizeChanged(this, mea);
+                }
+                _width = value.X;
+                _height = value.Y;
+            }
+        }
+
+        /// <summary>
+        /// The bounding box for this ScreenEntity. This is determined by using
+        /// the X, Y, Width, and Height properties of this ScreenEntity.
+        /// </summary>
+        public Rectangle Bounds
+        {
+            get
+            {
+                return new Rectangle(X, Y, Width, Height);
+            }
+        }
+        
+        /// <summary>
+        /// The ID of the texture that should be used when drawing this ScreenEntity.
+        /// May be null if the ScreenEntity is never intended to actually be drawn.
+        /// </summary>
+        public virtual string Texture { get; set; }
+
+        /// <summary>
+        /// Gets the Sprite object for this ScreenEntity, which is intended to be
+        /// passed to drawing functions. The Sprite simply takes the position, size and
+        /// texture ID and combines them into one class.
+        /// </summary>
+        public sealed Yuuki2TheGame.Graphics.Sprite Sprite
+        {
+            get
+            {
+                return new Graphics.Sprite(Position, Size, Texture);
+            }
+        }
+
+        /// <summary>
+        /// The X-coordinate of this ScreenEntity, measured in meters.
+        /// </summary>
+        public sealed float BlockX
+        {
+            get
+            {
+                return _x / (float)Game1.BLOCK_WIDTH;
+            }
+            set
+            {
+                int newX = (int)Math.Round(value * Game1.BLOCK_WIDTH);
                 X = newX;
             }
         }
 
+        /// <summary>
+        /// The Y-coordinate of this ScreenEntity, measured in meters.
+        /// </summary>
+        public sealed float BlockY
+        {
+            get
+            {
+                return _y / (float)Game1.BLOCK_HEIGHT;
+            }
+            set
+            {
+                int newY = (int)Math.Round(value * Game1.BLOCK_HEIGHT);
+                Y = newY;
+            }
+        }
+        
+        /// <summary>
+        /// The width of this ScreenEntity, measured in meters.
+        /// </summary>
         public float BlockWidth
         {
             get
@@ -216,42 +313,10 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public int Y
-        {
-            get
-            {
-                return _y;
-            }
-            set
-            {
-                if (_y != value && OnMoved != null)
-                {
-                    Point oldV = new Point(_x, _y);
-                    Point newV = new Point(_x, value);
-                    MovedEventArgs mea = new MovedEventArgs();
-                    mea.NewPosition = newV;
-                    mea.OldPosition = oldV;
-                    OnMoved(this, mea);
-                    BoundsChanged(this, null);
-                }
-                _y = value;
-            }
-        }
-
-        public float BlockY
-        {
-            get
-            {
-                return _y / (float)Game1.BLOCK_HEIGHT;
-            }
-            set
-            {
-                int newY = (int) Math.Round(value * Game1.BLOCK_HEIGHT);
-                Y = newY;
-            }
-        }
-
-        public float BlockHeight
+        /// <summary>
+        /// The height of this ScreenEntity, measured in meters.
+        /// </summary>
+        public sealed float BlockHeight
         {
             get
             {
@@ -264,13 +329,41 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public string Texture { get; set; }
-
-        public Yuuki2TheGame.Graphics.Sprite Sprite
+        /// <summary>
+        /// The position of this ScreenEntity measured in meters. The pixel size of a meter may
+        /// be determined by referring to <see cref="Game1.BLOCK_WIDTH"/> and
+        /// <see cref="Game1.BLOCK_HEIGHT"/>.
+        /// </summary>
+        public sealed Vector2 BlockPosition
         {
             get
             {
-                return new Graphics.Sprite(Position, Size, Texture);
+                return new Vector2(BlockX, BlockY);
+            }
+            set
+            {
+                int newX = (int)Math.Round(value.X * Game1.BLOCK_WIDTH);
+                int newY = (int)Math.Round(value.Y * Game1.BLOCK_HEIGHT);
+                Position = new Point(newX, newY);
+            }
+        }
+
+        /// <summary>
+        /// The size of this ScreenEntity measured in meter. The pixel size of a meter may
+        /// be determined by referring to <see cref="Game1.BLOCK_WIDTH"/> and
+        /// <see cref="Game1.BLOCK_HEIGHT"/>.
+        /// </summary>
+        public sealed Vector2 BlockSize
+        {
+            get
+            {
+                return new Vector2(BlockWidth, BlockHeight);
+            }
+            set
+            {
+                int newX = (int)Math.Round(value.X * Game1.BLOCK_WIDTH);
+                int newY = (int)Math.Round(value.Y * Game1.BLOCK_HEIGHT);
+                Size = new Point(newX, newY);
             }
         }
 
@@ -278,22 +371,55 @@ namespace Yuuki2TheGame.Core
 
         #region events
 
-        public event MovedEventHandler OnMoved = null;
-
-        public event SizeChangedEventHandler OnSizeChanged = null;
-
-        public event EventHandler BoundsChanged = null;
+        /// <summary>
+        /// Called when the position of this ScreenEntity changes.
+        /// </summary>
+        public event PositionChangedEventHandler OnPositionChanged = delegate(ScreenEntity source, PositionChangedEventArgs args)
+        {
+            source.OnBoundsChanged(source, null);
+        };
+        
+        /// <summary>
+        /// Called when the size of this ScreenEntity changes.
+        /// </summary>
+        public event SizeChangedEventHandler OnSizeChanged = delegate(ScreenEntity source, SizeChangedEventArgs args)
+        {
+            source.OnBoundsChanged(source, null);
+        };
+        
+        /// <summary>
+        /// Called when either the position or the size changes. Note on deriving:
+        /// calling OnMoved or OnSizeChanged automatically calls OnBoundsChanged.
+        /// </summary>
+        public event EventHandler OnBoundsChanged = null;
 
         #endregion
 
+        #region ctors
+
+        /// <summary>
+        /// Creates a new ScreenEntity with a position of (0, 0) and a texture ID set to null.
+        /// </summary>
+        /// <param name="size">The size (in pixels) of the new ScreenEntity.</param>
         public ScreenEntity(Point size)
             : this(size, new Point(0, 0))
         {}
 
+        /// <summary>
+        /// Creates a new ScreenEntity with a texture ID set to null.
+        /// </summary>
+        /// <param name="size">The size (in pixels) of the new ScreenEntity.</param>
+        /// <param name="position">The position (in pixels) of the new ScreenEntity.</param>
         public ScreenEntity(Point size, Point position)
             : this(size, position, null)
         {}
 
+        /// <summary>
+        /// Creates a new ScreenEntity.
+        /// </summary>
+        /// <param name="size">The size (in pixels) of the new ScreenEntity.</param>
+        /// <param name="position">The position (in pixels) of the new ScreenEntity.</param>
+        /// <param name="texture">The texture ID of the new ScreenEntity.</param>
         public ScreenEntity(Point size, Point position, string texture)
         {
             _width = size.X;
@@ -302,5 +428,8 @@ namespace Yuuki2TheGame.Core
             _y = position.Y;
             Texture = texture;
         }
+
+        #endregion
+
     }
 }

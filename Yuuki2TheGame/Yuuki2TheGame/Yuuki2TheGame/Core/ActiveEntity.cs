@@ -193,7 +193,7 @@ namespace Yuuki2TheGame.Core
             : base(size, position, texture)
         {
             _position = BlockPosition;
-            OnMoved += delegate(Object sender, MovedEventArgs mea)
+            OnPositionChanged += delegate(ScreenEntity sender, PositionChangedEventArgs mea)
             {
                 if (IsOnGround && mea.NewPosition.Y != mea.OldPosition.Y)
                 {

@@ -6,6 +6,6 @@ namespace Yuuki2TheGame.Physics
     public interface IQuadObject
     {
         Rectangle Bounds { get; }
-        event EventHandler BoundsChanged;
+        event EventHandler OnBoundsChanged;
     }
 }

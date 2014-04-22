@@ -56,12 +56,12 @@ namespace Yuuki2TheGame.Core
             {
                 if (_follow != null)
                 {
-                    _follow.OnMoved -= HandleMovement;
+                    _follow.OnPositionChanged -= HandleMovement;
                 }
                 _follow = value;
                 if (_follow != null)
                 {
-                    _follow.OnMoved += HandleMovement;
+                    _follow.OnPositionChanged += HandleMovement;
                     X = _follow.Position.X + TargetOffsetX;
                     Y = _follow.Position.Y + TargetOffsetY;
                 }
@@ -86,7 +86,7 @@ namespace Yuuki2TheGame.Core
             Target = gc;
         }
 
-        public void HandleMovement(object sender, MovedEventArgs e)
+        public void HandleMovement(object sender, PositionChangedEventArgs e)
         {
             X = e.NewPosition.X + TargetOffsetX;
             Y = e.NewPosition.Y + TargetOffsetY;
