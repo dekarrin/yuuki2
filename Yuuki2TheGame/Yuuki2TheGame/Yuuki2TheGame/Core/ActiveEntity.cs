@@ -305,10 +305,8 @@ namespace Yuuki2TheGame.Core
         
         private void Dampen(float secs)
         {
-            //Vector2 damp = CalcDamping();
-            int multX = (Velocity.X == 0) ? 0 : (Velocity.X < 0) ? -1 : 1;
-            int multY = (Velocity.Y == 0) ? 0 : (Velocity.Y < 0) ? -1 : 1;
-            Velocity -= new Vector2(multX * Damping.X, multY * Damping.Y) * secs;
+            Vector2 remainingPercent = new Vector2(1.0f - Damping.X, 1.0f - Damping.Y);
+            Velocity *= remainingPercent * secs;
         }
     }
 }

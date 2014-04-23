@@ -32,6 +32,11 @@ namespace Yuuki2TheGame.Physics
 
         float Mass { get; set; }
 
+        /// <summary>
+        /// Percent of velocity lost per second. Used for fast simulation of friction.
+        /// If a component is greater than 1, it will become a multiplied effect rather
+        /// than a dividing effect, which may have unintended results.
+        /// </summary>
         Vector2 Damping { get; set; }
 
         /// <summary>
