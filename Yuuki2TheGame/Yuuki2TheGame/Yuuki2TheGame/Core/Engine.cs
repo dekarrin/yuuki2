@@ -16,6 +16,8 @@ namespace Yuuki2TheGame.Core
 
         public const float PHYS_TIMESCALE = 1.0f;
 
+        public bool ManualPhysStepMode { get; set; }
+
         private List<GameCharacter> _characters = new List<GameCharacter>();
 
         private List<Item> _items = new List<Item>();
@@ -39,7 +41,7 @@ namespace Yuuki2TheGame.Core
             physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_TIMESCALE);
             physics.AddMap(_map);
             physics.AddPhob(Player);
-            Player.Damping = new Vector2(10, 10);
+            Player.Damping = new Vector2(0.1f, 0.1f);
             Player.ApplyImpulse(new Vector2(100, 0));
         }
 
@@ -66,7 +68,15 @@ namespace Yuuki2TheGame.Core
                 i.Update(gameTime);
             }
             _map.Update(gameTime);
-            physics.Update(gameTime);
+            if (!ManualPhysStepMode)
+            {
+                physics.Update(gameTime);
+            }
+        }
+
+        public void StepPhysics()
+        {
+            physics.Step(0.016f);
         }
 
         /// <summary>

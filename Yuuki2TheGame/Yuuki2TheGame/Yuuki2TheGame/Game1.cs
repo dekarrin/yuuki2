@@ -53,6 +53,7 @@ namespace Yuuki2TheGame
             Content.RootDirectory = "Content";
             blocksOnScreen = new Point (GAME_WIDTH / BLOCK_WIDTH + 1, GAME_HEIGHT / BLOCK_HEIGHT + 1);
             gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
+            gameEngine.ManualPhysStepMode = true;
         }
 
         /// <summary>
@@ -131,18 +132,37 @@ namespace Yuuki2TheGame
             if (!debugKeyLocked && keyState.IsKeyDown(Keys.F4))
             {
                 debugKeyLocked = true;
+                DebugMode = !DebugMode;
             }
             else if (debugKeyLocked && keyState.IsKeyUp(Keys.F4))
             {
                 debugKeyLocked = false;
-                DebugMode = !DebugMode;
             }
+            if (!physKeyLocked && keyState.IsKeyDown(Keys.F5))
+            {
+                physKeyLocked = true;
+                gameEngine.ManualPhysStepMode = !gameEngine.ManualPhysStepMode;
+            }
+            else if (physKeyLocked && keyState.IsKeyUp(Keys.F5))
+            {
+                physKeyLocked = false;
+            }
+            if (!physStepKeyLocked && keyState.IsKeyDown(Keys.F8) && gameEngine.ManualPhysStepMode)
+            {
+                physStepKeyLocked = true;
+                gameEngine.StepPhysics();
+            }
+            else if (physStepKeyLocked && keyState.IsKeyUp(Keys.F8))
             // TODO: Add your update logic here
             gameEngine.Update(gameTime);
             base.Update(gameTime);
         }
 
         private bool pressedJump = false;
+
+        private bool physKeyLocked = false;
+
+        private bool physStepKeyLocked = false;
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -173,6 +193,10 @@ namespace Yuuki2TheGame
             {
                 DrawDebugInfo();
             }
+            if (gameEngine.ManualPhysStepMode)
+            {
+                DrawManualPhysInfo();
+            }
             spriteBatch.End();
             base.Draw(gameTime);
         }
@@ -187,6 +211,12 @@ namespace Yuuki2TheGame
             string debug = "P:({0}, {1})  V:({2}, {3})  A:({4}, {5})  F:({6}, {7})  M:{8}";
             string output = string.Format(debug, s.X, s.Y, v.X, v.Y, a.X, a.Y, f.X, f.Y, pc.Mass);
             spriteBatch.DrawString(font, output, new Vector2(10, 10), Color.Red);
+        }
+
+        private void DrawManualPhysInfo()
+        {
+            string debug = "Hit F8 to step physics or F5 to turn on auto step";
+            spriteBatch.DrawString(font, debug, new Vector2(10, 25), Color.Red);
         }
 
         private void ProcessSpriteGraphics(IList<Sprite> sprites)

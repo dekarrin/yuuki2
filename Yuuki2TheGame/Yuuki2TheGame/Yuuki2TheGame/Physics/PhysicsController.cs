@@ -75,9 +75,14 @@ namespace Yuuki2TheGame.Physics
 
         public void Update(GameTime time)
         {
+            Step(time.ElapsedGameTime.Milliseconds / 1000.0f);
+        }
+
+        public void Step(float secs)
+        {
             foreach (IPhysical phob in phobs)
             {
-                phob.UpdatePhysics((time.ElapsedGameTime.Milliseconds / 1000.0f) * timescale);
+                phob.UpdatePhysics(secs * timescale);
             }
             IList<IPhysical> toGround = GetLandingPhobs();
             IList<IPhysical> toAir = GetLaunchingPhobs();
