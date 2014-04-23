@@ -15,8 +15,6 @@ namespace Yuuki2TheGame.Core
 
         private const string DEFAULT_FORCE_NAME = "__DEFAULT__";
 
-        private const float DAMPING_MAX = 100f;
-
         private class ForceListing {
             public Vector2 originalForce;
             public Vector2 force;
@@ -176,6 +174,7 @@ namespace Yuuki2TheGame.Core
             ForceListing fl = forces[name];
             fl.force += force;
             fl.maxVelocity = maxVelocity;
+            fl.hasMaxVelocity = true;
         }
 
         public void RemoveForce(string name)

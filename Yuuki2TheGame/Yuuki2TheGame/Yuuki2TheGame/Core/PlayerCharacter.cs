@@ -31,7 +31,7 @@ namespace Yuuki2TheGame.Core
             if (!movingLeft)
             {
                 movingLeft = true;
-                AddForce(new Vector2(0, -HORIZONTAL_FORCE), "move_left", new Vector2(0, -MAX_SPEED));
+                AddForce(new Vector2(-HORIZONTAL_FORCE, 0), "move_left", new Vector2(-MAX_SPEED, 0));
             }
         }
 
@@ -40,7 +40,7 @@ namespace Yuuki2TheGame.Core
             if (!movingRight)
             {
                 movingRight = true;
-                AddForce(new Vector2(0, HORIZONTAL_FORCE), "move_right", new Vector2(0, MAX_SPEED));
+                AddForce(new Vector2(HORIZONTAL_FORCE, 0), "move_right", new Vector2(MAX_SPEED, 0));
             }
         }
 

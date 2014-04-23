@@ -102,19 +102,19 @@ namespace Yuuki2TheGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
             KeyboardState keyState = Keyboard.GetState();
-            if (keyState.IsKeyDown(Keys.A) || keyState.IsKeyDown(Keys.Left))
+            if (keyState.IsKeyDown(Keys.Left))
             {
                 gameEngine.Player.StartMovingLeft();
             }
-            else if (keyState.IsKeyDown(Keys.D) || keyState.IsKeyDown(Keys.Right))
+            if (keyState.IsKeyDown(Keys.Right))
             {
                 gameEngine.Player.StartMovingRight();
             }
-            if (keyState.IsKeyUp(Keys.A) || keyState.IsKeyUp(Keys.Left))
+            if (keyState.IsKeyUp(Keys.Left))
             {
                 gameEngine.Player.StopMovingLeft();
             }
-            if (keyState.IsKeyUp(Keys.D) || keyState.IsKeyUp(Keys.Right))
+            if (keyState.IsKeyUp(Keys.Right))
             {
                 gameEngine.Player.StopMovingRight();
             }
