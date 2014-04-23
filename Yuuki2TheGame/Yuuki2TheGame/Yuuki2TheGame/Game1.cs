@@ -91,6 +91,10 @@ namespace Yuuki2TheGame
             // TODO: Unload any non ContentManager content here
         }
 
+        bool leftKeyLocked = false;
+
+        bool rightKeyLocked = false;
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -102,20 +106,24 @@ namespace Yuuki2TheGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
             KeyboardState keyState = Keyboard.GetState();
-            if (keyState.IsKeyDown(Keys.Left))
+            if (!leftKeyLocked && keyState.IsKeyDown(Keys.Left))
             {
+                leftKeyLocked = true;
                 gameEngine.Player.StartMovingLeft();
             }
-            if (keyState.IsKeyDown(Keys.Right))
+            if (!rightKeyLocked && keyState.IsKeyDown(Keys.Right))
             {
+                rightKeyLocked = true;
                 gameEngine.Player.StartMovingRight();
             }
-            if (keyState.IsKeyUp(Keys.Left))
+            if (leftKeyLocked && keyState.IsKeyUp(Keys.Left))
             {
+                leftKeyLocked = false;
                 gameEngine.Player.StopMovingLeft();
             }
-            if (keyState.IsKeyUp(Keys.Right))
+            if (rightKeyLocked && keyState.IsKeyUp(Keys.Right))
             {
+                rightKeyLocked = false;
                 gameEngine.Player.StopMovingRight();
             }
             // TODO: Individual key resets

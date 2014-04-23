@@ -11,7 +11,7 @@ namespace Yuuki2TheGame.Core
         public const int WIDTH = Game1.BLOCK_WIDTH * 1;
         public const int HEIGHT = Game1.BLOCK_HEIGHT * 2;
         public const float WALK_FORCE = 50.0f;
-        public const float JUMP_FORCE = 500.0f;
+        public const float JUMP_FORCE = 1500.0f;
         public const float MAX_SPEED = 5.0f;
 
 
@@ -20,6 +20,17 @@ namespace Yuuki2TheGame.Core
 
         public PlayerCharacter(string name, Point pixelLocation, int health, int baseAttack, int baseArmor) : base(name, pixelLocation, new Point(WIDTH, HEIGHT), health, baseAttack, baseArmor)
         {
+        }
+
+
+        private bool apped = false;
+        public void Update(GameTime gt)
+        {
+            if (IsOnGround && !apped)
+            {
+                apped = true;
+                ApplyImpulse(new Vector2(1000, 0));
+            }
         }
 
         public override void Jump()

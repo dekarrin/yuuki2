@@ -15,7 +15,9 @@ namespace Yuuki2TheGame.Core
 
         private const string DEFAULT_FORCE_NAME = "__DEFAULT__";
 
-        private const float MINIMUM_VELOCITY = 0.1f;
+        private const float MINIMUM_VELOCITY_UNFORCED = 0.1f;
+
+        private const float MINIMUM_VELOCITY = 0.0001f;
 
         private class ForceListing {
             public Vector2 originalForce;
@@ -175,6 +177,7 @@ namespace Yuuki2TheGame.Core
             }
             ForceListing fl = forces[name];
             fl.force += force;
+            fl.originalForce = fl.force;
             fl.maxVelocity = maxVelocity;
             fl.hasMaxVelocity = true;
         }
@@ -308,8 +311,11 @@ namespace Yuuki2TheGame.Core
         {
             Vector2 remainingPercent = new Vector2(1.0f - (Damping.X * secs), 1.0f - (Damping.Y * secs));
             Velocity *= remainingPercent;
-            float fx = (Velocity.X <= MINIMUM_VELOCITY) ? 0 : Velocity.X;
-            float fy = (Velocity.Y <= MINIMUM_VELOCITY) ? 0 : Velocity.Y;
+            // lower minimum velocity if forces are actively pushing on us
+            float minX = (Force.X == _global_force.X) ? MINIMUM_VELOCITY_UNFORCED : MINIMUM_VELOCITY;
+            float minY = (Force.Y == _global_force.Y) ? MINIMUM_VELOCITY_UNFORCED : MINIMUM_VELOCITY;
+            float fx = (Math.Abs(Velocity.X) <= minX) ? 0 : Velocity.X;
+            float fy = (Math.Abs(Velocity.Y) <= minY) ? 0 : Velocity.Y;
             Velocity = new Vector2(fx, fy);
         }
     }

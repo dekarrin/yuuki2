@@ -43,7 +43,7 @@ namespace Yuuki2TheGame.Core
             physics.AddMap(_map);
             physics.AddPhob(Player);
             Player.Damping = new Vector2(0.1f, 0.1f);
-            Player.ApplyImpulse(new Vector2(10000, 0));
+            //Player.ApplyImpulse(new Vector2(10000, 0));
         }
 
         private int TESTcycle = 0;
