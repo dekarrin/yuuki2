@@ -10,7 +10,8 @@ namespace Yuuki2TheGame.Core
     {
         public const int WIDTH = Game1.BLOCK_WIDTH * 1;
         public const int HEIGHT = Game1.BLOCK_HEIGHT * 2;
-        public const float HORIZONTAL_FORCE = 50.0f;
+        public const float WALK_FORCE = 50.0f;
+        public const float JUMP_FORCE = 500.0f;
         public const float MAX_SPEED = 5.0f;
 
 
@@ -23,7 +24,10 @@ namespace Yuuki2TheGame.Core
 
         public override void Jump()
         {
-            ApplyImpulse(new Vector2(0, -10));
+            if (IsOnGround)
+            {
+                ApplyImpulse(new Vector2(0, -JUMP_FORCE));
+            }
         }
 
         public override void StartMovingLeft()
@@ -31,7 +35,7 @@ namespace Yuuki2TheGame.Core
             if (!movingLeft)
             {
                 movingLeft = true;
-                AddForce(new Vector2(-HORIZONTAL_FORCE, 0), "move_left", new Vector2(-MAX_SPEED, 0));
+                AddForce(new Vector2(-WALK_FORCE, 0), "move_left", new Vector2(-MAX_SPEED, 0));
             }
         }
 
@@ -40,7 +44,7 @@ namespace Yuuki2TheGame.Core
             if (!movingRight)
             {
                 movingRight = true;
-                AddForce(new Vector2(HORIZONTAL_FORCE, 0), "move_right", new Vector2(MAX_SPEED, 0));
+                AddForce(new Vector2(WALK_FORCE, 0), "move_right", new Vector2(MAX_SPEED, 0));
             }
         }
 
