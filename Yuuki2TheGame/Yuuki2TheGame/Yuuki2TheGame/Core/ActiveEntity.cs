@@ -240,7 +240,7 @@ namespace Yuuki2TheGame.Core
 
         private void SetVelocity(float secs)
         {
-            Velocity = Velocity + Acceleration * secs;
+            Velocity += Acceleration * secs;
             if (IsOnGround && Velocity.Y > 0)
             {
                 Velocity = new Vector2(Velocity.X, 0);
@@ -305,8 +305,11 @@ namespace Yuuki2TheGame.Core
         
         private void Dampen(float secs)
         {
-            Vector2 remainingPercent = new Vector2(1.0f - Damping.X, 1.0f - Damping.Y);
-            Velocity *= remainingPercent * secs;
+            Vector2 remainingPercent = new Vector2(1.0f - (Damping.X * secs), 1.0f - (Damping.Y * secs));
+            Velocity *= remainingPercent;
+            float fx = (Velocity.X < 0.05) ? 0 : Velocity.X;
+            float fy = (Velocity.Y < 0.05) ? 0 : Velocity.Y;
+            Velocity = new Vector2(fx, fy);
         }
     }
 }

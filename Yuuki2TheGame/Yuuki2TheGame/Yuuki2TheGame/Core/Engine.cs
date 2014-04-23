@@ -32,6 +32,7 @@ namespace Yuuki2TheGame.Core
 
         public Engine(Point size)
         {
+            ManualPhysStepMode = false;
             _map = new Map(size.X, size.Y);
             spawn = new Point(0, (size.Y / 2) * Game1.BLOCK_HEIGHT - 30);
             // temp vars until we can meet with the team

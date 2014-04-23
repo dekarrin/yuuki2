@@ -53,7 +53,6 @@ namespace Yuuki2TheGame
             Content.RootDirectory = "Content";
             blocksOnScreen = new Point (GAME_WIDTH / BLOCK_WIDTH + 1, GAME_HEIGHT / BLOCK_HEIGHT + 1);
             gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
-            gameEngine.ManualPhysStepMode = true;
         }
 
         /// <summary>
@@ -211,8 +210,9 @@ namespace Yuuki2TheGame
             Vector2 v = pc.Velocity;
             Vector2 a = pc.Acceleration;
             Vector2 f = pc.Force;
-            string debug = "P:({0}, {1})  V:({2}, {3})  A:({4}, {5})  F:({6}, {7})  M:{8}";
-            string output = string.Format(debug, s.X, s.Y, v.X, v.Y, a.X, a.Y, f.X, f.Y, pc.Mass);
+            string onGround = pc.IsOnGround ? "T" : "F";
+            string debug = "P:({0}, {1})  V:({2}, {3})  A:({4}, {5})  F:({6}, {7})  M:{8}  G:{9}";
+            string output = string.Format(debug, s.X, s.Y, v.X, v.Y, a.X, a.Y, f.X, f.Y, pc.Mass, onGround);
             spriteBatch.DrawString(font, output, new Vector2(10, 10), Color.Red);
         }
 
