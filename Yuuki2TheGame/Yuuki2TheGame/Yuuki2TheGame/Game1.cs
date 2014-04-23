@@ -45,7 +45,7 @@ namespace Yuuki2TheGame
 
         public Game1()
         {
-            DebugMode = true;
+            DebugMode = false;
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = GAME_WIDTH;
             graphics.PreferredBackBufferHeight = GAME_HEIGHT;
