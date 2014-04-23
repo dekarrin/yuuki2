@@ -153,6 +153,9 @@ namespace Yuuki2TheGame
                 gameEngine.StepPhysics();
             }
             else if (physStepKeyLocked && keyState.IsKeyUp(Keys.F8))
+            {
+                physStepKeyLocked = false;
+            }
             // TODO: Add your update logic here
             gameEngine.Update(gameTime);
             base.Update(gameTime);
