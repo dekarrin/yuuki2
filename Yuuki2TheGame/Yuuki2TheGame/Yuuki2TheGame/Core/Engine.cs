@@ -42,7 +42,6 @@ namespace Yuuki2TheGame.Core
             physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_TIMESCALE);
             physics.AddMap(_map);
             physics.AddPhob(Player);
-            Player.Damping = new Vector2(0.1f, 0.1f);
             //Player.ApplyImpulse(new Vector2(10000, 0));
         }
 
