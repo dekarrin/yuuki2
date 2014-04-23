@@ -9,6 +9,19 @@ namespace Yuuki2TheGame.Physics
 {
     class PhysicsController
     {
+        /// <summary>
+        /// Contains the setters that give the engine access to private physical properties.
+        /// </summary>
+        private struct PhobAccessors
+        {
+            public PhysicsPrivateSetter<bool> setIsOnGround;
+        }
+
+        /// <summary>
+        /// Maps Phobs to their PhobAccessors struct.
+        /// </summary>
+        private IDictionary<IPhysical, PhobAccessors> accessors = new Dictionary<IPhysical,PhobAccessors>();
+
         private Vector2 globalAcceleration;
 
         private const int GROUND_EPSILON = 1;
@@ -74,12 +87,9 @@ namespace Yuuki2TheGame.Physics
 
         public void AddPhob(IPhysical obj)
         {
-            obj.GlobalAcceleration = globalAcceleration;
-            obj.CheckGroundContact = delegate(Rectangle bounds)
-            {
-                Rectangle queryBounds = new Rectangle(bounds.X, bounds.Y + bounds.Height, bounds.Width, GROUND_EPSILON);
-                return landTree.Query(queryBounds).Any();
-            };
+            PhobAccessors acc = new PhobAccessors();
+            acc.setIsOnGround = obj.AddToEngine(globalAcceleration);
+            accessors[obj] = acc;
             phobs.Add(obj);
             airborne.Add(obj);
             phobTree.Insert(obj);
@@ -91,8 +101,7 @@ namespace Yuuki2TheGame.Physics
             airborne.Remove(obj);
             grounded.Remove(obj);
             phobTree.Remove(obj);
-            obj.GlobalAcceleration = Vector2.Zero;
-            obj.CheckGroundContact = null;
+            obj.RemoveFromEngine();
         }
         
         /// <summary>
@@ -104,8 +113,9 @@ namespace Yuuki2TheGame.Physics
             IList<IPhysical> toAir = new List<IPhysical>();
             foreach (IPhysical phob in grounded)
             {
-                if (!phob.IsOnGround)
+                if (!CheckGroundContact(phob))
                 {
+                    CorrectGroundLaunch(phob);
                     toAir.Add(phob);
                 }
             }
@@ -152,7 +162,12 @@ namespace Yuuki2TheGame.Physics
         private void CorrectGroundCollision(IPhysical phob, Rectangle groundBounds)
         {
             phob.PhysPosition = new Vector2(phob.PhysPosition.X, PixelsToMeters(groundBounds.Top - phob.Bounds.Height));
-            phob.IsOnGround = true;
+            accessors[phob].setIsOnGround(true);
+        }
+
+        private void CorrectGroundLaunch(IPhysical phob)
+        {
+            accessors[phob].setIsOnGround(false);
         }
 
         private void MoveToGrounded(IList<IPhysical> phobs)
@@ -171,6 +186,13 @@ namespace Yuuki2TheGame.Physics
                 airborne.Add(phob);
                 grounded.Remove(phob);
             }
+        }
+
+        private bool CheckGroundContact(IPhysical toCheck)
+        {
+            Rectangle bounds = toCheck.Bounds;
+            Rectangle queryBounds = new Rectangle(bounds.X, bounds.Y + bounds.Height, bounds.Width, GROUND_EPSILON);
+            return landTree.Query(queryBounds).Any();
         }
     }
 }

@@ -76,7 +76,7 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public bool IsOnGround { get; set; }
+        public bool IsOnGround { get; private set; }
 
         public Vector2 Force {
             get
@@ -137,8 +137,6 @@ namespace Yuuki2TheGame.Core
                 }
             }
         }
-
-        public GroundContactChecker CheckGroundContact { get; set; }
 
         #endregion
 
@@ -203,6 +201,20 @@ namespace Yuuki2TheGame.Core
             SetPosition(secs);
         }
 
+        public PhysicsPrivateSetter<bool> AddToEngine(Vector2 globalAcceleration)
+        {
+            this.GlobalAcceleration = globalAcceleration;
+            return delegate(bool value)
+            {
+                this.IsOnGround = value;
+            };
+        }
+
+        public void RemoveFromEngine()
+        {
+            this.GlobalAcceleration = Vector2.Zero;
+        }
+
         #endregion
 
         public ActiveEntity(Point size)
@@ -229,7 +241,7 @@ namespace Yuuki2TheGame.Core
         private void SetVelocity(float secs)
         {
             Velocity = Velocity + Acceleration * secs;
-            if (IsOnGround && Velocity.Y > 0 && CheckGroundContact != null && CheckGroundContact(this.Bounds))
+            if (IsOnGround && Velocity.Y > 0)
             {
                 Velocity = new Vector2(Velocity.X, 0);
             }
@@ -290,23 +302,13 @@ namespace Yuuki2TheGame.Core
                 }
             }
         }
-
+        
         private void Dampen(float secs)
         {
-            if (Force == _global_force)
-            {
-                Vector2 damp = CalcDamping();
-                int multX = (Velocity.X == 0) ? 0 : (Velocity.X < 0) ? -1 : 1;
-                int multY = (Velocity.Y == 0) ? 0 : (Velocity.Y < 0) ? -1 : 1;
-                Velocity -= new Vector2(multX * Damping.X, multY * Damping.Y) * secs;
-            }
-        }
-
-        private Vector2 CalcDamping()
-        {
-            float x = (float)(Math.Pow(2, (2 * Math.Abs(Velocity.X)) / DAMPING_MAX) - 1.0) / 6.0f;
-            float y = (float)(Math.Pow(2, (2 * Math.Abs(Velocity.Y)) / DAMPING_MAX) - 1.0) / 6.0f;
-            return new Vector2(Damping.X * x, Damping.Y * y);
+            //Vector2 damp = CalcDamping();
+            int multX = (Velocity.X == 0) ? 0 : (Velocity.X < 0) ? -1 : 1;
+            int multY = (Velocity.Y == 0) ? 0 : (Velocity.Y < 0) ? -1 : 1;
+            Velocity -= new Vector2(multX * Damping.X, multY * Damping.Y) * secs;
         }
     }
 }

@@ -7,12 +7,20 @@ using Microsoft.Xna.Framework;
 namespace Yuuki2TheGame.Physics
 {
 
-    delegate bool GroundContactChecker(Rectangle bounds);
+    /// <summary>
+    /// Given to the physics engine when added to it so that it has direct access to set
+    /// properties that are not normally externally accessable.
+    /// </summary>
+    /// <typeparam name="T">The type of the property being set.</typeparam>
+    /// <param name="value">What to set the value to.</param>
+    delegate void PhysicsPrivateSetter<T>(T value);
 
     interface IPhysical : IQuadObject
     {
 
-        bool IsOnGround { get; set; }
+        #region properties
+
+        bool IsOnGround { get; }
 
         Vector2 Force { get; }
 
@@ -31,7 +39,9 @@ namespace Yuuki2TheGame.Physics
         /// </summary>
         Vector2 GlobalAcceleration { get; set; }
 
-        GroundContactChecker CheckGroundContact { get; set; }
+        #endregion
+
+        #region methods
 
         void UpdatePhysics(float secs);
 
@@ -48,5 +58,16 @@ namespace Yuuki2TheGame.Physics
         void RemoveForce(string name);
 
         void RemoveAllForce();
+
+        /// <summary>
+        /// Called when the IPhysical is added to the physics engine.
+        /// </summary>
+        /// <param name="globalAcceleration">The amount of global acceleration that this IPhysical should undergo.</param>
+        /// <returns>Returns a setter for the IsOnGround property.</returns>
+        PhysicsPrivateSetter<bool> AddToEngine(Vector2 globalAcceleration);
+
+        void RemoveFromEngine();
+
+        #endregion
     }
 }
