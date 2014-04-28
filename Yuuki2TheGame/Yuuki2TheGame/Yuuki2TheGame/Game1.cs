@@ -13,6 +13,7 @@ using Yuuki2TheGame.Graphics;
 
 
 
+
 namespace Yuuki2TheGame
 {
     /// <summary>
@@ -55,16 +56,18 @@ namespace Yuuki2TheGame
         private Point blocksOnScreen;
         public GameState gamestate = GameState.Menu;
         List<MainMenu> menuButtons = new List<MainMenu>();
-        Texture2D mainmenuTexture;
+        //Texture2D mainmenuTexture;
+        Texture2D newGameButton;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
 
 
-            menuButtons.Add(new MainMenu(new Rectangle(400, 45, 100, 14), "NewGame"));
-            menuButtons.Add(new MainMenu(new Rectangle(400, 75, 100, 14), "LoadGame"));
-            menuButtons.Add(new MainMenu(new Rectangle(400, 105, 100, 14), "Options"));
-            menuButtons.Add(new MainMenu(new Rectangle(400, 135, 100, 14), "Exit"));
+            menuButtons.Add(new MainMenu(new Rectangle(350, 199, 100, 14), "NewGame"));
+            menuButtons.Add(new MainMenu(new Rectangle(350, 229, 100, 14), "LoadGame"));
+            menuButtons.Add(new MainMenu(new Rectangle(350, 259, 100, 14), "Options"));
+            menuButtons.Add(new MainMenu(new Rectangle(350, 290, 100, 14), "Exit"));
 
 
             graphics.PreferredBackBufferWidth = GAME_WIDTH;
@@ -101,8 +104,9 @@ namespace Yuuki2TheGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            
-            mainmenuTexture = Content.Load<Texture2D>(@"Menu/Minecraft");
+
+          //  mainmenuTexture = Content.Load<Texture2D>(@"BackGround/Minecraft");
+            newGameButton = Content.Load<Texture2D>(@"Tiles/dirt");
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
 
         }
@@ -141,21 +145,31 @@ namespace Yuuki2TheGame
                         menuButtons.RemoveRange(0, menuButtons.Count);
                    }
                    break;
+
                case GameState.InGame:
                        {
 
                        }
                        break;
-               case GameState.LoadGame:
-                       {
 
+               case GameState.LoadGame:
+                       if (keyState.IsKeyDown(Keys.Back))
+                       {
+                           gamestate = GameState.Menu;
+                           //spriteManager.Enabled = false;
+                           //spriteManager.Visible = false;
                        }
                    break;
-               case GameState.Options:
-                   {
 
+               case GameState.Options:
+                   if (keyState.IsKeyDown(Keys.Back))
+                   {
+                       gamestate = GameState.Menu;
+                       //spriteManager.Enabled = false;
+                       //spriteManager.Visible = false;
                    }
                    break;
+
                case GameState.Exit:
                    {
 
@@ -163,6 +177,7 @@ namespace Yuuki2TheGame
                    break;
 
              }
+
            mbd = Mouse.GetState();
 
            foreach (MainMenu m in menuButtons)
@@ -268,7 +283,7 @@ namespace Yuuki2TheGame
             bg.Texture = NameToTexture(bg.TextureID);
             ProcessSpriteGraphics(tiles);
             ProcessSpriteGraphics(chars);
-         // GraphicsDevice.Clear(Color.Black);
+           GraphicsDevice.Clear(Color.WhiteSmoke);
 
             
             
@@ -281,17 +296,17 @@ namespace Yuuki2TheGame
 
             spriteBatch.Begin();
             IsMouseVisible = true;
-           // spriteBatch.Draw(mainmenuTexture, pos1, Color.White);
-            
+          
+            string Title = "Yuuki 2";
 
+            //spriteBatch.Draw(mainmenuTexture,
+            //    new Rectangle(0, 0, Window.ClientBounds.Width,
+            //        Window.ClientBounds.Height), null,
+            //        Color.White, 0, Vector2.Zero,
+            //        SpriteEffects.None, 1);
 
-            spriteBatch.Draw(mainmenuTexture,
-                new Rectangle(0, 0, Window.ClientBounds.Width,
-                    Window.ClientBounds.Height), null,
-                    Color.White, 0, Vector2.Zero,
-                    SpriteEffects.None, 1);
-
-
+          //  spriteBatch.Draw(newGameButton, new Vector2(400, 100), Color.White);
+            spriteBatch.DrawString(spriteManager.font, Title, new Vector2(350, 100), Color.Black);
             foreach (MainMenu m in menuButtons)
             {
                 m.Draw(spriteBatch, spriteManager.font);
@@ -326,12 +341,21 @@ namespace Yuuki2TheGame
                     break;
                 case GameState.LoadGame:
                     {
+                        IsMouseVisible = true;
+                        string options = "Select your saved game";
+                        spriteBatch.Begin();
+                        spriteBatch.DrawString(spriteManager.font, options, new Vector2(300,100), Color.Black);
+                        spriteBatch.End();
 
                     }
                     break;
                 case GameState.Options:
                     {
-
+                        IsMouseVisible = true;
+                        string options = "Select From the Follwing Options!!";
+                        spriteBatch.Begin();
+                        spriteBatch.DrawString(spriteManager.font, options, new Vector2(200, 100), Color.Black);
+                        spriteBatch.End();
                     }
                     break;
                 case GameState.Exit:
