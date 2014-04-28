@@ -100,7 +100,7 @@ namespace Yuuki2TheGame.Core
             get
             {
                 Vector2 accel = (Force - Drag - Friction) / Mass;
-                if (IsOnGround)
+                if (IsOnGround && Force.Y == _global_force.Y)
                 {
                     accel.Y = 0;
                 }
@@ -324,11 +324,11 @@ namespace Yuuki2TheGame.Core
             if (forces.Count == 0)
             {
                 float newX = Velocity.X, newY = Velocity.Y;
-                if (Velocity.X < MINIMUM_VELOCITY)
+                if (Math.Abs(Velocity.X) < MINIMUM_VELOCITY)
                 {
                     newX = 0;
                 }
-                if (Velocity.Y < MINIMUM_VELOCITY)
+                if (Math.Abs(Velocity.Y) < MINIMUM_VELOCITY)
                 {
                     newY = 0;
                 }

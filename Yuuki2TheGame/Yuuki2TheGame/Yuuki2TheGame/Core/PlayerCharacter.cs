@@ -11,7 +11,7 @@ namespace Yuuki2TheGame.Core
         public const int WIDTH = Game1.BLOCK_WIDTH * 1;
         public const int HEIGHT = Game1.BLOCK_HEIGHT * 2;
         public const float WALK_FORCE = 500.0f;
-        public const float JUMP_FORCE = 1500.0f;
+        public const float JUMP_FORCE = 45000.0f;
         public const float MAX_SPEED = 5.0f;
 
 

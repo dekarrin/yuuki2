@@ -23,8 +23,8 @@ namespace Yuuki2TheGame
         Engine gameEngine;
         Texture2D defaultTexture;
 
-        public const int WORLD_WIDTH = 100;
-        public const int WORLD_HEIGHT = 100;
+        public const int WORLD_WIDTH = 1000;
+        public const int WORLD_HEIGHT = 1000;
 
         public const int GAME_WIDTH = 800;
         public const int GAME_HEIGHT = 600;
