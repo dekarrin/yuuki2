@@ -120,7 +120,10 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                float a = (float) Math.Pow((Math.Abs(Velocity.X) > Math.Abs(Velocity.Y)) ? BlockHeight : BlockWidth, 2);
+                float sideSmall = (float)Math.Min(BlockWidth, BlockHeight);
+                float sideLarge = (float)Math.Max(BlockWidth, BlockHeight);
+                float depth = sideSmall / sideLarge;
+                float a = ((Math.Abs(Velocity.X) > Math.Abs(Velocity.Y)) ? BlockHeight : BlockWidth) * depth;
                 float r = FluidDensity;
                 float c = DragModel.Coefficient;
                 Vector2 d = 0.5f * r * Velocity * Velocity * c * a * DragEffect;
@@ -251,6 +254,7 @@ namespace Yuuki2TheGame.Core
             : base(size, position, texture)
         {
             DragEffect = new Vector2(1.0f, 1.0f);
+            DragModel = new DragModel(DragShape.CUBE);
             _position = BlockPosition;
             OnPositionChanged += delegate(ScreenEntity sender, PositionChangedEventArgs mea)
             {
