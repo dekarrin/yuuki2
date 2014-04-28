@@ -15,12 +15,20 @@ namespace Yuuki2TheGame.Physics
     /// <param name="value">What to set the value to.</param>
     delegate void PhysicsPrivateSetter<T>(T value);
 
+    enum ContactType
+    {
+        TOP = 0x01,
+        DOWN = 0x02,
+        RIGHT = 0x04,
+        LEFT = 0x08
+    }
+
     interface IPhysical : IQuadObject
     {
 
         #region properties
 
-        bool IsOnGround { get; }
+        int ContactMask { get; }
 
         float MediumDensity { get; }
 
@@ -55,6 +63,14 @@ namespace Yuuki2TheGame.Physics
 
         #region methods
 
+        bool IsOnGround();
+
+        bool IsOnRightWall();
+
+        bool IsOnLeftWall();
+
+        bool IsOnCeiling();
+
         void UpdatePhysics(float secs);
 
         void AddForce(Vector2 force);
@@ -75,8 +91,8 @@ namespace Yuuki2TheGame.Physics
         /// Called when the IPhysical is added to the physics engine.
         /// </summary>
         /// <param name="globalAcceleration">The amount of global acceleration that this IPhysical should undergo.</param>
-        /// <returns>Returns a setter for the IsOnGround property.</returns>
-        PhysicsPrivateSetter<bool> AddToEngine(Vector2 globalAcceleration, float mediumDensity, float friction);
+        /// <returns>Returns a setter for the ContactMask property.</returns>
+        PhysicsPrivateSetter<int> AddToEngine(Vector2 globalAcceleration, float mediumDensity, float friction);
 
         void RemoveFromEngine();
 

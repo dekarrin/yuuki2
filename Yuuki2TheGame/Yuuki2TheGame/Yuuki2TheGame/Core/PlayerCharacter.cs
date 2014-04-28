@@ -24,7 +24,7 @@ namespace Yuuki2TheGame.Core
 
         public override void Jump()
         {
-            if (IsOnGround)
+            if (IsOnGround())
             {
                 ApplyImpulse(new Vector2(0, -JUMP_FORCE));
             }

@@ -14,7 +14,7 @@ namespace Yuuki2TheGame.Physics
         /// </summary>
         private struct PhobAccessors
         {
-            public PhysicsPrivateSetter<bool> setIsOnGround;
+            public PhysicsPrivateSetter<int> setContactMask;
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Yuuki2TheGame.Physics
         public void AddPhob(IPhysical obj)
         {
             PhobAccessors acc = new PhobAccessors();
-            acc.setIsOnGround = obj.AddToEngine(globalAcceleration, mediumDensity, friction);
+            acc.setContactMask = obj.AddToEngine(globalAcceleration, mediumDensity, friction);
             accessors[obj] = acc;
             phobs.Add(obj);
             airborne.Add(obj);
@@ -174,12 +174,12 @@ namespace Yuuki2TheGame.Physics
         {
             phob.PhysPosition = new Vector2(phob.PhysPosition.X, PixelsToMeters(groundBounds.Top - phob.Bounds.Height));
             phob.Velocity = new Vector2(phob.Velocity.X, 0);
-            accessors[phob].setIsOnGround(true);
+            accessors[phob].setContactMask(phob.ContactMask | (int)ContactType.DOWN);
         }
 
         private void CorrectGroundLaunch(IPhysical phob)
         {
-            accessors[phob].setIsOnGround(false);
+            accessors[phob].setContactMask(phob.ContactMask & ~(int)ContactType.DOWN);
         }
 
         private void MoveToGrounded(IList<IPhysical> phobs)

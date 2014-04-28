@@ -218,7 +218,7 @@ namespace Yuuki2TheGame
             Vector2 v = pc.Velocity;
             Vector2 a = pc.Acceleration;
             Vector2 f = pc.Force;
-            string onGround = pc.IsOnGround ? "T" : "F";
+            string onGround = pc.IsOnGround() ? "T" : "F";
             string debug = "P:({0}, {1})  V:({2}, {3})  A:({4}, {5})  F:({6}, {7})  M:{8}  G:{9}";
             string output = string.Format(debug, s.X, s.Y, v.X, v.Y, a.X, a.Y, f.X, f.Y, pc.Mass, onGround);
             spriteBatch.DrawString(font, output, new Vector2(10, 10), Color.Red);

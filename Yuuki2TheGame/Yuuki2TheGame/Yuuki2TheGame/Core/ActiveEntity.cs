@@ -76,7 +76,7 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public bool IsOnGround { get; private set; }
+        public int ContactMask { get; private set; }
 
         public Vector2 Force {
             get
@@ -100,7 +100,7 @@ namespace Yuuki2TheGame.Core
             get
             {
                 Vector2 accel = (Force - Drag - Friction) / Mass;
-                if (IsOnGround && Force.Y == _global_force.Y)
+                if (IsOnGround() && Force.Y == _global_force.Y)
                 {
                     accel.Y = 0;
                 }
@@ -121,7 +121,7 @@ namespace Yuuki2TheGame.Core
             {
                 float fricx = 0;
                 float fricy = 0;
-                if (IsOnGround && Velocity.X != 0)
+                if (IsOnGround() && Velocity.X != 0)
                 {
                     fricx = FrictionCoefficient * Math.Abs(_global_force.Y) * FrictionEffect.X;
                     fricx *= (Velocity.X > 0) ? 1 : -1;
@@ -185,6 +185,26 @@ namespace Yuuki2TheGame.Core
 
         #region public methods
 
+        public bool IsOnGround()
+        {
+            return ((ContactMask & (int)ContactType.DOWN) != 0);
+        }
+
+        public bool IsOnLeftWall()
+        {
+            return ((ContactMask & (int)ContactType.LEFT) != 0);
+        }
+
+        public bool IsOnRightWall()
+        {
+            return ((ContactMask & (int)ContactType.RIGHT) != 0);
+        }
+
+        public bool IsOnCeiling()
+        {
+            return ((ContactMask & (int)ContactType.TOP) != 0);
+        }
+
         public void AddForce(Vector2 force)
         {
             AddForce(force, DEFAULT_FORCE_NAME, 0);
@@ -246,14 +266,14 @@ namespace Yuuki2TheGame.Core
             SetPosition(secs);
         }
 
-        public PhysicsPrivateSetter<bool> AddToEngine(Vector2 globalAcceleration, float mediumDensity, float friction)
+        public PhysicsPrivateSetter<int> AddToEngine(Vector2 globalAcceleration, float mediumDensity, float friction)
         {
             FrictionCoefficient = friction;
             MediumDensity = mediumDensity;
             GlobalAcceleration = globalAcceleration;
-            return delegate(bool value)
+            return delegate(int value)
             {
-                IsOnGround = value;
+                ContactMask = value;
             };
         }
 
