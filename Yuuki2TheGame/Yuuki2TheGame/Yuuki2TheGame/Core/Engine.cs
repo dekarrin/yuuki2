@@ -18,7 +18,7 @@ namespace Yuuki2TheGame.Core
 
         public const float PHYS_MEDIUM_DENSITY = 1.225f;
 
-        public const float PHYS_SURFACE_FRICTION = 0.2f;
+        public const float PHYS_SURFACE_FRICTION = 0.3f;
 
         public bool ManualPhysStepMode { get; set; }
 

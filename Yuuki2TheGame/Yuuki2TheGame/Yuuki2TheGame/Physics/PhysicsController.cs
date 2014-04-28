@@ -173,6 +173,7 @@ namespace Yuuki2TheGame.Physics
         private void CorrectGroundCollision(IPhysical phob, Rectangle groundBounds)
         {
             phob.PhysPosition = new Vector2(phob.PhysPosition.X, PixelsToMeters(groundBounds.Top - phob.Bounds.Height));
+            phob.Velocity = new Vector2(phob.Velocity.X, 0);
             accessors[phob].setIsOnGround(true);
         }
 

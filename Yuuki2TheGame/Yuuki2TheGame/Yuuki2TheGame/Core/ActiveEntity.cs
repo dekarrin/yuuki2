@@ -99,7 +99,12 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return (Force - Drag - Friction) / Mass;
+                Vector2 accel = (Force - Drag - Friction) / Mass;
+                if (IsOnGround)
+                {
+                    accel.Y = 0;
+                }
+                return accel;
             }
             set
             {
@@ -118,12 +123,14 @@ namespace Yuuki2TheGame.Core
                 float fricy = 0;
                 if (IsOnGround && Velocity.X != 0)
                 {
-                    fricx = FrictionCoefficient * Math.Abs(_global_force.Y);
+                    fricx = FrictionCoefficient * Math.Abs(_global_force.Y) * FrictionEffect.X;
                     fricx *= (Velocity.X > 0) ? 1 : -1;
                 }
                 return new Vector2(fricx, fricy);
             }
         }
+
+        public Vector2 FrictionEffect { get; set; }
 
         public float MediumDensity { get; private set; }
 
@@ -246,7 +253,7 @@ namespace Yuuki2TheGame.Core
             GlobalAcceleration = globalAcceleration;
             return delegate(bool value)
             {
-                this.IsOnGround = value;
+                IsOnGround = value;
             };
         }
 
@@ -273,22 +280,12 @@ namespace Yuuki2TheGame.Core
             DragEffect = new Vector2(1.0f, 1.0f);
             DragModel = new DragModel(DragShape.CUBE);
             _position = BlockPosition;
-            OnPositionChanged += delegate(ScreenEntity sender, PositionChangedEventArgs mea)
-            {
-                if (IsOnGround && mea.NewPosition.Y != mea.OldPosition.Y)
-                {
-                    IsOnGround = false;
-                }
-            };
+            FrictionEffect = new Vector2(1.0f, 1.0f);
         }
 
         private void SetVelocity(float secs)
         {
             Velocity += Acceleration * secs;
-            if (IsOnGround && Velocity.Y > 0)
-            {
-                Velocity = new Vector2(Velocity.X, 0);
-            }
             Dampen();
         }
 

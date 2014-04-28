@@ -36,6 +36,8 @@ namespace Yuuki2TheGame.Physics
 
         Vector2 Friction { get; }
 
+        Vector2 FrictionEffect { get; set; }
+
         Vector2 Drag { get; }
 
         DragModel DragModel { get; set; }
