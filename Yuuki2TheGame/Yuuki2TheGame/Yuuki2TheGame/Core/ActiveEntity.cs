@@ -15,9 +15,7 @@ namespace Yuuki2TheGame.Core
 
         private const string DEFAULT_FORCE_NAME = "__DEFAULT__";
 
-        private const float MINIMUM_VELOCITY_UNFORCED = 0.1f;
-
-        private const float MINIMUM_VELOCITY = 0.0001f;
+        private const float MINIMUM_VELOCITY = 0.0000000001f;
 
         private class ForceListing {
             public Vector2 originalForce;
@@ -101,7 +99,7 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return Force / Mass;
+                return (Force - Drag - Friction) / Mass;
             }
             set
             {
@@ -110,7 +108,24 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public float FluidDensity { get; set; }
+        public float FrictionCoefficient { get; private set; }
+
+        public Vector2 Friction
+        {
+            get
+            {
+                float fricx = 0;
+                float fricy = 0;
+                if (IsOnGround && Velocity.X != 0)
+                {
+                    fricx = FrictionCoefficient * Math.Abs(_global_force.Y);
+                    fricx *= (Velocity.X > 0) ? 1 : -1;
+                }
+                return new Vector2(fricx, fricy);
+            }
+        }
+
+        public float MediumDensity { get; private set; }
 
         public Vector2 DragEffect { get; set; }
 
@@ -124,7 +139,7 @@ namespace Yuuki2TheGame.Core
                 float sideLarge = (float)Math.Max(BlockWidth, BlockHeight);
                 float depth = sideLarge / sideSmall;
                 float a = ((Math.Abs(Velocity.X) > Math.Abs(Velocity.Y)) ? BlockHeight : BlockWidth) * depth;
-                float r = FluidDensity;
+                float r = MediumDensity;
                 float c = DragModel.Coefficient;
                 Vector2 d = 0.5f * r * Velocity * Velocity * c * a * DragEffect;
                 return d;
@@ -224,9 +239,10 @@ namespace Yuuki2TheGame.Core
             SetPosition(secs);
         }
 
-        public PhysicsPrivateSetter<bool> AddToEngine(Vector2 globalAcceleration, float mediumDensity)
+        public PhysicsPrivateSetter<bool> AddToEngine(Vector2 globalAcceleration, float mediumDensity, float friction)
         {
-            FluidDensity = mediumDensity;
+            FrictionCoefficient = friction;
+            MediumDensity = mediumDensity;
             GlobalAcceleration = globalAcceleration;
             return delegate(bool value)
             {
@@ -237,7 +253,8 @@ namespace Yuuki2TheGame.Core
         public void RemoveFromEngine()
         {
             GlobalAcceleration = Vector2.Zero;
-            FluidDensity = 1.0f;
+            MediumDensity = 1.0f;
+            FrictionCoefficient = 0f;
         }
 
         #endregion
@@ -267,11 +284,12 @@ namespace Yuuki2TheGame.Core
 
         private void SetVelocity(float secs)
         {
-            Velocity += (Acceleration - Drag) * secs;
+            Velocity += Acceleration * secs;
             if (IsOnGround && Velocity.Y > 0)
             {
                 Velocity = new Vector2(Velocity.X, 0);
             }
+            Dampen();
         }
 
         private void SetPosition(float secs)
@@ -301,6 +319,23 @@ namespace Yuuki2TheGame.Core
             foreach (string forceName in toRemove)
             {
                 forces.Remove(forceName);
+            }
+        }
+
+        private void Dampen()
+        {
+            if (forces.Count == 0)
+            {
+                float newX = Velocity.X, newY = Velocity.Y;
+                if (Velocity.X < MINIMUM_VELOCITY)
+                {
+                    newX = 0;
+                }
+                if (Velocity.Y < MINIMUM_VELOCITY)
+                {
+                    newY = 0;
+                }
+                Velocity = new Vector2(newX, newY);
             }
         }
 

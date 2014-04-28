@@ -18,6 +18,8 @@ namespace Yuuki2TheGame.Core
 
         public const float PHYS_MEDIUM_DENSITY = 1.225f;
 
+        public const float PHYS_SURFACE_FRICTION = 0.2f;
+
         public bool ManualPhysStepMode { get; set; }
 
         private List<GameCharacter> _characters = new List<GameCharacter>();
@@ -41,7 +43,7 @@ namespace Yuuki2TheGame.Core
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);
             Camera = new Camera(new Point(Game1.GAME_WIDTH, Game1.GAME_HEIGHT), Player, new Point(-100, -300));
-            physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_MEDIUM_DENSITY, PHYS_TIMESCALE);
+            physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_MEDIUM_DENSITY, PHYS_SURFACE_FRICTION, PHYS_TIMESCALE);
             physics.AddMap(_map);
             physics.AddPhob(Player);
             //Player.ApplyImpulse(new Vector2(10000, 0));

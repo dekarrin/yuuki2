@@ -22,7 +22,7 @@ namespace Yuuki2TheGame.Physics
 
         bool IsOnGround { get; }
 
-        float FluidDensity { get; set; }
+        float MediumDensity { get; }
 
         Vector2 Force { get; }
 
@@ -31,6 +31,10 @@ namespace Yuuki2TheGame.Physics
         Vector2 Velocity { get; set; }
 
         Vector2 Acceleration { get; set; }
+
+        float FrictionCoefficient { get; }
+
+        Vector2 Friction { get; }
 
         Vector2 Drag { get; }
 
@@ -70,7 +74,7 @@ namespace Yuuki2TheGame.Physics
         /// </summary>
         /// <param name="globalAcceleration">The amount of global acceleration that this IPhysical should undergo.</param>
         /// <returns>Returns a setter for the IsOnGround property.</returns>
-        PhysicsPrivateSetter<bool> AddToEngine(Vector2 globalAcceleration, float mediumDensity);
+        PhysicsPrivateSetter<bool> AddToEngine(Vector2 globalAcceleration, float mediumDensity, float friction);
 
         void RemoveFromEngine();
 

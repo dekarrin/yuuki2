@@ -46,8 +46,11 @@ namespace Yuuki2TheGame.Physics
 
         private float timescale;
 
-        public PhysicsController(float wind, float gravity, float density, float timescale)
+        private float friction;
+
+        public PhysicsController(float wind, float gravity, float density, float friction, float timescale)
         {
+            this.friction = friction;
             this.timescale = timescale;
             this.mediumDensity = density;
             this.globalAcceleration = new Vector2(wind, gravity);
@@ -96,7 +99,7 @@ namespace Yuuki2TheGame.Physics
         public void AddPhob(IPhysical obj)
         {
             PhobAccessors acc = new PhobAccessors();
-            acc.setIsOnGround = obj.AddToEngine(globalAcceleration, mediumDensity);
+            acc.setIsOnGround = obj.AddToEngine(globalAcceleration, mediumDensity, friction);
             accessors[obj] = acc;
             phobs.Add(obj);
             airborne.Add(obj);
