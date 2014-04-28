@@ -42,11 +42,14 @@ namespace Yuuki2TheGame.Physics
 
         private QuadTree<IQuadObject> landTree = new QuadTree<IQuadObject>(new Point(MIN_QUAD_SIZE, MIN_QUAD_SIZE), MAX_ITEMS_PER_QUAD_LEAF, false);
 
+        private float mediumDensity;
+
         private float timescale;
 
-        public PhysicsController(float wind, float gravity, float timescale)
+        public PhysicsController(float wind, float gravity, float density, float timescale)
         {
             this.timescale = timescale;
+            this.mediumDensity = density;
             this.globalAcceleration = new Vector2(wind, gravity);
         }
 
@@ -93,7 +96,7 @@ namespace Yuuki2TheGame.Physics
         public void AddPhob(IPhysical obj)
         {
             PhobAccessors acc = new PhobAccessors();
-            acc.setIsOnGround = obj.AddToEngine(globalAcceleration);
+            acc.setIsOnGround = obj.AddToEngine(globalAcceleration, mediumDensity);
             accessors[obj] = acc;
             phobs.Add(obj);
             airborne.Add(obj);

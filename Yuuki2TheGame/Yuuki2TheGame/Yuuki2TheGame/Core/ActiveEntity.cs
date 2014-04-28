@@ -110,7 +110,23 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public Vector2 Damping { get; set; }
+        public float FluidDensity { get; set; }
+
+        public Vector2 DragEffect { get; set; }
+
+        public DragModel DragModel { get; set; }
+
+        public Vector2 Drag
+        {
+            get
+            {
+                float a = (Math.Abs(Velocity.X) > Math.Abs(Velocity.Y)) ? BlockHeight : BlockWidth;
+                float r = FluidDensity;
+                float c = DragModel.Coefficient;
+                Vector2 d = 0.5f * r * Velocity * Velocity * c * a * DragEffect;
+                return d;
+            }
+        }
 
         /// <summary>
         /// If this is never set or is set to 0 (which is physically impossible), it will be assumed that the item has
@@ -205,9 +221,10 @@ namespace Yuuki2TheGame.Core
             SetPosition(secs);
         }
 
-        public PhysicsPrivateSetter<bool> AddToEngine(Vector2 globalAcceleration)
+        public PhysicsPrivateSetter<bool> AddToEngine(Vector2 globalAcceleration, float mediumDensity)
         {
-            this.GlobalAcceleration = globalAcceleration;
+            FluidDensity = mediumDensity;
+            GlobalAcceleration = globalAcceleration;
             return delegate(bool value)
             {
                 this.IsOnGround = value;
@@ -216,7 +233,8 @@ namespace Yuuki2TheGame.Core
 
         public void RemoveFromEngine()
         {
-            this.GlobalAcceleration = Vector2.Zero;
+            GlobalAcceleration = Vector2.Zero;
+            FluidDensity = 1.0f;
         }
 
         #endregion
@@ -232,6 +250,7 @@ namespace Yuuki2TheGame.Core
         public ActiveEntity(Point size, Point position, string texture)
             : base(size, position, texture)
         {
+            DragEffect = new Vector2(1.0f, 1.0f);
             _position = BlockPosition;
             OnPositionChanged += delegate(ScreenEntity sender, PositionChangedEventArgs mea)
             {
@@ -244,12 +263,11 @@ namespace Yuuki2TheGame.Core
 
         private void SetVelocity(float secs)
         {
-            Velocity += Acceleration * secs;
+            Velocity += (Acceleration - Drag) * secs;
             if (IsOnGround && Velocity.Y > 0)
             {
                 Velocity = new Vector2(Velocity.X, 0);
             }
-            Dampen(secs);
         }
 
         private void SetPosition(float secs)
@@ -305,18 +323,6 @@ namespace Yuuki2TheGame.Core
                     fl.force.Y = fl.originalForce.Y;
                 }
             }
-        }
-        
-        private void Dampen(float secs)
-        {
-            Vector2 remainingPercent = new Vector2(1.0f - (Damping.X * secs), 1.0f - (Damping.Y * secs));
-            Velocity *= remainingPercent;
-            // lower minimum velocity if forces are actively pushing on us
-            float minX = (Force.X == _global_force.X) ? MINIMUM_VELOCITY_UNFORCED : MINIMUM_VELOCITY;
-            float minY = (Force.Y == _global_force.Y) ? MINIMUM_VELOCITY_UNFORCED : MINIMUM_VELOCITY;
-            float fx = (Math.Abs(Velocity.X) <= minX) ? 0 : Velocity.X;
-            float fy = (Math.Abs(Velocity.Y) <= minY) ? 0 : Velocity.Y;
-            Velocity = new Vector2(fx, fy);
         }
     }
 }

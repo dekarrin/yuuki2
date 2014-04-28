@@ -13,7 +13,6 @@ namespace Yuuki2TheGame.Core
         public const float WALK_FORCE = 500.0f;
         public const float JUMP_FORCE = 1500.0f;
         public const float MAX_SPEED = 5.0f;
-        public const float DAMPING = 0.995f;
 
 
         private bool movingLeft = false;
@@ -21,7 +20,6 @@ namespace Yuuki2TheGame.Core
 
         public PlayerCharacter(string name, Point pixelLocation, int health, int baseAttack, int baseArmor) : base(name, pixelLocation, new Point(WIDTH, HEIGHT), health, baseAttack, baseArmor)
         {
-            Damping = new Vector2(DAMPING, DAMPING - 0.8f);
         }
 
         public override void Jump()
@@ -38,7 +36,6 @@ namespace Yuuki2TheGame.Core
             {
                 movingLeft = true;
                 AddForce(new Vector2(-WALK_FORCE, 0), "move_left", new Vector2(-MAX_SPEED, 0));
-                Damping = new Vector2(0, DAMPING - 0.8f);
             }
         }
 
@@ -48,7 +45,6 @@ namespace Yuuki2TheGame.Core
             {
                 movingRight = true;
                 AddForce(new Vector2(WALK_FORCE, 0), "move_right", new Vector2(MAX_SPEED, 0));
-                Damping = new Vector2(0, DAMPING - 0.8f);
             }
         }
 
@@ -58,7 +54,6 @@ namespace Yuuki2TheGame.Core
             {
                 movingLeft = false;
                 RemoveForce("move_left");
-                Damping = new Vector2(DAMPING, DAMPING - 0.8f);
             }
         }
 
@@ -68,7 +63,6 @@ namespace Yuuki2TheGame.Core
             {
                 movingRight = false;
                 RemoveForce("move_right");
-                Damping = new Vector2(DAMPING, DAMPING - 0.2f);
             }
         }
     }

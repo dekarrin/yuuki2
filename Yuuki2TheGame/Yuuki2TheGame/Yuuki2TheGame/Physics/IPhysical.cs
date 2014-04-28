@@ -22,6 +22,8 @@ namespace Yuuki2TheGame.Physics
 
         bool IsOnGround { get; }
 
+        float FluidDensity { get; set; }
+
         Vector2 Force { get; }
 
         Vector2 PhysPosition { get; set; }
@@ -30,14 +32,13 @@ namespace Yuuki2TheGame.Physics
 
         Vector2 Acceleration { get; set; }
 
-        float Mass { get; set; }
+        Vector2 Drag { get; }
 
-        /// <summary>
-        /// Percent of velocity lost per second. Used for fast simulation of friction.
-        /// If a component is greater than 1, it will become a multiplied effect rather
-        /// than a dividing effect, which may have unintended results.
-        /// </summary>
-        Vector2 Damping { get; set; }
+        DragModel DragModel { get; set; }
+
+        Vector2 DragEffect { get; set; }
+
+        float Mass { get; set; }
 
         /// <summary>
         /// Acceleration imparted that cannot be removed except by explicitly setting GlobalAcceleration.
@@ -69,7 +70,7 @@ namespace Yuuki2TheGame.Physics
         /// </summary>
         /// <param name="globalAcceleration">The amount of global acceleration that this IPhysical should undergo.</param>
         /// <returns>Returns a setter for the IsOnGround property.</returns>
-        PhysicsPrivateSetter<bool> AddToEngine(Vector2 globalAcceleration);
+        PhysicsPrivateSetter<bool> AddToEngine(Vector2 globalAcceleration, float mediumDensity);
 
         void RemoveFromEngine();
 

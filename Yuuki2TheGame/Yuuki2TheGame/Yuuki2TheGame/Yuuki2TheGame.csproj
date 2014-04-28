@@ -85,6 +85,7 @@
     <Compile Include="Core\Map.cs" />
     <Compile Include="Graphics\Sprite.cs" />
     <Compile Include="Graphics\Tile.cs" />
+    <Compile Include="Physics\DragModel.cs" />
     <Compile Include="Physics\IPhysical.cs" />
     <Compile Include="Physics\IQuadObject.cs" />
     <Compile Include="Physics\PhysicsController.cs" />
