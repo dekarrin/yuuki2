@@ -120,7 +120,7 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                float a = (Math.Abs(Velocity.X) > Math.Abs(Velocity.Y)) ? BlockHeight : BlockWidth;
+                float a = (float) Math.Pow((Math.Abs(Velocity.X) > Math.Abs(Velocity.Y)) ? BlockHeight : BlockWidth, 2);
                 float r = FluidDensity;
                 float c = DragModel.Coefficient;
                 Vector2 d = 0.5f * r * Velocity * Velocity * c * a * DragEffect;
