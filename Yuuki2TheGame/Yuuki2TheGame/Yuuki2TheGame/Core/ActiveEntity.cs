@@ -122,7 +122,7 @@ namespace Yuuki2TheGame.Core
             {
                 float sideSmall = (float)Math.Min(BlockWidth, BlockHeight);
                 float sideLarge = (float)Math.Max(BlockWidth, BlockHeight);
-                float depth = sideSmall / sideLarge;
+                float depth = sideLarge / sideSmall;
                 float a = ((Math.Abs(Velocity.X) > Math.Abs(Velocity.Y)) ? BlockHeight : BlockWidth) * depth;
                 float r = FluidDensity;
                 float c = DragModel.Coefficient;
