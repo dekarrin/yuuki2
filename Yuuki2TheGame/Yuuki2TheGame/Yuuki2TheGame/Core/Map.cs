@@ -42,8 +42,6 @@ namespace Yuuki2TheGame.Core
                 }
                 world.Add(slice);
             }
-            world[3][(Height / 2)] = new Block(1, 3, (Height / 2));
-            world[7][(Height / 2) - 3] = new Block(1, 7, (Height / 2) - 3);
             return world;
         }
 
