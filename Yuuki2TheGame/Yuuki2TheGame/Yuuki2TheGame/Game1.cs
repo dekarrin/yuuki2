@@ -172,10 +172,21 @@ namespace Yuuki2TheGame
             {
                 recKeyLocked = false;
             }
+            if (!respawnKeyLocked && keyState.IsKeyDown(Keys.F7))
+            {
+                respawnKeyLocked = true;
+                gameEngine.Respawn();
+            }
+            else if (respawnKeyLocked && keyState.IsKeyUp(Keys.F7))
+            {
+                respawnKeyLocked = false;
+            }
             // TODO: Add your update logic here
             gameEngine.Update(gameTime);
             base.Update(gameTime);
         }
+
+        private bool respawnKeyLocked = false;
 
         public static void Debug(String str)
         {

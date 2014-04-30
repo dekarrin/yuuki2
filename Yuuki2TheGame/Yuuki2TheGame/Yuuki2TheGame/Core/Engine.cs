@@ -104,6 +104,11 @@ namespace Yuuki2TheGame.Core
             }
         }
 
+        public void Respawn()
+        {
+            Player.Teleport(spawn);
+        }
+
         public void StepPhysics()
         {
             physics.Step(0.016f);

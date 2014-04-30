@@ -125,12 +125,12 @@ namespace Yuuki2TheGame.Physics
             }
         }
 
-        private float PixelsToMeters(int pixels)
+        public static float PixelsToMeters(int pixels)
         {
             return pixels / (float) Game1.BLOCK_WIDTH;
         }
 
-        private int MetersToPixels(float physUnits)
+        public static int MetersToPixels(float physUnits)
         {
             return (int) Math.Round(physUnits * Game1.BLOCK_WIDTH);
         }

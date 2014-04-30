@@ -437,5 +437,13 @@ namespace Yuuki2TheGame.Core
 
         #endregion
 
+        #region methods
+
+        public virtual void Teleport(Point p)
+        {
+            Position = p;
+        }
+
+        #endregion
     }
 }

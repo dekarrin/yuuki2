@@ -72,7 +72,47 @@ namespace Yuuki2TheGame.Core
             set
             {
                 _position = value;
-                BlockPosition = value;
+                int x = Physics.PhysicsController.MetersToPixels(value.X);
+                int y = Physics.PhysicsController.MetersToPixels(value.Y);
+                base.Position = new Point(x, y);
+            }
+        }
+
+        public override Point Position
+        {
+            get
+            {
+                return base.Position;
+            }
+            set
+            {
+                float x = Physics.PhysicsController.PixelsToMeters(value.X);
+                float y = Physics.PhysicsController.PixelsToMeters(value.Y);
+                PhysPosition = new Vector2(x, y);
+            }
+        }
+
+        public override int X
+        {
+            get
+            {
+                return base.X;
+            }
+            set
+            {
+                Position = new Point(value, Y);
+            }
+        }
+
+        public override int Y
+        {
+            get
+            {
+                return base.Y;
+            }
+            set
+            {
+                Position = new Point(X, value);
             }
         }
 
@@ -317,6 +357,15 @@ namespace Yuuki2TheGame.Core
             DragModel = new DragModel(DragShape.CUBE);
             _position = BlockPosition;
             FrictionEffect = new Vector2(1.0f, 1.0f);
+        }
+
+        public override void Teleport(Point p)
+        {
+            Vector2 ga = GlobalAcceleration;
+            RemoveAllForce();
+            Velocity = Vector2.Zero;
+            GlobalAcceleration = ga;
+            base.Teleport(p);
         }
 
         protected virtual void ContactMaskChanged(int oldValue)
