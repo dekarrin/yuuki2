@@ -18,10 +18,11 @@ namespace Yuuki2TheGame
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        public static List<SoundEffect> gameAudio = new List<SoundEffect>();
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Engine gameEngine;
-        Texture2D defaultTexture;
+        static Texture2D defaultTexture;
 
         public const int WORLD_WIDTH = 100;
         public const int WORLD_HEIGHT = 100;
@@ -45,6 +46,10 @@ namespace Yuuki2TheGame
             graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             blocksOnScreen = new Point (GAME_WIDTH / BLOCK_WIDTH + 1, GAME_HEIGHT / BLOCK_HEIGHT + 1);
+
+            SoundEffect bgMusic = Content.Load<SoundEffect>(@"Backround");
+            bgMusic.Name = "backround";
+            gameAudio.Add(bgMusic);
             gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
         }
 
@@ -59,6 +64,9 @@ namespace Yuuki2TheGame
             // TODO: Add your initialization logic here
             int butts = 0;
             butts++;
+
+
+
             base.Initialize();
         }
 
@@ -72,7 +80,10 @@ namespace Yuuki2TheGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
-
+            SoundEffect bgMusic = Content.Load<SoundEffect>(@"Backround");
+            bgMusic.Name = "backround";
+            gameAudio.Add(bgMusic);
+            
         }
 
         /// <summary>

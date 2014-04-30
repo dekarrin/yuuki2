@@ -29,10 +29,13 @@ namespace Yuuki2TheGame.Core
 
         private PhysicsController physics;
 
+        private SoundEngine audioEngine;
+
         public Camera Camera { get; set; }
 
         public Engine(Point size)
         {
+            audioEngine = new SoundEngine(Game1.gameAudio);
             _map = new Map(size.X, size.Y);
             spawn = new Point(0, (size.Y / 2) * Game1.BLOCK_HEIGHT - 30);
             // temp vars until we can meet with the team
@@ -69,6 +72,7 @@ namespace Yuuki2TheGame.Core
             }
             _map.Update(gameTime);
             physics.Update(gameTime);
+            audioEngine.Update(gameTime);
         }
 
         private void UpdateBlockInput(GameTime gameTime)
