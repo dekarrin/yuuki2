@@ -217,7 +217,7 @@ namespace Yuuki2TheGame.Physics
             {
                 watch.Start();
             }
-            IList<Block> query = map.QueryPixels(queryBounds, type);
+            IList<Block> query = map.QueryPixels(queryBounds);
             watch.Stop();
             if (RecordingQueryTime)
             {
