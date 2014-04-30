@@ -17,7 +17,7 @@ namespace Yuuki2TheGame.Physics
 
     enum ContactType
     {
-        TOP = 0x01,
+        UP = 0x01,
         DOWN = 0x02,
         RIGHT = 0x04,
         LEFT = 0x08
@@ -70,6 +70,8 @@ namespace Yuuki2TheGame.Physics
         bool IsOnLeftWall();
 
         bool IsOnCeiling();
+
+        bool IsInContact(ContactType type);
 
         void UpdatePhysics(float secs);
 

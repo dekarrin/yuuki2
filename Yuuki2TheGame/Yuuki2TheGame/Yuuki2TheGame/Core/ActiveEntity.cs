@@ -185,24 +185,29 @@ namespace Yuuki2TheGame.Core
 
         #region public methods
 
+        public bool IsInContact(ContactType type)
+        {
+            return ((ContactMask & (int)type) != 0);
+        }
+
         public bool IsOnGround()
         {
-            return ((ContactMask & (int)ContactType.DOWN) != 0);
+            return IsInContact(ContactType.DOWN);
         }
 
         public bool IsOnLeftWall()
         {
-            return ((ContactMask & (int)ContactType.LEFT) != 0);
+            return IsInContact(ContactType.LEFT);
         }
 
         public bool IsOnRightWall()
         {
-            return ((ContactMask & (int)ContactType.RIGHT) != 0);
+            return IsInContact(ContactType.RIGHT);
         }
 
         public bool IsOnCeiling()
         {
-            return ((ContactMask & (int)ContactType.TOP) != 0);
+            return IsInContact(ContactType.UP);
         }
 
         public void AddForce(Vector2 force)

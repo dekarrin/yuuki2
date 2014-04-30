@@ -26,7 +26,7 @@ namespace Yuuki2TheGame.Physics
 
         private Vector2 globalAcceleration;
 
-        private const int GROUND_EPSILON = 1;
+        private const int CONTACT_EPSILON = 1;
 
         private const int MAX_ITEMS_PER_QUAD_LEAF = 0;
 
@@ -36,10 +36,6 @@ namespace Yuuki2TheGame.Physics
         private const int MIN_QUAD_SIZE = Game1.BLOCK_WIDTH * 3;
 
         private IList<IPhysical> phobs = new List<IPhysical>();
-
-        private IList<IPhysical> grounded = new List<IPhysical>();
-
-        private IList<IPhysical> airborne = new List<IPhysical>();
 
         private IList<IQuadObject> lands = new List<IQuadObject>();
 
@@ -82,11 +78,8 @@ namespace Yuuki2TheGame.Physics
             foreach (IPhysical phob in phobs)
             {
                 phob.UpdatePhysics(secs * timescale);
+                CheckGroundCollision(phob);
             }
-            IList<IPhysical> toGround = GetLandingPhobs();
-            IList<IPhysical> toAir = GetLaunchingPhobs();
-            MoveToGrounded(toGround);
-            MoveToAirborne(toAir);
         }
 
         public void AddPhob(IPhysical obj)
@@ -95,15 +88,12 @@ namespace Yuuki2TheGame.Physics
             acc.setContactMask = obj.AddToEngine(globalAcceleration, mediumDensity, friction);
             accessors[obj] = acc;
             phobs.Add(obj);
-            airborne.Add(obj);
             phobTree.Insert(obj);
         }
 
         public void RemovePhob(IPhysical obj)
         {
             phobs.Remove(obj);
-            airborne.Remove(obj);
-            grounded.Remove(obj);
             phobTree.Remove(obj);
             obj.RemoveFromEngine();
         }
@@ -131,51 +121,6 @@ namespace Yuuki2TheGame.Physics
                 Game1.Debug("No data for average query time");
             }
         }
-        
-        /// <summary>
-        /// Returns list of previously grounded phobs that have left the ground.
-        /// </summary>
-        /// <returns></returns>
-        private IList<IPhysical> GetLaunchingPhobs()
-        {
-            IList<IPhysical> toAir = new List<IPhysical>();
-            foreach (IPhysical phob in grounded)
-            {
-                if (!CheckGroundContact(phob))
-                {
-                    CorrectGroundLaunch(phob);
-                    toAir.Add(phob);
-                }
-            }
-            return toAir;
-        }
-
-        /// <summary>
-        /// Returns list of previously airborne phobs that have collided with the ground.
-        /// </summary>
-        /// <returns></returns>
-        private IList<IPhysical> GetLandingPhobs()
-        {
-            IList<IPhysical> toGround = new List<IPhysical>();
-            foreach (IPhysical phob in airborne)
-            {
-                IList<Block> objs = map.QueryPixels(phob.Bounds);
-                if (objs.Count() > 0)
-                {
-                    IQuadObject top = null;
-                    foreach (IQuadObject iqo in objs)
-                    {
-                        if (top == null || top.Bounds.Top < iqo.Bounds.Top)
-                        {
-                            top = iqo;
-                        }
-                    }
-                    CorrectGroundCollision(phob, top.Bounds);
-                    toGround.Add(phob);
-                }
-            }
-            return toGround;
-        }
 
         private float PixelsToMeters(int pixels)
         {
@@ -187,41 +132,50 @@ namespace Yuuki2TheGame.Physics
             return (int) Math.Round(physUnits * Game1.BLOCK_WIDTH);
         }
 
-        private void CorrectGroundCollision(IPhysical phob, Rectangle groundBounds)
+        private void CorrectCollision(IPhysical phob, Point newPos)
         {
-            phob.PhysPosition = new Vector2(phob.PhysPosition.X, PixelsToMeters(groundBounds.Top - phob.Bounds.Height));
+            phob.PhysPosition = new Vector2(PixelsToMeters(newPos.X), PixelsToMeters(newPos.Y));
             phob.Velocity = new Vector2(phob.Velocity.X, 0);
-            accessors[phob].setContactMask(phob.ContactMask | (int)ContactType.DOWN);
         }
 
-        private void CorrectGroundLaunch(IPhysical phob)
+        private void CheckGroundCollision(IPhysical phob)
         {
-            accessors[phob].setContactMask(phob.ContactMask & ~(int)ContactType.DOWN);
-        }
-
-        private void MoveToGrounded(IList<IPhysical> phobs)
-        {
-            foreach (IPhysical phob in phobs)
+            Block contact = CheckContact(phob, ContactType.DOWN);
+            if (contact != null && !phob.IsInContact(ContactType.DOWN))
             {
-                grounded.Add(phob);
-                airborne.Remove(phob);
+                CorrectCollision(phob, new Point(phob.Bounds.X, contact.Bounds.Top - phob.Bounds.Height));
+                accessors[phob].setContactMask(phob.ContactMask | (int)ContactType.DOWN);
+            }
+            else if (contact == null && phob.IsInContact(ContactType.DOWN))
+            {
+                accessors[phob].setContactMask(phob.ContactMask & ~(int)ContactType.DOWN);
             }
         }
 
-        private void MoveToAirborne(IList<IPhysical> phobs)
-        {
-            foreach (IPhysical phob in phobs)
-            {
-                airborne.Add(phob);
-                grounded.Remove(phob);
-            }
-        }
-
-        private bool CheckGroundContact(IPhysical toCheck)
+        private Block CheckContact(IPhysical toCheck, ContactType type)
         {
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
             Rectangle bounds = toCheck.Bounds;
-            Rectangle queryBounds = new Rectangle(bounds.X, bounds.Y + bounds.Height, bounds.Width, GROUND_EPSILON);
+            Rectangle queryBounds;
+            switch (type)
+            {
+                default:
+                case ContactType.DOWN:
+                    queryBounds = new Rectangle(bounds.X, bounds.Y + bounds.Height, bounds.Width, CONTACT_EPSILON);
+                    break;
+
+                case ContactType.UP:
+                    queryBounds = new Rectangle(bounds.X, bounds.Y - CONTACT_EPSILON, bounds.Width, CONTACT_EPSILON);
+                    break;
+
+                case ContactType.LEFT:
+                    queryBounds = new Rectangle(bounds.X - CONTACT_EPSILON, bounds.Y, CONTACT_EPSILON, bounds.Height);
+                    break;
+
+                case ContactType.RIGHT:
+                    queryBounds = new Rectangle(bounds.X + bounds.Width, bounds.Y, CONTACT_EPSILON, bounds.Height);
+                    break;
+            }
             if (RecordingQueryTime)
             {
                 watch.Start();
@@ -232,7 +186,14 @@ namespace Yuuki2TheGame.Physics
             {
                 queryTimes.Add(watch.Elapsed.Ticks);
             }
-            return query.Any();
+            if (query.Count > 0)
+            {
+                return query[0];
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
