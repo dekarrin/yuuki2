@@ -51,7 +51,7 @@ namespace Yuuki2TheGame.Core
 
         private List<Item> _items = new List<Item>();
 
-        private bool mouseLeftLocked;
+        private bool mouseLeftLocked = false;
 
         private Point spawn;
 
@@ -87,6 +87,7 @@ namespace Yuuki2TheGame.Core
 
         public void Update(GameTime gameTime)
         {
+            UpdateBlockInput(gameTime);
             if (RecordPhysStep)
             {
                 _recording = physics.RecordingQueryTime;
@@ -122,8 +123,8 @@ namespace Yuuki2TheGame.Core
             if (mouseState.LeftButton == ButtonState.Pressed && !mouseLeftLocked)
             {
                 mouseLeftLocked = true;
-                int globalx = (mouseState.X + this.Camera.Location.X) / Game1.BLOCK_WIDTH;
-                int globaly = (mouseState.Y + this.Camera.Location.Y) / Game1.BLOCK_HEIGHT;
+                int globalx = (mouseState.X + this.Camera.Position.X) / Game1.BLOCK_WIDTH;
+                int globaly = (mouseState.Y + this.Camera.Position.Y) / Game1.BLOCK_HEIGHT;
                 Point p = new Point(globalx, globaly);
 
                 if (globalx <= Game1.WORLD_WIDTH && globalx >= 0 && globaly <= Game1.WORLD_HEIGHT && globaly >= 0)
@@ -133,13 +134,10 @@ namespace Yuuki2TheGame.Core
                     if (block != null)
                     {
                         _map.DestroyBlock(p);
-                        this.RemovePhysical(block);
                     }
                     else
                     {
                         _map.AddBlock(p);
-                        block = _map.BlockAt(p);
-                        this.AddPhysical(block);
                     }
                 }
             }
