@@ -78,7 +78,7 @@ namespace Yuuki2TheGame.Physics
             foreach (IPhysical phob in phobs)
             {
                 phob.UpdatePhysics(secs * timescale);
-                CheckGroundCollision(phob);
+                CheckCollision(phob, ContactType.DOWN);
             }
         }
 
@@ -138,17 +138,37 @@ namespace Yuuki2TheGame.Physics
             phob.Velocity = new Vector2(phob.Velocity.X, 0);
         }
 
-        private void CheckGroundCollision(IPhysical phob)
+        private void CheckCollision(IPhysical phob, ContactType type)
         {
-            Block contact = CheckContact(phob, ContactType.DOWN);
-            if (contact != null && !phob.IsInContact(ContactType.DOWN))
+            Block contact = CheckContact(phob, type);
+            if (contact != null && !phob.IsInContact(type))
             {
-                CorrectCollision(phob, new Point(phob.Bounds.X, contact.Bounds.Top - phob.Bounds.Height));
-                accessors[phob].setContactMask(phob.ContactMask | (int)ContactType.DOWN);
+                Point correction;
+                switch (type)
+                {
+                    default:
+                    case ContactType.DOWN:
+                        correction = new Point(phob.Bounds.X, contact.Bounds.Top - phob.Bounds.Height);
+                        break;
+
+                    case ContactType.UP:
+                        correction = new Point(phob.Bounds.X, contact.Bounds.Bottom + CONTACT_EPSILON);
+                        break;
+
+                    case ContactType.LEFT:
+                        correction = new Point(contact.Bounds.Right + CONTACT_EPSILON, phob.Bounds.Y);
+                        break;
+
+                    case ContactType.RIGHT:
+                        correction = new Point(contact.Bounds.Left - phob.Bounds.Width, phob.Bounds.Y);
+                        break;
+                }
+                CorrectCollision(phob, correction);
+                accessors[phob].setContactMask(phob.ContactMask | (int)type);
             }
-            else if (contact == null && phob.IsInContact(ContactType.DOWN))
+            else if (contact == null && phob.IsInContact(type))
             {
-                accessors[phob].setContactMask(phob.ContactMask & ~(int)ContactType.DOWN);
+                accessors[phob].setContactMask(phob.ContactMask & ~(int)type);
             }
         }
 
