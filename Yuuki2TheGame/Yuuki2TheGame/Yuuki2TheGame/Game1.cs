@@ -37,8 +37,15 @@ namespace Yuuki2TheGame
         /// </summary>
         private Point blocksOnScreen;
 
+        public bool DebugMode { get; set; }
+
+        private bool debugKeyLocked = false;
+
+        private SpriteFont font;
+
         public Game1()
         {
+            DebugMode = false;
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = GAME_WIDTH;
             graphics.PreferredBackBufferHeight = GAME_HEIGHT;
@@ -72,7 +79,7 @@ namespace Yuuki2TheGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
-
+            font = Content.Load<SpriteFont>("SegoeUI");
         }
 
         /// <summary>
@@ -84,6 +91,10 @@ namespace Yuuki2TheGame
             // TODO: Unload any non ContentManager content here
         }
 
+        bool leftKeyLocked = false;
+
+        bool rightKeyLocked = false;
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -94,17 +105,105 @@ namespace Yuuki2TheGame
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
-
-            // TODO: Add your update logic here
+			
+            KeyboardState keyState = Keyboard.GetState();
+            if (!leftKeyLocked && keyState.IsKeyDown(Keys.Left))
+            {
+                leftKeyLocked = true;
+                gameEngine.Player.StartMovingLeft();
+            }
+            if (!rightKeyLocked && keyState.IsKeyDown(Keys.Right))
+            {
+                rightKeyLocked = true;
+                gameEngine.Player.StartMovingRight();
+            }
+            if (leftKeyLocked && keyState.IsKeyUp(Keys.Left))
+            {
+                leftKeyLocked = false;
+                gameEngine.Player.StopMovingLeft();
+            }
+            if (rightKeyLocked && keyState.IsKeyUp(Keys.Right))
+            {
+                rightKeyLocked = false;
+                gameEngine.Player.StopMovingRight();
+            }
+            // TODO: Individual key resets
+            if (!pressedJump && (keyState.IsKeyDown(Keys.W) || keyState.IsKeyDown(Keys.Space) || keyState.IsKeyDown(Keys.Up)))
+            {
+                gameEngine.Player.Jump();
+                pressedJump = true;
+            }
+            else if (pressedJump && (keyState.IsKeyUp(Keys.W) && keyState.IsKeyUp(Keys.Space) && keyState.IsKeyUp(Keys.Up)))
+            {
+                pressedJump = false;
+            }
+            if (!debugKeyLocked && keyState.IsKeyDown(Keys.F4))
+            {
+                debugKeyLocked = true;
+                DebugMode = !DebugMode;
+            }
+            else if (debugKeyLocked && keyState.IsKeyUp(Keys.F4))
+            {
+                debugKeyLocked = false;
+            }
+            if (!physKeyLocked && keyState.IsKeyDown(Keys.F5))
+            {
+                physKeyLocked = true;
+                gameEngine.ManualPhysStepMode = !gameEngine.ManualPhysStepMode;
+            }
+            else if (physKeyLocked && keyState.IsKeyUp(Keys.F5))
+            {
+                physKeyLocked = false;
+            }
+            if (!physStepKeyLocked && keyState.IsKeyDown(Keys.F8) && gameEngine.ManualPhysStepMode)
+            {
+                physStepKeyLocked = true;
+                gameEngine.StepPhysics();
+            }
+            else if (physStepKeyLocked && keyState.IsKeyUp(Keys.F8))
+            {
+                physStepKeyLocked = false;
+            }
+            if (!recKeyLocked && keyState.IsKeyDown(Keys.F6))
+            {
+                recKeyLocked = true;
+                gameEngine.RecordPhysStep = !gameEngine.RecordPhysStep;
+            }
+            else if (recKeyLocked && keyState.IsKeyUp(Keys.F6))
+            {
+                recKeyLocked = false;
+            }
+            if (!respawnKeyLocked && keyState.IsKeyDown(Keys.F7))
+            {
+                respawnKeyLocked = true;
+                gameEngine.Respawn();
+            }
+            else if (respawnKeyLocked && keyState.IsKeyUp(Keys.F7))
+            {
+                respawnKeyLocked = false;
+            }
             gameEngine.Update(gameTime);
             base.Update(gameTime);
 
         }
 
         private bool mouseLeftLocked = false;
-      
+    
+        private bool respawnKeyLocked = false;
+
+        public static void Debug(String str)
+        {
+            System.Diagnostics.Debug.WriteLine(str);
+        }
+
+        private bool recKeyLocked = false;
+
         private bool pressedJump = false;
        
+
+        private bool physKeyLocked = false;
+
+        private bool physStepKeyLocked = false;
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -131,19 +230,59 @@ namespace Yuuki2TheGame
             {
                 spriteBatch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
             }
-
-
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
             MouseState currentMouse = Mouse.GetState();
             Vector2 pos = new Vector2(currentMouse.X, currentMouse.Y);
 
             spriteBatch.Draw(bg.Texture, pos, Color.White);
-
+            if (DebugMode)
+            {
+                DrawDebugInfo();
+            }
+            if (gameEngine.ManualPhysStepMode)
+            {
+                DrawManualPhysInfo();
+            }
+            if (gameEngine.RecordPhysStep)
+            {
+                DrawRecordingPhysStep();
+            }
             spriteBatch.End();
             base.Draw(gameTime);
   
             
+        }
+
+        private void DrawDebugInfo()
+        {
+            PlayerCharacter pc = gameEngine.Player;
+            Vector2 s = pc.PhysPosition;
+            Vector2 v = pc.Velocity;
+            Vector2 a = pc.Acceleration;
+            Vector2 f = pc.Force;
+            string[] debug = new string[5];
+            debug[0] = string.Format("P:({0}, {1})", s.X, s.Y);
+            debug[1] = string.Format("V:({0}, {1})", v.X, v.Y);
+            debug[2] = string.Format("A:({0}, {1})", a.X, a.Y);
+            debug[3] = string.Format("F:({0}, {1})", f.X, f.Y);
+            debug[4] = string.Format("M:{0}  C:{1}  G:{2}", pc.Mass, Convert.ToString(pc.ContactMask, 2).PadLeft(4, '0'), pc.IsOnGround());
+            for (int i = 0; i < debug.Length; i++)
+            {
+                spriteBatch.DrawString(font, debug[i], new Vector2(5, i * 15), Color.Red);
+            }
+        }
+
+        private void DrawManualPhysInfo()
+        {
+            string debug = "Hit F8 to step physics or F5 to turn on auto step";
+            spriteBatch.DrawString(font, debug, new Vector2(200, 0), Color.Red);
+        }
+
+        private void DrawRecordingPhysStep()
+        {
+            string debug = "(recording)";
+            spriteBatch.DrawString(font, debug, new Vector2(720, 0), Color.Red);
         }
 
         private void ProcessSpriteGraphics(IList<Sprite> sprites)

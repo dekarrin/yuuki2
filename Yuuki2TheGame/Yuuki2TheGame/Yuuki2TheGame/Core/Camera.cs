@@ -6,39 +6,27 @@ using Microsoft.Xna.Framework;
 
 namespace Yuuki2TheGame.Core
 {
-    class Camera
+    class Camera : ScreenEntity
     {
 
-        private IPixelLocatable _follow;
+        private ScreenEntity _follow;
 
-        private int _x;
+        private int _offsetx;
 
-        private int _y;
-
-        private int _targetx;
-
-        private int _targety;
-
-        public Point Location
-        {
-            get
-            {
-                return new Point(_x, _y);
-            }
-        }
+        private int _offsety;
 
         public int TargetOffsetX
         {
             get
             {
-                return _targetx;
+                return _offsetx;
             }
             set
             {
-                _targetx = value;
+                _offsetx = value;
                 if (_follow != null)
                 {
-                    _x = _follow.PixelLocation.X + _targetx;
+                    X = _follow.Position.X + _offsetx;
                 }
             }
         }
@@ -47,19 +35,19 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return _targety;
+                return _offsety;
             }
             set
             {
-                _targety = value;
+                _offsety = value;
                 if (_follow != null)
                 {
-                    _y = _follow.PixelLocation.Y + _targety;
+                    Y = _follow.Position.Y + _offsety;
                 }
             }
         }
 
-        public IPixelLocatable Target {
+        public ScreenEntity Target {
             get
             {
                 return _follow;
@@ -68,53 +56,40 @@ namespace Yuuki2TheGame.Core
             {
                 if (_follow != null)
                 {
-                    _follow.OnMoved -= HandleMovement;
+                    _follow.OnPositionChanged -= HandleMovement;
                 }
                 _follow = value;
                 if (_follow != null)
                 {
-                    _follow.OnMoved += HandleMovement;
-                    _x = _follow.PixelLocation.X + TargetOffsetX;
-                    _y = _follow.PixelLocation.Y + TargetOffsetY;
+                    _follow.OnPositionChanged += HandleMovement;
+                    X = _follow.Position.X + TargetOffsetX;
+                    Y = _follow.Position.Y + TargetOffsetY;
                 }
-            }
-        }
-
-        /// <summary>
-        /// Coordinates of the block that this camera is over.
-        /// </summary>
-        public Point Coordinates
-        {
-            get
-            {
-                return new Point(Location.X / Game1.BLOCK_WIDTH, Location.Y / Game1.BLOCK_HEIGHT);
             }
         }
 
         /// <summary>
         /// Amount we are offset from the upper left of the block that we are over.
         /// </summary>
-        public Point Offsets
+        public Point BlockOffsets
         {
             get
             {
-                int x = Location.X;
-                int y = Location.Y;
-                return new Point(x % Game1.BLOCK_WIDTH, y % Game1.BLOCK_HEIGHT);
+                return new Point(X % Game1.BLOCK_WIDTH, Y % Game1.BLOCK_HEIGHT);
             }
         }
 
-        public Camera(IPixelLocatable gc, Point offset)
+        public Camera(Point size, ScreenEntity gc, Point offset) : base(size)
         {
             TargetOffsetX = offset.X; // must set targetoffset before target!
             TargetOffsetY = offset.Y;
             Target = gc;
         }
 
-        public void HandleMovement(object sender, MovedEventArgs e)
+        public void HandleMovement(object sender, PositionChangedEventArgs e)
         {
-            _x = e.NewLocation.X + TargetOffsetX;
-            _y = e.NewLocation.Y + TargetOffsetY;
+            X = e.NewPosition.X + TargetOffsetX;
+            Y = e.NewPosition.Y + TargetOffsetY;
         }
 
     }
