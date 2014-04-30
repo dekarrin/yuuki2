@@ -15,6 +15,8 @@ namespace Yuuki2TheGame.Core
 
         private int _offsety;
 
+        public Rectangle Range { get; set; }
+
         public int TargetOffsetX
         {
             get
@@ -26,7 +28,7 @@ namespace Yuuki2TheGame.Core
                 _offsetx = value;
                 if (_follow != null)
                 {
-                    X = _follow.Position.X + _offsetx;
+                    X = Math.Min(Math.Max(_follow.Position.X + _offsetx, Range.X), (Range.X + Range.Width - 1) - (Width - 1));
                 }
             }
         }
@@ -42,7 +44,7 @@ namespace Yuuki2TheGame.Core
                 _offsety = value;
                 if (_follow != null)
                 {
-                    Y = _follow.Position.Y + _offsety;
+                    Y = Math.Min(Math.Max(_follow.Position.Y + _offsety, Range.Y), (Range.Y + Range.Height - 1) - (Height - 1));
                 }
             }
         }
@@ -62,8 +64,8 @@ namespace Yuuki2TheGame.Core
                 if (_follow != null)
                 {
                     _follow.OnPositionChanged += HandleMovement;
-                    X = _follow.Position.X + TargetOffsetX;
-                    Y = _follow.Position.Y + TargetOffsetY;
+                    X = Math.Min(Math.Max(_follow.Position.X + TargetOffsetX, Range.X), (Range.X + Range.Width - 1) - (Width - 1));
+                    Y = Math.Min(Math.Max(_follow.Position.Y + TargetOffsetY, Range.Y), (Range.Y + Range.Height - 1) - (Height - 1));
                 }
             }
         }
@@ -79,17 +81,18 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public Camera(Point size, ScreenEntity gc, Point offset) : base(size)
+        public Camera(Point size, ScreenEntity gc, Point offset, Rectangle range) : base(size)
         {
             TargetOffsetX = offset.X; // must set targetoffset before target!
             TargetOffsetY = offset.Y;
             Target = gc;
+            Range = range;
         }
 
         public void HandleMovement(object sender, PositionChangedEventArgs e)
         {
-            X = e.NewPosition.X + TargetOffsetX;
-            Y = e.NewPosition.Y + TargetOffsetY;
+            X = Math.Min(Math.Max(e.NewPosition.X + TargetOffsetX, Range.X), (Range.X + Range.Width - 1) - (Width - 1));
+            Y = Math.Min(Math.Max(e.NewPosition.Y + TargetOffsetY, Range.Y), (Range.Y + Range.Height - 1) - (Height - 1));
         }
 
     }

@@ -67,7 +67,8 @@ namespace Yuuki2TheGame.Core
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);
-            Camera = new Camera(new Point(Game1.GAME_WIDTH, Game1.GAME_HEIGHT), Player, new Point(-100, -300));
+            Rectangle camLimits = new Rectangle(0, 0, Game1.BLOCK_WIDTH * Game1.WORLD_WIDTH, Game1.BLOCK_HEIGHT * Game1.WORLD_HEIGHT);
+            Camera = new Camera(new Point(Game1.GAME_WIDTH, Game1.GAME_HEIGHT), Player, new Point(-100, -300), camLimits);
             physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_MEDIUM_DENSITY, PHYS_SURFACE_FRICTION, PHYS_TIMESCALE);
             physics.AddMap(_map);
             physics.AddPhob(Player);
