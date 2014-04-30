@@ -140,13 +140,21 @@ namespace Yuuki2TheGame.Core
             get
             {
                 Vector2 accel = (Force - Drag - Friction) / Mass;
-                if ((IsOnGround() || IsOnCeiling()) && Force.Y == _global_force.Y)
+                if (IsOnGround())
                 {
-                    accel.Y = 0;
+                    accel.Y = Math.Min(accel.Y, 0);
                 }
-                if ((IsOnLeftWall() || IsOnRightWall()) && Force.X == _global_force.X)
+                if (IsOnCeiling())
                 {
-                    accel.X = 0;
+                    accel.Y = Math.Max(accel.Y, 0);
+                }
+                if (IsOnRightWall())
+                {
+                    accel.X = Math.Min(accel.X, 0);
+                }
+                if (IsOnLeftWall())
+                {
+                    accel.X = Math.Max(accel.X, 0);
                 }
                 return accel;
             }
