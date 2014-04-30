@@ -169,11 +169,11 @@ namespace Yuuki2TheGame.Physics
                         break;
 
                     case ContactType.UP:
-                        correction = new Point(phob.Bounds.X, contact.Bounds.Bottom + CONTACT_EPSILON);
+                        correction = new Point(phob.Bounds.X, contact.Bounds.Bottom + CONTACT_EPSILON - 1);
                         break;
 
                     case ContactType.LEFT:
-                        correction = new Point(contact.Bounds.Right + CONTACT_EPSILON, phob.Bounds.Y);
+                        correction = new Point(contact.Bounds.Right + CONTACT_EPSILON - 1, phob.Bounds.Y);
                         break;
 
                     case ContactType.RIGHT:
