@@ -20,6 +20,28 @@ namespace Yuuki2TheGame.Core
 
         public const float PHYS_SURFACE_FRICTION = 0.3f;
 
+        private bool _recording = false;
+
+        public bool RecordPhysStep
+        {
+            get
+            {
+                return _recording;
+            }
+            set
+            {
+                if (value)
+                {
+                    physics.StartRecording();
+                }
+                else
+                {
+                    physics.StopRecording();
+                }
+                _recording = value;
+            }
+        }
+
         public bool ManualPhysStepMode { get; set; }
 
         private List<GameCharacter> _characters = new List<GameCharacter>();
@@ -62,6 +84,10 @@ namespace Yuuki2TheGame.Core
 
         public void Update(GameTime gameTime)
         {
+            if (RecordPhysStep)
+            {
+                _recording = physics.RecordingQueryTime;
+            }
             //TESTCamMove();
             foreach (GameCharacter c in _characters)
             {

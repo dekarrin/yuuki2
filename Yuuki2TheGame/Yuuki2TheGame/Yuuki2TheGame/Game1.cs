@@ -163,10 +163,26 @@ namespace Yuuki2TheGame
             {
                 physStepKeyLocked = false;
             }
+            if (!recKeyLocked && keyState.IsKeyDown(Keys.F6))
+            {
+                recKeyLocked = true;
+                gameEngine.RecordPhysStep = !gameEngine.RecordPhysStep;
+            }
+            else if (recKeyLocked && keyState.IsKeyUp(Keys.F6))
+            {
+                recKeyLocked = false;
+            }
             // TODO: Add your update logic here
             gameEngine.Update(gameTime);
             base.Update(gameTime);
         }
+
+        public static void Debug(String str)
+        {
+            System.Diagnostics.Debug.WriteLine(str);
+        }
+
+        private bool recKeyLocked = false;
 
         private bool pressedJump = false;
 
@@ -207,6 +223,10 @@ namespace Yuuki2TheGame
             {
                 DrawManualPhysInfo();
             }
+            if (gameEngine.RecordPhysStep)
+            {
+                DrawRecordingPhysStep();
+            }
             spriteBatch.End();
             base.Draw(gameTime);
         }
@@ -218,16 +238,28 @@ namespace Yuuki2TheGame
             Vector2 v = pc.Velocity;
             Vector2 a = pc.Acceleration;
             Vector2 f = pc.Force;
-            string onGround = pc.IsOnGround() ? "T" : "F";
-            string debug = "P:({0}, {1})  V:({2}, {3})  A:({4}, {5})  F:({6}, {7})  M:{8}  G:{9}";
-            string output = string.Format(debug, s.X, s.Y, v.X, v.Y, a.X, a.Y, f.X, f.Y, pc.Mass, onGround);
-            spriteBatch.DrawString(font, output, new Vector2(10, 10), Color.Red);
+            string[] debug = new string[5];
+            debug[0] = string.Format("P:({0}, {1})", s.X, s.Y);
+            debug[1] = string.Format("V:({0}, {1})", v.X, v.Y);
+            debug[2] = string.Format("A:({0}, {1})", a.X, a.Y);
+            debug[3] = string.Format("F:({0}, {1})", f.X, f.Y);
+            debug[4] = string.Format("M:{0}  G:{1}", pc.Mass, pc.IsOnGround());
+            for (int i = 0; i < debug.Length; i++)
+            {
+                spriteBatch.DrawString(font, debug[i], new Vector2(5, i * 15), Color.Red);
+            }
         }
 
         private void DrawManualPhysInfo()
         {
             string debug = "Hit F8 to step physics or F5 to turn on auto step";
-            spriteBatch.DrawString(font, debug, new Vector2(10, 25), Color.Red);
+            spriteBatch.DrawString(font, debug, new Vector2(200, 0), Color.Red);
+        }
+
+        private void DrawRecordingPhysStep()
+        {
+            string debug = "(recording)";
+            spriteBatch.DrawString(font, debug, new Vector2(720, 0), Color.Red);
         }
 
         private void ProcessSpriteGraphics(IList<Sprite> sprites)

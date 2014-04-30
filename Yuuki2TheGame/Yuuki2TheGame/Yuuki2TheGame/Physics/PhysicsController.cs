@@ -17,6 +17,8 @@ namespace Yuuki2TheGame.Physics
             public PhysicsPrivateSetter<int> setContactMask;
         }
 
+        public bool RecordingQueryTime { get; private set; }
+
         /// <summary>
         /// Maps Phobs to their PhobAccessors struct.
         /// </summary>
@@ -26,9 +28,12 @@ namespace Yuuki2TheGame.Physics
 
         private const int GROUND_EPSILON = 1;
 
-        private const int MAX_ITEMS_PER_QUAD_LEAF = 20;
+        private const int MAX_ITEMS_PER_QUAD_LEAF = 0;
 
-        private const int MIN_QUAD_SIZE = 256;
+        /// <summary>
+        /// This should be block_width times an odd number. Idk why. Fucking stupid quad tree.
+        /// </summary>
+        private const int MIN_QUAD_SIZE = Game1.BLOCK_WIDTH * 3;
 
         private IList<IPhysical> phobs = new List<IPhysical>();
 
@@ -40,8 +45,10 @@ namespace Yuuki2TheGame.Physics
 
         private QuadTree<IPhysical> phobTree = new QuadTree<IPhysical>(new Point(MIN_QUAD_SIZE, MIN_QUAD_SIZE), MAX_ITEMS_PER_QUAD_LEAF, false);
 
-        private QuadTree<IQuadObject> landTree = new QuadTree<IQuadObject>(new Point(MIN_QUAD_SIZE, MIN_QUAD_SIZE), MAX_ITEMS_PER_QUAD_LEAF, false);
+        private IList<long> queryTimes = new List<long>();
 
+        private Map map;
+        
         private float mediumDensity;
 
         private float timescale;
@@ -56,31 +63,17 @@ namespace Yuuki2TheGame.Physics
             this.globalAcceleration = new Vector2(wind, gravity);
         }
 
-        public void AddMap(Yuuki2TheGame.Core.Map map)
+        public void AddMap(Map map)
         {
-            Point coords = new Point();
-            Block block = null;
-            for (coords.X = 0; coords.X < map.Width; coords.X++)
-            {
-                for (coords.Y = 0; coords.Y < map.Height; coords.Y++)
-                {
-                    block = map.BlockAt(coords);
-                    if (block != null)
-                    {
-                        AddLand(block);
-                    }
-                }
-            }
-        }
-
-        public void AddLand(IQuadObject land)
-        {
-            lands.Add(land);
-            landTree.Insert(land);
+            this.map = map;
         }
 
         public void Update(GameTime time)
         {
+            if (RecordingQueryTime && queryTimes.Count >= 250)
+            {
+                StopRecording();
+            }
             Step(time.ElapsedGameTime.Milliseconds / 1000.0f);
         }
 
@@ -114,6 +107,30 @@ namespace Yuuki2TheGame.Physics
             phobTree.Remove(obj);
             obj.RemoveFromEngine();
         }
+
+        public void StartRecording()
+        {
+            if (RecordingQueryTime)
+            {
+                StopRecording();
+            }
+            RecordingQueryTime = true;
+            queryTimes = new List<long>();
+        }
+
+        public void StopRecording()
+        {
+            RecordingQueryTime = false;
+            if (queryTimes.Count > 0)
+            {
+                long avg = queryTimes.Sum() / queryTimes.Count;
+                Game1.Debug("Avg: " + avg + " [" + queryTimes.Min() + ", " + queryTimes.Max() + "]");
+            }
+            else
+            {
+                Game1.Debug("No data for average query time");
+            }
+        }
         
         /// <summary>
         /// Returns list of previously grounded phobs that have left the ground.
@@ -142,7 +159,7 @@ namespace Yuuki2TheGame.Physics
             IList<IPhysical> toGround = new List<IPhysical>();
             foreach (IPhysical phob in airborne)
             {
-                List<IQuadObject> objs = landTree.Query(phob.Bounds);
+                IList<Block> objs = map.QueryPixels(phob.Bounds);
                 if (objs.Count() > 0)
                 {
                     IQuadObject top = null;
@@ -202,9 +219,20 @@ namespace Yuuki2TheGame.Physics
 
         private bool CheckGroundContact(IPhysical toCheck)
         {
+            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
             Rectangle bounds = toCheck.Bounds;
             Rectangle queryBounds = new Rectangle(bounds.X, bounds.Y + bounds.Height, bounds.Width, GROUND_EPSILON);
-            return landTree.Query(queryBounds).Any();
+            if (RecordingQueryTime)
+            {
+                watch.Start();
+            }
+            IList<Block> query = map.QueryPixels(queryBounds);
+            watch.Stop();
+            if (RecordingQueryTime)
+            {
+                queryTimes.Add(watch.Elapsed.Ticks);
+            }
+            return query.Any();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Yuuki2TheGame.Core
 
         private const string DEFAULT_FORCE_NAME = "__DEFAULT__";
 
-        private const float MINIMUM_VELOCITY = 0.0000000001f;
+        private const float MINIMUM_VELOCITY = 0.05f;
 
         private class ForceListing {
             public Vector2 originalForce;

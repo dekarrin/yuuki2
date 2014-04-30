@@ -9,55 +9,13 @@ namespace Yuuki2TheGame.Core
     /// <summary>
     /// Please note that block array coordinates are x, y, 0 is upper left.
     /// </summary>
-    class Map : IUpdateable
+    class Map
     {
         public int Height { get; private set; }
 
         public int Width { get; private set; }
 
         public List<List<Block>> world { get; private set; }
-
-        private int _updateOrder = 0;
-
-        public int UpdateOrder
-        {
-            get
-            {
-                return _updateOrder;
-            }
-            set
-            {
-                bool diff = _updateOrder != value;
-                _updateOrder = value;
-                if (diff && UpdateOrderChanged != null)
-                {
-                    UpdateOrderChanged(this, new EventArgs());
-                }
-            }
-        }
-
-        private bool _enabled = true;
-
-        public bool Enabled
-        {
-            get
-            {
-                return _enabled;
-            }
-            set
-            {
-                bool diff = _enabled != value;
-                _enabled = value;
-                if (diff && EnabledChanged != null)
-                {
-                    EnabledChanged(this, new EventArgs());
-                }
-            }
-        }
-
-        public event EventHandler<EventArgs> UpdateOrderChanged = null;
-
-        public event EventHandler<EventArgs> EnabledChanged = null;
 
         public Map(int height, int width)
         {
@@ -84,7 +42,40 @@ namespace Yuuki2TheGame.Core
                 }
                 world.Add(slice);
             }
+            //world[3][(Height / 2)] = new Block(1, 3, (Height / 2));
             return world;
+        }
+
+        public IList<Block> QueryPixels(Rectangle rect)
+        {
+            int x1 = (int)(rect.X / (float) Game1.BLOCK_WIDTH);
+            int y1 = (int)(rect.Y / (float) Game1.BLOCK_HEIGHT);
+            int x2 = (int)((rect.X + rect.Width - 1) / (float)Game1.BLOCK_WIDTH);
+            int y2 = (int)((rect.Y + rect.Height - 1) / (float)Game1.BLOCK_HEIGHT);
+            int w = Math.Abs(x2 - x1) + 1;
+            int h = Math.Abs(y2 - y1) + 1;
+            return Query(new Rectangle(x1, y1, w, h));
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="rect"></param>
+        /// <returns></returns>
+        public IList<Block> Query(Rectangle rect)
+        {
+            IList<Block> results = new List<Block>();
+            for (int i = 0; i < rect.Width; i++)
+            {
+                for (int j = 0; j < rect.Height; j++)
+                {
+                    Block b = world[rect.X + i][rect.Y + j];
+                    if (b != null)
+                    {
+                        results.Add(b);
+                    }
+                }
+            }
+            return results;
         }
 
         public void Update(GameTime gameTime)
