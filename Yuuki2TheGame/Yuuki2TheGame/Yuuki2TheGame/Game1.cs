@@ -243,7 +243,7 @@ namespace Yuuki2TheGame
             debug[1] = string.Format("V:({0}, {1})", v.X, v.Y);
             debug[2] = string.Format("A:({0}, {1})", a.X, a.Y);
             debug[3] = string.Format("F:({0}, {1})", f.X, f.Y);
-            debug[4] = string.Format("M:{0}  G:{1}", pc.Mass, pc.IsOnGround());
+            debug[4] = string.Format("M:{0}  C:{1}  G:{2}", pc.Mass, Convert.ToString(pc.ContactMask, 2).PadLeft(4, '0'), pc.IsOnGround());
             for (int i = 0; i < debug.Length; i++)
             {
                 spriteBatch.DrawString(font, debug[i], new Vector2(5, i * 15), Color.Red);

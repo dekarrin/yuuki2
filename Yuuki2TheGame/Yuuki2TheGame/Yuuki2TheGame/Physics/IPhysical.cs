@@ -17,8 +17,8 @@ namespace Yuuki2TheGame.Physics
 
     enum ContactType
     {
-        UP = 0x01,
-        DOWN = 0x02,
+        DOWN = 0x01,
+        UP = 0x02,
         RIGHT = 0x04,
         LEFT = 0x08
     }

@@ -42,7 +42,7 @@ namespace Yuuki2TheGame.Core
                 }
                 world.Add(slice);
             }
-            //world[3][(Height / 2)] = new Block(1, 3, (Height / 2));
+            world[3][(Height / 2)] = new Block(1, 3, (Height / 2));
             return world;
         }
 
@@ -52,6 +52,22 @@ namespace Yuuki2TheGame.Core
             int y1 = (int)(rect.Y / (float) Game1.BLOCK_HEIGHT);
             int x2 = (int)((rect.X + rect.Width - 1) / (float)Game1.BLOCK_WIDTH);
             int y2 = (int)((rect.Y + rect.Height - 1) / (float)Game1.BLOCK_HEIGHT);
+            if (rect.X < 0)
+            {
+                x1--;
+                if (rect.X < -Game1.BLOCK_WIDTH)
+                {
+                    x2--;
+                }
+            }
+            if (rect.Y < 0)
+            {
+                y1--;
+                if (rect.Y < -Game1.BLOCK_HEIGHT)
+                {
+                    y2--;
+                }
+            }
             int w = Math.Abs(x2 - x1) + 1;
             int h = Math.Abs(y2 - y1) + 1;
             return Query(new Rectangle(x1, y1, w, h));
@@ -68,10 +84,15 @@ namespace Yuuki2TheGame.Core
             {
                 for (int j = 0; j < rect.Height; j++)
                 {
-                    Block b = world[rect.X + i][rect.Y + j];
-                    if (b != null)
+                    int x = rect.X + i;
+                    int y = rect.Y + j;
+                    if (x >= 0 && y >= 0 && x < world.Count && y < world[x].Count)
                     {
-                        results.Add(b);
+                        Block b = world[x][y];
+                        if (b != null)
+                        {
+                            results.Add(b);
+                        }
                     }
                 }
             }

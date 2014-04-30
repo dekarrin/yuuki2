@@ -79,6 +79,9 @@ namespace Yuuki2TheGame.Physics
             {
                 phob.UpdatePhysics(secs * timescale);
                 CheckCollision(phob, ContactType.DOWN);
+                CheckCollision(phob, ContactType.UP);
+                CheckCollision(phob, ContactType.RIGHT);
+                CheckCollision(phob, ContactType.LEFT);
             }
         }
 
@@ -132,10 +135,24 @@ namespace Yuuki2TheGame.Physics
             return (int) Math.Round(physUnits * Game1.BLOCK_WIDTH);
         }
 
-        private void CorrectCollision(IPhysical phob, Point newPos)
+        private void CorrectCollision(IPhysical phob, ContactType type, Point newPos)
         {
             phob.PhysPosition = new Vector2(PixelsToMeters(newPos.X), PixelsToMeters(newPos.Y));
-            phob.Velocity = new Vector2(phob.Velocity.X, 0);
+            Vector2 vCorrection;
+            switch (type)
+            {
+                default:
+                case ContactType.DOWN:
+                case ContactType.UP:
+                    vCorrection = new Vector2(phob.Velocity.X, 0);
+                    break;
+
+                case ContactType.LEFT:
+                case ContactType.RIGHT:
+                    vCorrection = new Vector2(0, phob.Velocity.Y);
+                    break;
+            }
+            phob.Velocity = vCorrection;
         }
 
         private void CheckCollision(IPhysical phob, ContactType type)
@@ -163,7 +180,7 @@ namespace Yuuki2TheGame.Physics
                         correction = new Point(contact.Bounds.Left - phob.Bounds.Width, phob.Bounds.Y);
                         break;
                 }
-                CorrectCollision(phob, correction);
+                CorrectCollision(phob, type, correction);
                 accessors[phob].setContactMask(phob.ContactMask | (int)type);
             }
             else if (contact == null && phob.IsInContact(type))

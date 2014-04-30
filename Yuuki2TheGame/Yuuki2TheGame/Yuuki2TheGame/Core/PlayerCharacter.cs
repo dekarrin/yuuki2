@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Yuuki2TheGame.Physics;
 
 namespace Yuuki2TheGame.Core
 {
@@ -22,6 +23,27 @@ namespace Yuuki2TheGame.Core
         {
         }
 
+        protected override void ContactMaskChanged(int oldValue)
+        {
+            if (IsOnLeftWall())
+            {
+                RemoveForce("move_left");
+            }
+            else if (movingLeft && ((oldValue & (int)ContactType.LEFT) != 0))
+            {
+                ApplyLeftForce();
+            }
+            if (IsOnRightWall())
+            {
+                RemoveForce("move_right");
+            }
+            else if (movingRight && ((oldValue & (int)ContactType.RIGHT) != 0))
+            {
+                ApplyRightForce();
+            }
+            base.ContactMaskChanged(oldValue);
+        }
+
         public override void Jump()
         {
             if (IsOnGround())
@@ -35,7 +57,7 @@ namespace Yuuki2TheGame.Core
             if (!movingLeft)
             {
                 movingLeft = true;
-                AddForce(new Vector2(-WALK_FORCE, 0), "move_left", new Vector2(-MAX_SPEED, 0));
+                ApplyLeftForce();
             }
         }
 
@@ -44,7 +66,7 @@ namespace Yuuki2TheGame.Core
             if (!movingRight)
             {
                 movingRight = true;
-                AddForce(new Vector2(WALK_FORCE, 0), "move_right", new Vector2(MAX_SPEED, 0));
+                ApplyRightForce();
             }
         }
 
@@ -63,6 +85,22 @@ namespace Yuuki2TheGame.Core
             {
                 movingRight = false;
                 RemoveForce("move_right");
+            }
+        }
+
+        private void ApplyLeftForce()
+        {
+            if (!IsOnLeftWall())
+            {
+                AddForce(new Vector2(-WALK_FORCE, 0), "move_left", new Vector2(-MAX_SPEED, 0));
+            }
+        }
+
+        private void ApplyRightForce()
+        {
+            if (!IsOnRightWall())
+            {
+                AddForce(new Vector2(WALK_FORCE, 0), "move_right", new Vector2(MAX_SPEED, 0));
             }
         }
     }

@@ -100,9 +100,13 @@ namespace Yuuki2TheGame.Core
             get
             {
                 Vector2 accel = (Force - Drag - Friction) / Mass;
-                if (IsOnGround() && Force.Y == _global_force.Y)
+                if ((IsOnGround() || IsOnCeiling()) && Force.Y == _global_force.Y)
                 {
                     accel.Y = 0;
+                }
+                if ((IsOnLeftWall() || IsOnRightWall()) && Force.X == _global_force.X)
+                {
+                    accel.X = 0;
                 }
                 return accel;
             }
@@ -121,10 +125,15 @@ namespace Yuuki2TheGame.Core
             {
                 float fricx = 0;
                 float fricy = 0;
-                if (IsOnGround() && Velocity.X != 0)
+                if ((IsOnGround() || IsOnCeiling()) && Velocity.X != 0)
                 {
                     fricx = FrictionCoefficient * Math.Abs(_global_force.Y) * FrictionEffect.X;
                     fricx *= (Velocity.X > 0) ? 1 : -1;
+                }
+                if ((IsOnLeftWall() || IsOnRightWall()) && Velocity.Y != 0)
+                {
+                    fricy = FrictionCoefficient * Math.Abs(_global_force.X) * FrictionEffect.Y;
+                    fricy *= (Velocity.Y > 0) ? 1 : -1;
                 }
                 return new Vector2(fricx, fricy);
             }
@@ -278,7 +287,9 @@ namespace Yuuki2TheGame.Core
             GlobalAcceleration = globalAcceleration;
             return delegate(int value)
             {
+                int val = ContactMask;
                 ContactMask = value;
+                ContactMaskChanged(val);
             };
         }
 
@@ -307,6 +318,9 @@ namespace Yuuki2TheGame.Core
             _position = BlockPosition;
             FrictionEffect = new Vector2(1.0f, 1.0f);
         }
+
+        protected virtual void ContactMaskChanged(int oldValue)
+        {}
 
         private void SetVelocity(float secs)
         {
