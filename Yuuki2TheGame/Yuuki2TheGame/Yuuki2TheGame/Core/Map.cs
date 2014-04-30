@@ -46,7 +46,7 @@ namespace Yuuki2TheGame.Core
             return world;
         }
 
-        public IList<Block> QueryPixels(Rectangle rect)
+        public IList<Block> QueryPixels(Rectangle rect, Physics.ContactType type)
         {
             int x1 = (int)(rect.X / (float) Game1.BLOCK_WIDTH);
             int y1 = (int)(rect.Y / (float) Game1.BLOCK_HEIGHT);
@@ -55,7 +55,7 @@ namespace Yuuki2TheGame.Core
             if (rect.X < 0)
             {
                 x1--;
-                if (rect.X < -Game1.BLOCK_WIDTH)
+                if (rect.X < -rect.Width) 
                 {
                     x2--;
                 }
@@ -63,14 +63,15 @@ namespace Yuuki2TheGame.Core
             if (rect.Y < 0)
             {
                 y1--;
-                if (rect.Y < -Game1.BLOCK_HEIGHT)
+                if (rect.Y < -rect.Height)
                 {
                     y2--;
                 }
             }
             int w = Math.Abs(x2 - x1) + 1;
             int h = Math.Abs(y2 - y1) + 1;
-            return Query(new Rectangle(x1, y1, w, h));
+            IList<Block> bl = Query(new Rectangle(x1, y1, w, h));
+            return bl;
         }
 
         /// <summary>
