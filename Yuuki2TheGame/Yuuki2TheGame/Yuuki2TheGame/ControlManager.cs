@@ -280,13 +280,15 @@ namespace Yuuki2TheGame
 
             public int startY = -1;
 
-            public int minDeltaX = 0;
+            public int minDistX = 0;
 
-            public int minDeltaY = 0;
+            public int minDistY = 0;
 
-            public int minDelta = 0;
+            public double minDist = 0;
 
-            public long fireInterval = 0;
+            public long checkInterval = 0;
+
+            public long lastCheck = 0;
 
             public long lastFire = 0;
 
@@ -295,11 +297,13 @@ namespace Yuuki2TheGame
 
         private class MouseScrollHandler
         {
-            public int minDelta = 0;
+            public int minDist = 0;
 
             public int startValue = 0;
 
-            public long fireInterval;
+            public long checkInterval;
+
+            public long lastCheck = 0;
 
             public long lastFire = 0;
 
@@ -359,14 +363,19 @@ namespace Yuuki2TheGame
 
         private void UpdateMouseScroll(GameTime gt, MouseState mse)
         {
-
+            long time = gt.TotalGameTime.Ticks;
+            foreach (MouseScrollHandler hlr in scrollHandlers)
+            {
+                CheckScrollMovement(hlr, mse, time);
+            }
         }
 
         private void UpdateMouseMovement(GameTime gt, MouseState mse)
         {
+            long time = gt.TotalGameTime.Ticks;
             foreach (MouseMoveHandler hlr in moveHandlers)
             {
-                //new TimeSpan()
+                CheckMouseMovement(hlr, mse, time);
             }
         }
 
@@ -377,6 +386,48 @@ namespace Yuuki2TheGame
                 long down = gt.TotalGameTime.Ticks - hlr.startTime;
                 CheckKeyState(hlr, kb, down, gt.TotalGameTime.Ticks);
                 CheckKeyDownFire(hlr, down);
+            }
+        }
+
+        private void CheckScrollMovement(MouseScrollHandler hlr, MouseState mse, long time)
+        {
+            long timeSinceCheck = time - hlr.lastCheck;
+            if (timeSinceCheck >= hlr.checkInterval)
+            {
+                hlr.lastCheck = time;
+                int delta = mse.ScrollWheelValue - hlr.startValue;
+                int dist = Math.Abs(delta);
+                if (dist >= hlr.minDist && dist != 0)
+                {
+                    if (delta < 0 && hlr.OnScrollDown != null)
+                    {
+                        long timeSinceFire = time - hlr.lastFire;
+                        hlr.OnScrollDown(new MouseScrollEventArgs(mse.X, mse.Y, mse.ScrollWheelValue, hlr.startValue, timeSinceFire));
+                        hlr.startValue = mse.ScrollWheelValue;
+                        hlr.lastFire = time;
+                    }
+                }
+            }
+        }
+
+        private void CheckMouseMovement(MouseMoveHandler handler, MouseState mse, long time)
+        {
+            long timeSinceCheck = time - handler.lastCheck;
+            if (timeSinceCheck >= handler.checkInterval)
+            {
+                // TODO: SET startX and startY at user creation of event!
+                handler.lastCheck = time;
+                int distx = Math.Abs(mse.X - handler.startX);
+                int disty = Math.Abs(mse.Y - handler.startY);
+                double dist = Math.Sqrt((distx * distx) + (disty * disty));
+                if (handler.OnMove != null && distx >= handler.minDistX && disty >= handler.minDistY && dist >= handler.minDist)
+                {
+                    long timeSinceFire = time - handler.lastFire;
+                    handler.OnMove(new MouseMoveEventArgs(mse.X, mse.Y, handler.startX, handler.startY, timeSinceFire));
+                    handler.startX = mse.X;
+                    handler.startY = mse.Y;
+                    handler.lastFire = time;
+                }
             }
         }
 
