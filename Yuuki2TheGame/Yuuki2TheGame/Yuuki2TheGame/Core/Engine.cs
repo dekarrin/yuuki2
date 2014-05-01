@@ -88,7 +88,6 @@ namespace Yuuki2TheGame.Core
 
         public void Update(GameTime gameTime)
         {
-            UpdateBlockInput(gameTime);
             if (RecordPhysStep)
             {
                 _recording = physics.RecordingQueryTime;
