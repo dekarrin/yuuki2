@@ -23,6 +23,8 @@ namespace Yuuki2TheGame.Core
 
         private bool _recording = false;
 
+        SoundEngine audioEngine;
+
         public bool RecordPhysStep
         {
             get
@@ -70,6 +72,7 @@ namespace Yuuki2TheGame.Core
             physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_MEDIUM_DENSITY, PHYS_SURFACE_FRICTION, PHYS_TIMESCALE);
             physics.AddMap(_map);
             physics.AddPhob(Player);
+            audioEngine = new SoundEngine(Game1.GameAudio);
         }
 
         private int TESTcycle = 0;
@@ -126,10 +129,12 @@ namespace Yuuki2TheGame.Core
                 if (block != null)
                 {
                     _map.DestroyBlock(p);
+                    audioEngine.PlaySound(Game1.GameAudio);
                 }
                 else
                 {
                     _map.AddBlock(p);
+                    audioEngine.PlaySound(Game1.GameAudio);
                 }
             }
         }
