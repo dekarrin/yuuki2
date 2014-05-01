@@ -22,6 +22,7 @@ namespace Yuuki2TheGame
         SpriteBatch spriteBatch;
         Engine gameEngine;
         Texture2D defaultTexture;
+        public static List<SoundEffect> GameAudio = new List<SoundEffect>();
 
         public const int WORLD_WIDTH = 100;
         public const int WORLD_HEIGHT = 100;
@@ -48,8 +49,19 @@ namespace Yuuki2TheGame
             graphics.PreferredBackBufferHeight = GAME_HEIGHT;
             graphics.ApplyChanges();
             Content.RootDirectory = "Content";
+
+
+            SoundEffect bgm = Content.Load<SoundEffect>("Backround");
+            SoundEffect swing01 = Content.Load<SoundEffect>("swing01");
+            GameAudio.Add(bgm);
+            GameAudio.Add(swing01);
+
             blocksOnScreen = new Point (GAME_WIDTH / METER_LENGTH + 1, GAME_HEIGHT / METER_LENGTH + 1);
             gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
+
+
+
+
         }
 
         ControlManager controls = new ControlManager();
