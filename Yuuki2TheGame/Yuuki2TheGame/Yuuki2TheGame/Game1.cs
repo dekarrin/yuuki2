@@ -31,6 +31,8 @@ namespace Yuuki2TheGame
 
         public const int METER_LENGTH = 16;
 
+        private Texture2D fullScreenRect;
+
         /// <summary>
         /// Contains the number of blocks that are on the screen.
         /// </summary>
@@ -77,7 +79,7 @@ namespace Yuuki2TheGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            fullScreenRect = CreateRect(GAME_WIDTH, GAME_HEIGHT);
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
             font = Content.Load<SpriteFont>("SegoeUI");
         }
@@ -167,7 +169,22 @@ namespace Yuuki2TheGame
 
         private void DrawInventory()
         {
+            if (gameEngine.InInventoryScreen)
+            {
+                spriteBatch.Draw(fullScreenRect, fullScreenRect.Bounds, new Color(0, 0, 0, 128));
+            }
+        }
 
+        private Texture2D CreateRect(int width, int height)
+        {
+            Texture2D tex = new Texture2D(graphics.GraphicsDevice, width, height, false, SurfaceFormat.Color);
+            Color[] data = new Color[width * height];
+            for (int i = 0; i < data.Length; i++)
+            {
+                data[i] = new Color(0, 0, 0, 255);
+            }
+            tex.SetData(data);
+            return tex;
         }
 
         private void BindControls()
@@ -192,7 +209,7 @@ namespace Yuuki2TheGame
             };
             controls.BindKeyDown(Keys.Escape, delegate(KeyEventArgs e)
             {
-                gameEngine.OverlayMode = !gameEngine.OverlayMode;
+                gameEngine.InInventoryScreen = !gameEngine.InInventoryScreen;
             }, false);
             controls.BindKeyDown(Keys.Left, startLeft, false);
             controls.BindKeyDown(Keys.A, startLeft, false);

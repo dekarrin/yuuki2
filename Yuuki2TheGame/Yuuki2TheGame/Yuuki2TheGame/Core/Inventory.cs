@@ -25,6 +25,16 @@ namespace Yuuki2TheGame.Core
     {
         private List<InventorySlot> slots;
 
+        public int QuickSlotsCount { get; set; }
+
+        public IList<InventorySlot> QuickSlots
+        {
+            get
+            {
+                return slots.Take(QuickSlotsCount).ToList();
+            }
+        }
+
         public Inventory(int size)
         {
             slots = new List<InventorySlot>();

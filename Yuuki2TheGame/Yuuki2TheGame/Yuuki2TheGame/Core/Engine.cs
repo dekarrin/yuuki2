@@ -21,7 +21,7 @@ namespace Yuuki2TheGame.Core
 
         public const float PHYS_SURFACE_FRICTION = 0.3f;
 
-        public bool OverlayMode { get; set; }
+        public bool InInventoryScreen { get; set; }
 
         private bool _recording = false;
 
@@ -61,7 +61,7 @@ namespace Yuuki2TheGame.Core
 
         public Engine(Point size)
         {
-            OverlayMode = false;
+            InInventoryScreen = false;
             ManualPhysStepMode = false;
             _map = new Map(size.X, size.Y);
             spawn = new Point(0, (size.Y / 2) * Game1.METER_LENGTH - 30);
@@ -88,7 +88,7 @@ namespace Yuuki2TheGame.Core
 
         public IList<InventorySlot> GetQuickSlots()
         {
-
+            return Player.Inventory.QuickSlots;
         }
 
         public void Update(GameTime gameTime)
