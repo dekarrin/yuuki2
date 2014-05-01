@@ -33,8 +33,10 @@ namespace Yuuki2TheGame
         /// </summary>
         public long fireCount;
 
-        public KeyEventArgs(Keys key, int down, int minTime, long fireCount)
+        public KeyEventArgs(Keys key, long downTicks, long minTimeTicks, long fireCount)
         {
+            int down = (int)(((double)downTicks) / 10000.0);
+            int minTime = (int)(((double)minTimeTicks) / 10000.0);
             this.key = key;
             this.timeActive = new TimeSpan(0, 0, 0, 0, down - minTime);
             this.timeDown = new TimeSpan(0, 0, 0, 0, down);
@@ -79,9 +81,10 @@ namespace Yuuki2TheGame
         /// <param name="startX">Where the cursor ended</param>
         /// <param name="startY">Where the cursor started</param>
         /// <param name="ms">Time it took to move this far, in millliseconds</param>
-        public MouseMoveEventArgs(int x, int y, int startX, int startY, int ms)
+        public MouseMoveEventArgs(int x, int y, int startX, int startY, long ticks)
             : base(x, y)
         {
+            int ms = (int)(((double)ticks) / 10000.0);
             int dx = x - startX;
             int dy = y - startY;
             double dist = Math.Sqrt((dx * dx) + (dy * dy));
@@ -112,9 +115,11 @@ namespace Yuuki2TheGame
         /// </summary>
         public long fireCount;
 
-        public MouseButtonEventArgs(int x, int y, MouseButton button, int down, int minTime, int fireCount)
+        public MouseButtonEventArgs(int x, int y, MouseButton button, long downTicks, long minTimeTicks, long fireCount)
             : base(x, y)
         {
+            int down = (int)(((double)downTicks) / 10000.0);
+            int minTime = (int)(((double)minTimeTicks) / 10000.0);
             this.button = button;
             this.timeActive = new TimeSpan(0, 0, 0, 0, down - minTime);
             this.timeDown = new TimeSpan(0, 0, 0, 0, down);
@@ -138,9 +143,10 @@ namespace Yuuki2TheGame
         /// </summary>
         public int time;
 
-        public MouseScrollEventArgs(int x, int y, int value, int oldValue, int ms)
+        public MouseScrollEventArgs(int x, int y, int value, int oldValue, long ticks)
             : base(x, y)
         {
+            int ms = (int)(((double)ticks) / 10000.0);
             this.value = value;
             delta = oldValue - value;
             time = ms;
@@ -202,11 +208,11 @@ namespace Yuuki2TheGame
             public long fireLimit = 0;
 
             /// <summary>
-            /// Minimum milliseconds for the key to be held down before an event is fired.
+            /// Minimum ticks for the key to be held down before an event is fired.
             /// </summary>
-            public int minTime = 0;
+            public long minTime = 0;
 
-            public int startTime = 0;
+            public long startTime = 0;
 
             public KeyAction OnDown = null;
 
@@ -219,9 +225,9 @@ namespace Yuuki2TheGame
 
             public bool pushed = false;
 
-            public int minTime = 0;
+            public long minTime = 0;
 
-            public int startTime = 0;
+            public long startTime = 0;
 
             /// <summary>
             /// Number of times the down event fired.
@@ -280,9 +286,9 @@ namespace Yuuki2TheGame
 
             public int minDelta = 0;
 
-            public int fireInterval = 0;
+            public long fireInterval = 0;
 
-            public int lastFire = 0;
+            public long lastFire = 0;
 
             public MouseMoveAction OnMove = null;
         }
@@ -293,9 +299,14 @@ namespace Yuuki2TheGame
 
             public int startValue = 0;
 
+            public long fireInterval;
+
+            public long lastFire = 0;
+
             public MouseScrollAction OnScrollUp = null;
 
             public MouseScrollAction OnScrollDown = null;
+
         }
 
         #endregion
@@ -323,7 +334,7 @@ namespace Yuuki2TheGame
         /// Amount of time allowed between two mouse button presses to be considered a
         /// double-click / click-and-a-half. Measured in milliseconds.
         /// </summary>
-        public long DoubleClickTimeTolerance { get; set; }
+        public int DoubleClickTimeTolerance { get; set; }
         
         public ControlManager()
         {
@@ -355,7 +366,7 @@ namespace Yuuki2TheGame
         {
             foreach (MouseMoveHandler hlr in moveHandlers)
             {
-
+                //new TimeSpan()
             }
         }
 
@@ -363,13 +374,13 @@ namespace Yuuki2TheGame
         {
             foreach (KeyHandler hlr in keyHandlers.Values)
             {
-                int down = gt.TotalGameTime.Milliseconds - hlr.startTime;
-                CheckKeyState(hlr, kb, down, gt.TotalGameTime.Milliseconds);
+                long down = gt.TotalGameTime.Ticks - hlr.startTime;
+                CheckKeyState(hlr, kb, down, gt.TotalGameTime.Ticks);
                 CheckKeyDownFire(hlr, down);
             }
         }
 
-        private void CheckKeyState(KeyHandler handler, KeyboardState kb, int timeDown, int curTime)
+        private void CheckKeyState(KeyHandler handler, KeyboardState kb, long timeDown, long curTime)
         {
             if (!handler.pushed && kb.IsKeyDown(handler.key))
             {
@@ -389,7 +400,7 @@ namespace Yuuki2TheGame
             }
         }
 
-        private void CheckKeyDownFire(KeyHandler handler, int timeDown)
+        private void CheckKeyDownFire(KeyHandler handler, long timeDown)
         {
             if (handler.pushed && handler.OnDown != null && timeDown >= handler.minTime)
             {
