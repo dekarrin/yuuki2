@@ -84,6 +84,7 @@
     <Compile Include="Core\Item.cs" />
     <Compile Include="Core\Inventory.cs" />
     <Compile Include="Core\Map.cs" />
+    <Compile Include="Extensions\ExtensionMethods.cs" />
     <Compile Include="Graphics\Sprite.cs" />
     <Compile Include="Graphics\Tile.cs" />
     <Compile Include="Physics\DragModel.cs" />

@@ -55,6 +55,8 @@ namespace Yuuki2TheGame
             gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
         }
 
+        ControlManager controls = new ControlManager();
+
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -64,6 +66,7 @@ namespace Yuuki2TheGame
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            BindControls();
             int butts = 0;
             butts++;
             base.Initialize();
@@ -102,6 +105,8 @@ namespace Yuuki2TheGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            controls.Update(gameTime);
+            /*
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -181,7 +186,7 @@ namespace Yuuki2TheGame
             else if (respawnKeyLocked && keyState.IsKeyUp(Keys.F7))
             {
                 respawnKeyLocked = false;
-            }
+            }*/
             gameEngine.Update(gameTime);
             base.Update(gameTime);
 
@@ -252,6 +257,11 @@ namespace Yuuki2TheGame
             base.Draw(gameTime);
   
             
+        }
+
+        private void BindControls()
+        {
+
         }
 
         private void DrawDebugInfo()

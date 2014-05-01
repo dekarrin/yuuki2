@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
+using Yuuki2TheGame.Extensions;
 
 namespace Yuuki2TheGame
 {
-    enum MouseButton
+    public enum MouseButton
     {
         LEFT,
         RIGHT,
@@ -18,60 +19,60 @@ namespace Yuuki2TheGame
 
     class KeyEventArgs : EventArgs
     {
-        public Keys key;
+        public readonly Keys Key;
 
-        public TimeSpan timeDown;
+        public readonly TimeSpan TimeDown;
 
         /// <summary>
         /// Amount of time after the time limit threshold that the key was held down for.
         /// </summary>
-        public TimeSpan timeActive;
+        public readonly TimeSpan TimeActive;
 
         /// <summary>
         /// The number of times since last key down that this key event has fired. The first firing will have
         /// this set to 1, the second to 2, etc.
         /// </summary>
-        public long fireCount;
+        public readonly long FireCount;
 
         public KeyEventArgs(Keys key, long downTicks, long minTimeTicks, long fireCount)
         {
             int down = (int)(((double)downTicks) / 10000.0);
             int minTime = (int)(((double)minTimeTicks) / 10000.0);
-            this.key = key;
-            this.timeActive = new TimeSpan(0, 0, 0, 0, down - minTime);
-            this.timeDown = new TimeSpan(0, 0, 0, 0, down);
-            this.fireCount = fireCount;
+            this.Key = key;
+            this.TimeActive = new TimeSpan(0, 0, 0, 0, down - minTime);
+            this.TimeDown = new TimeSpan(0, 0, 0, 0, down);
+            this.FireCount = fireCount;
         }
     }
 
     class MouseEventArgs : EventArgs
     {
-        public int x;
+        public readonly int X;
 
-        public int y;
+        public readonly int Y;
 
         public MouseEventArgs(int x, int y)
         {
-            this.x = x;
-            this.y = y;
+            this.X = x;
+            this.Y = y;
         }
     }
 
     class MouseMoveEventArgs : MouseEventArgs
     {
-        public Point start;
+        public readonly Point Start;
 
-        public Point delta;
+        public readonly Point Delta;
 
         /// <summary>
         /// measured in pixels per second.
         /// </summary>
-        public double speed;
+        public readonly double Speed;
 
         /// <summary>
         /// Time it took to move the cursor that far.
         /// </summary>
-        public TimeSpan time;
+        public readonly TimeSpan Time;
 
         /// <summary>
         /// 
@@ -88,80 +89,80 @@ namespace Yuuki2TheGame
             int dx = x - startX;
             int dy = y - startY;
             double dist = Math.Sqrt((dx * dx) + (dy * dy));
-            start = new Point(startX, startY);
-            delta = new Point(dx, dy);
-            time = new TimeSpan(0, 0, 0, 0, ms);
-            speed = dist / (((double)ms) * 1000.0);
+            Start = new Point(startX, startY);
+            Delta = new Point(dx, dy);
+            Time = new TimeSpan(0, 0, 0, 0, ms);
+            Speed = dist / (((double)ms) * 1000.0);
         }
     }
 
     class MouseButtonEventArgs : MouseEventArgs
     {
-        MouseButton button;
+        public readonly MouseButton Button;
 
         /// <summary>
         /// Time that the button was held down for.
         /// </summary>
-        public TimeSpan timeDown;
+        public readonly TimeSpan TimeDown;
 
         /// <summary>
         /// Amount of time after the time limit threshold that the button was held down for.
         /// </summary>
-        public TimeSpan timeActive;
+        public readonly TimeSpan TimeActive;
 
         /// <summary>
         /// The number of times since last mouse down that this key event has fired. The first firing will have
         /// this set to 1, the second to 2, etc.
         /// </summary>
-        public long fireCount;
+        public readonly long FireCount;
 
         public MouseButtonEventArgs(int x, int y, MouseButton button, long downTicks, long minTimeTicks, long fireCount)
             : base(x, y)
         {
             int down = (int)(((double)downTicks) / 10000.0);
             int minTime = (int)(((double)minTimeTicks) / 10000.0);
-            this.button = button;
-            this.timeActive = new TimeSpan(0, 0, 0, 0, down - minTime);
-            this.timeDown = new TimeSpan(0, 0, 0, 0, down);
-            this.fireCount = fireCount;
+            this.Button = button;
+            this.TimeActive = new TimeSpan(0, 0, 0, 0, down - minTime);
+            this.TimeDown = new TimeSpan(0, 0, 0, 0, down);
+            this.FireCount = fireCount;
         }
     }
 
     class MouseScrollEventArgs : MouseEventArgs
     {
-        public int value;
+        public readonly int Value;
 
-        public int delta;
+        public readonly int Delta;
 
         /// <summary>
         /// Measured in values per second.
         /// </summary>
-        public double speed;
+        public readonly double Speed;
 
         /// <summary>
         /// Time it took to get this measurement. Measured in milliseconds.
         /// </summary>
-        public int time;
+        public readonly int Time;
 
         public MouseScrollEventArgs(int x, int y, int value, int oldValue, long ticks)
             : base(x, y)
         {
             int ms = (int)(((double)ticks) / 10000.0);
-            this.value = value;
-            delta = oldValue - value;
-            time = ms;
-            speed = Math.Abs(delta) / (((double)ms) * 1000.0);
+            this.Value = value;
+            Delta = oldValue - value;
+            Time = ms;
+            Speed = Math.Abs(Delta) / (((double)ms) * 1000.0);
         }
     }
 
     class MouseDragEventArgs : MouseMoveEventArgs
     {
-        public Rectangle dragRect;
+        public Rectangle DragArea;
 
-        public MouseDragEventArgs(int x, int y, int startX, int startY, int ms)
-            : base(x, y, startX, startY, ms)
+        public MouseDragEventArgs(int x, int y, int startX, int startY, long ticks)
+            : base(x, y, startX, startY, ticks)
         {
-            dragRect = new Rectangle(this.start.X, this.start.Y, this.delta.X + 1, this.delta.Y + 1);
+            DragArea = new Rectangle(Start.X, Start.Y, Delta.X + 1, Delta.Y + 1);
         }
     }
 
@@ -174,6 +175,8 @@ namespace Yuuki2TheGame
     delegate void MouseMoveAction(MouseMoveEventArgs args);
 
     delegate void MouseScrollAction(MouseScrollEventArgs args);
+
+    delegate void MouseAction(MouseEventArgs args);
 
     /// <summary>
     /// Events for mouse buttons will fire in a specific order.
@@ -189,6 +192,8 @@ namespace Yuuki2TheGame
     /// </summary>
     class ControlManager
     {
+        public const string DEFAULT_NAME = "__DEFAULT__";
+
         #region handler definitions
 
         private class KeyHandler
@@ -223,6 +228,16 @@ namespace Yuuki2TheGame
         {
             public MouseButton button;
 
+            public bool inDrag = false;
+
+            public bool firedClickDown = false;
+
+            public long clickTime = 0;
+
+            public int startX = 0;
+
+            public int startY = 0;
+
             public bool pushed = false;
 
             public long minTime = 0;
@@ -243,6 +258,8 @@ namespace Yuuki2TheGame
 
             public int dragStartY = -1;
 
+            public long dragStartTime = 0;
+
             public MouseButtonAction OnDown = null;
 
             public MouseButtonAction OnUp = null;
@@ -250,7 +267,7 @@ namespace Yuuki2TheGame
             /// <summary>
             /// Fired when the button is pressed and the mouse is moved.
             /// </summary>
-            public MouseDragAction OnDragStart = null;
+            public MouseAction OnDragStart = null;
 
             /// <summary>
             /// Fired when the button is pressed, the mouse is moved, and then the button is released.
@@ -301,7 +318,7 @@ namespace Yuuki2TheGame
 
             public int startValue = 0;
 
-            public long checkInterval;
+            public long checkInterval = 0;
 
             public long lastCheck = 0;
 
@@ -317,16 +334,16 @@ namespace Yuuki2TheGame
 
         #region handler attributes
 
-        private IDictionary<Keys, KeyHandler> keyHandlers = new Dictionary<Keys, KeyHandler>();
+        private IDictionary<string, KeyHandler> keyHandlers = new Dictionary<string, KeyHandler>();
 
-        private IDictionary<MouseButton, MouseButtonHandler> buttonHandlers = new Dictionary<MouseButton, MouseButtonHandler>();
+        private IDictionary<string, MouseButtonHandler> buttonHandlers = new Dictionary<string, MouseButtonHandler>();
 
-        private IList<MouseMoveHandler> moveHandlers = new List<MouseMoveHandler>();
+        private IDictionary<string, MouseMoveHandler> moveHandlers = new Dictionary<string, MouseMoveHandler>();
 
-        private IList<MouseScrollHandler> scrollHandlers = new List<MouseScrollHandler>();
+        private IDictionary<string, MouseScrollHandler> scrollHandlers = new Dictionary<string, MouseScrollHandler>();
 
         #endregion
-        
+
         /// <summary>
         /// Number of pixels mouse can move between button down and button up and not be considered a drag.
         /// This should not be set very high, lest you greatly confuse your users! Recommend 0-2, certainly
@@ -339,7 +356,7 @@ namespace Yuuki2TheGame
         /// double-click / click-and-a-half. Measured in milliseconds.
         /// </summary>
         public int DoubleClickTimeTolerance { get; set; }
-        
+
         public ControlManager()
         {
             ClickMoveTolerance = 1;
@@ -356,15 +373,375 @@ namespace Yuuki2TheGame
             UpdateMouseButtons(gt, mse);
         }
 
+        public void AddScrollListener(string name, int minDistance, int checkInterval, MouseScrollAction scrollUpAction, MouseScrollAction scrollDownAction)
+        {
+            MouseScrollHandler msh = new MouseScrollHandler();
+            msh.minDist = minDistance;
+            msh.checkInterval = ((long)checkInterval) * 10000L;
+            msh.OnScrollUp = scrollUpAction;
+            msh.OnScrollDown = scrollDownAction;
+            scrollHandlers[name] = msh;
+        }
+
+        public void RemoveScrollListener(string name)
+        {
+            scrollHandlers.Remove(name);
+        }
+
+        public void BindScrollUp(string listenerName, MouseScrollAction action)
+        {
+            if (!scrollHandlers.ContainsKey(listenerName))
+            {
+                AddScrollListener(listenerName, 0, 0, null, null);
+            }
+            scrollHandlers[listenerName].OnScrollUp = action;
+        }
+
+        public void BindScrollDown(string listenerName, MouseScrollAction action)
+        {
+            if (!scrollHandlers.ContainsKey(listenerName))
+            {
+                AddScrollListener(listenerName, 0, 0, null, null);
+            }
+            scrollHandlers[listenerName].OnScrollDown = action;
+        }
+
+        public void BindScrollUp(MouseScrollAction action) {
+            BindScrollUp(DEFAULT_NAME, action);
+        }
+
+        public void BindScrollDown(MouseScrollAction action) {
+            BindScrollDown(DEFAULT_NAME, action);
+        }
+
+        public void AddMouseMoveListener(string name, int minDistX, int minDistY, double minDistTotal, int checkInterval, MouseMoveAction moveAction)
+        {
+            MouseMoveHandler mmh = new MouseMoveHandler();
+            mmh.minDistX = minDistX;
+            mmh.minDistY = minDistY;
+            mmh.minDist = minDistTotal;
+            mmh.checkInterval = ((long)checkInterval) * 10000L;
+            mmh.OnMove = moveAction;
+            moveHandlers[name] = mmh;
+        }
+
+        public void RemoveMouseMoveListener(string name)
+        {
+            moveHandlers.Remove(name);
+        }
+
+        public void BindMouseMove(string listenerName, MouseMoveAction action)
+        {
+            if (!moveHandlers.ContainsKey(listenerName))
+            {
+                AddMouseMoveListener(listenerName, 0, 0, 0, 0, null);
+            }
+            moveHandlers[listenerName].OnMove = action;
+        }
+
+        public void BindMouseMove(MouseMoveAction action)
+        {
+            BindMouseMove(DEFAULT_NAME, action);
+        }
+
+        public void AddKeyListener(string name, Keys key, long downFireLimit, long minHoldTime, KeyAction downAction, KeyAction upAction)
+        {
+            KeyHandler kh = new KeyHandler();
+            kh.key = key;
+            kh.fireLimit = downFireLimit;
+            kh.minTime = minHoldTime;
+            kh.OnDown = downAction;
+            kh.OnUp = upAction;
+            keyHandlers[name] = kh;
+        }
+
+        public void AddKeyListener(Keys key, long downFireLimit, long minHoldTime, KeyAction downAction, KeyAction upAction) {
+            AddKeyListener(DEFAULT_NAME + KeyName(key), key, downFireLimit, minHoldTime, downAction, upAction);
+        }
+
+        public void RemoveKeyListener(string name)
+        {
+            keyHandlers.Remove(name);
+        }
+
+        public void RemoveKeyListener(Keys key) {
+            RemoveKeyListener(DEFAULT_NAME + KeyName(key));
+        }
+
+        public void BindKeyUp(string listenerName, Keys key, KeyAction action)
+        {
+            if (!keyHandlers.ContainsKey(listenerName))
+            {
+                AddKeyListener(listenerName, key, 0, 0, null, null);
+            }
+            keyHandlers[listenerName].OnUp = action;
+        }
+
+        public void BindKeyDown(string listenerName, Keys key, KeyAction action)
+        {
+            if (!keyHandlers.ContainsKey(listenerName))
+            {
+                AddKeyListener(listenerName, key, 0, 0, null, null);
+            }
+            keyHandlers[listenerName].OnDown = action;
+        }
+
+        public void BindKeyUp(Keys key, KeyAction action)
+        {
+            BindKeyUp(DEFAULT_NAME + KeyName(key), key, action);
+        }
+
+        public void BindKeyDown(Keys key, KeyAction action)
+        {
+            BindKeyDown(DEFAULT_NAME + KeyName(key), key, action);
+        }
+
+        public void AddMouseButtonListener(string name, MouseButton button, long downFireLimit, long minHoldTime, MouseButtonAction downAction, MouseButtonAction upAction, MouseAction dragStartAction, MouseDragAction dragFinishAction, MouseButtonAction clickAction, MouseButtonAction clickAndDownAction, MouseButtonAction doubleClickAction)
+        {
+            MouseButtonHandler mbh = new MouseButtonHandler();
+            mbh.button = button;
+            mbh.fireLimit = downFireLimit;
+            mbh.minTime = minHoldTime;
+            mbh.OnDown = downAction;
+            mbh.OnUp = upAction;
+            mbh.OnClick = clickAction;
+            mbh.OnClickAndDown = clickAndDownAction;
+            mbh.OnDoubleClick = doubleClickAction;
+            mbh.OnDragStart = dragStartAction;
+            mbh.OnDragFinish = dragFinishAction;
+            buttonHandlers[name] = mbh;
+        }
+
+        public void AddMouseButtonListener(MouseButton button, long downFireLimit, long minHoldTime, MouseButtonAction downAction, MouseButtonAction upAction, MouseAction dragStartAction, MouseDragAction dragFinishAction, MouseButtonAction clickAction, MouseButtonAction clickAndDownAction, MouseButtonAction doubleClickAction)
+        {
+            AddMouseButtonListener(DEFAULT_NAME + ButtonName(button), button, downFireLimit, minHoldTime, downAction, upAction, dragStartAction, dragFinishAction, clickAction, clickAndDownAction, doubleClickAction);
+        }
+
+        public void RemoveMouseButtonListener(string name)
+        {
+            buttonHandlers.Remove(name);
+        }
+
+        public void RemoveMouseButtonListener(MouseButton button)
+        {
+            RemoveMouseButtonListener(DEFAULT_NAME + ButtonName(button));
+        }
+
+        public void BindMouseButtonDown(string name, MouseButton button, MouseButtonAction action)
+        {
+            if (!buttonHandlers.ContainsKey(name))
+            {
+                AddMouseButtonListener(name, button, 0, 0, null, null, null, null, null, null, null);
+            }
+            buttonHandlers[name].OnDown = action;
+        }
+
+        public void BindMouseButtonDown(MouseButton button, MouseButtonAction action)
+        {
+            BindMouseButtonDown(DEFAULT_NAME + ButtonName(button), button, action);
+        }
+
+        public void BindMouseButtonUp(string name, MouseButton button, MouseButtonAction action)
+        {
+            if (!buttonHandlers.ContainsKey(name))
+            {
+                AddMouseButtonListener(name, button, 0, 0, null, null, null, null, null, null, null);
+            }
+            buttonHandlers[name].OnUp = action;
+        }
+
+        public void BindMouseButtonUp(MouseButton button, MouseButtonAction action)
+        {
+            BindMouseButtonUp(DEFAULT_NAME + ButtonName(button), button, action);
+        }
+
+        public void BindMouseButtonClick(string name, MouseButton button, MouseButtonAction action)
+        {
+            if (!buttonHandlers.ContainsKey(name))
+            {
+                AddMouseButtonListener(name, button, 0, 0, null, null, null, null, null, null, null);
+            }
+            buttonHandlers[name].OnClick = action;
+        }
+
+        public void BindMouseButtonClick(MouseButton button, MouseButtonAction action)
+        {
+            BindMouseButtonClick(DEFAULT_NAME + ButtonName(button), button, action);
+        }
+
+        public void BindMouseButtonClickAndDown(string name, MouseButton button, MouseButtonAction action)
+        {
+            if (!buttonHandlers.ContainsKey(name))
+            {
+                AddMouseButtonListener(name, button, 0, 0, null, null, null, null, null, null, null);
+            }
+            buttonHandlers[name].OnClickAndDown = action;
+        }
+
+        public void BindMouseButtonClickAndDown(MouseButton button, MouseButtonAction action)
+        {
+            BindMouseButtonClickAndDown(DEFAULT_NAME + ButtonName(button), button, action);
+        }
+
+        public void BindMouseButtonDoubleClick(string name, MouseButton button, MouseButtonAction action)
+        {
+            if (!buttonHandlers.ContainsKey(name))
+            {
+                AddMouseButtonListener(name, button, 0, 0, null, null, null, null, null, null, null);
+            }
+            buttonHandlers[name].OnDoubleClick = action;
+        }
+
+        public void BindMouseButtonDoubleClick(MouseButton button, MouseButtonAction action)
+        {
+            BindMouseButtonDoubleClick(DEFAULT_NAME + ButtonName(button), button, action);
+        }
+
+        public void BindMouseButtonDragStart(string name, MouseButton button, MouseAction action)
+        {
+            if (!buttonHandlers.ContainsKey(name))
+            {
+                AddMouseButtonListener(name, button, 0, 0, null, null, null, null, null, null, null);
+            }
+            buttonHandlers[name].OnDragStart = action;
+        }
+
+        public void BindMouseButtonDragStart(MouseButton button, MouseAction action)
+        {
+            BindMouseButtonDragStart(DEFAULT_NAME + ButtonName(button), button, action);
+        }
+
+        public void BindMouseButtonDragFinish(string name, MouseButton button, MouseDragAction action)
+        {
+            if (!buttonHandlers.ContainsKey(name))
+            {
+                AddMouseButtonListener(name, button, 0, 0, null, null, null, null, null, null, null);
+            }
+            buttonHandlers[name].OnDragFinish = action;
+        }
+
+        public void BindMouseButtonDragFinish(MouseButton button, MouseDragAction action)
+        {
+            BindMouseButtonDragFinish(DEFAULT_NAME + ButtonName(button), button, action);
+        }
+
+        private string KeyName(Keys k)
+        {
+            return Enum.GetName(typeof(Keys), k);
+        }
+
+        private string ButtonName(MouseButton b)
+        {
+            return Enum.GetName(typeof(MouseButton), b);
+        }
+
         private void UpdateMouseButtons(GameTime gt, MouseState mse)
         {
-
+            long time = gt.TotalGameTime.Ticks;
+            foreach (MouseButtonHandler h in buttonHandlers.Values)
+            {
+                long timeDown = time - h.startTime;
+                long timeLastClick = time - h.clickTime;
+                int dx = mse.X - h.startX;
+                int dy = mse.Y - h.startY;
+                int tol = ClickMoveTolerance;
+                bool inClickBounds = (dx <= tol && dy <= tol);
+                if (!h.pushed && mse.IsButtonDown(h.button))
+                {
+                    h.pushed = true;
+                    h.fireCount = 0;
+                    h.startTime = time;
+                    h.inDrag = false;
+                    if (timeLastClick > DoubleClickTimeTolerance)
+                    {
+                        h.startX = h.startY = 0;
+                        h.firedClickDown = false;
+                    }
+                }
+                else if (h.pushed && mse.IsButtonUp(h.button))
+                {
+                    MouseButtonEventArgs eargs = new MouseButtonEventArgs(mse.X, mse.Y, h.button, timeDown, h.minTime, 1);
+                    h.pushed = false;
+                    h.fireCount = 0;
+                    h.startTime = 0;
+                    if (timeDown >= h.minTime)
+                    {
+                        if (h.OnUp != null)
+                        {
+                            h.OnUp(eargs);
+                        }
+                        if (!h.inDrag && inClickBounds)
+                        {
+                            if (timeLastClick <= DoubleClickTimeTolerance)
+                            {
+                                if (h.OnDoubleClick != null)
+                                {
+                                    h.OnDoubleClick(eargs);
+                                }
+                                h.clickTime = 0;
+                            }
+                            else
+                            {
+                                if (h.OnClick != null)
+                                {
+                                    h.OnClick(eargs);
+                                }
+                                h.clickTime = time;
+                            }
+                        }
+                        else if (h.inDrag && h.OnDragFinish != null)
+                        {
+                            long dtime = time - h.dragStartTime;
+                            h.OnDragFinish(new MouseDragEventArgs(mse.X, mse.Y, h.dragStartX, h.dragStartY, dtime));
+                        }
+                    }
+                }
+                if (h.pushed)
+                {
+                    if (!inClickBounds)
+                    {
+                        h.dragStartX = h.startX;
+                        h.dragStartY = h.startY;
+                        if (!h.inDrag && h.OnDragStart != null)
+                        {
+                            h.OnDragStart(new MouseEventArgs(mse.X, mse.Y));
+                        }
+                        h.inDrag = true;
+                        h.dragStartTime = time;
+                    }
+                    if (timeDown >= h.minTime)
+                    {
+                        if (h.OnDown != null && (h.fireCount < h.fireLimit || h.fireLimit == 0))
+                        {
+                            h.fireCount++;
+                            h.OnDown(new MouseButtonEventArgs(mse.X, mse.Y, h.button, timeDown, h.minTime, h.fireCount));
+                        }
+                        if (timeLastClick <= DoubleClickTimeTolerance)
+                        {
+                            if (!h.inDrag)
+                            {
+                                if (h.OnClickAndDown != null && !h.firedClickDown)
+                                {
+                                    h.OnClickAndDown(new MouseButtonEventArgs(mse.X, mse.Y, h.button, timeDown, h.minTime, 1));
+                                    h.firedClickDown = true;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            h.startX = mse.X;
+                            h.startY = mse.Y;
+                            h.firedClickDown = false;
+                        }
+                    }
+                }
+            }
         }
 
         private void UpdateMouseScroll(GameTime gt, MouseState mse)
         {
             long time = gt.TotalGameTime.Ticks;
-            foreach (MouseScrollHandler hlr in scrollHandlers)
+            foreach (MouseScrollHandler hlr in scrollHandlers.Values)
             {
                 CheckScrollMovement(hlr, mse, time);
             }
@@ -373,7 +750,7 @@ namespace Yuuki2TheGame
         private void UpdateMouseMovement(GameTime gt, MouseState mse)
         {
             long time = gt.TotalGameTime.Ticks;
-            foreach (MouseMoveHandler hlr in moveHandlers)
+            foreach (MouseMoveHandler hlr in moveHandlers.Values)
             {
                 CheckMouseMovement(hlr, mse, time);
             }
@@ -381,10 +758,11 @@ namespace Yuuki2TheGame
 
         private void UpdateKeys(GameTime gt, KeyboardState kb)
         {
+            long time = gt.TotalGameTime.Ticks;
             foreach (KeyHandler hlr in keyHandlers.Values)
             {
-                long down = gt.TotalGameTime.Ticks - hlr.startTime;
-                CheckKeyState(hlr, kb, down, gt.TotalGameTime.Ticks);
+                long down = time - hlr.startTime;
+                CheckKeyState(hlr, kb, down, time);
                 CheckKeyDownFire(hlr, down);
             }
         }
