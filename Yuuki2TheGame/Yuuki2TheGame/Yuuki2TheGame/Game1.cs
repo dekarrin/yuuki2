@@ -47,7 +47,7 @@ namespace Yuuki2TheGame
             Content.RootDirectory = "Content";
             blocksOnScreen = new Point (GAME_WIDTH / BLOCK_WIDTH + 1, GAME_HEIGHT / BLOCK_HEIGHT + 1);
 
-            SoundEffect bgMusic = Content.Load<SoundEffect>(@"Backround");
+            SoundEffect bgMusic = Content.Load<SoundEffect>(@"Sounds/Backround");
             bgMusic.Name = "backround";
             gameAudio.Add(bgMusic);
             gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
@@ -80,9 +80,8 @@ namespace Yuuki2TheGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
-            SoundEffect bgMusic = Content.Load<SoundEffect>(@"Backround");
-            bgMusic.Name = "backround";
-            gameAudio.Add(bgMusic);
+            SoundEffect swing01 = Content.Load<SoundEffect>(@"Sounds/swing01");
+            gameAudio.Add(swing01);
             
         }
 

@@ -19,6 +19,19 @@ namespace Yuuki2TheGame.Core
             BackroundMusic.IsLooped = true;
         }
 
+        public void PlaySound(List<SoundEffect> GameAudio)
+        {
+            SoundEffect randomSound;
+            do
+            {
+                Random r = new Random();
+                int random = r.Next(GameAudio.Count);
+                randomSound = GameAudio[random];
+            } while (randomSound.Name != "");
+
+            randomSound.Play();
+        }
+
 
         public void Update(GameTime gameTime)
         {

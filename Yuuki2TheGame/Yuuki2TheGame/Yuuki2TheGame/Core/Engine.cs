@@ -93,12 +93,14 @@ namespace Yuuki2TheGame.Core
                     {
                         _map.DestroyBlock(p);
                         this.RemovePhysical(block);
+                        audioEngine.PlaySound(Game1.gameAudio);
                     }
                     else
                     {
                         _map.AddBlock(p);
                         block = _map.BlockAt(p);
                         this.AddPhysical(block);
+                        audioEngine.PlaySound(Game1.gameAudio);
                     }
                 }
             }
@@ -106,6 +108,7 @@ namespace Yuuki2TheGame.Core
             {
                 mouseLeftLocked = false;
             }
+
         }
 
         public void RemovePhysical(IPhysical phob)

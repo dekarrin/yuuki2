@@ -37,8 +37,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Backround.wav">
+    <Compile Include="Sounds\Backround.wav">
       <Name>Backround</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Sounds\swing01.wav">
+      <Name>swing01</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
