@@ -33,7 +33,7 @@ namespace Yuuki2TheGame.Physics
         /// <summary>
         /// This should be block_width times an odd number. Idk why. Fucking stupid quad tree.
         /// </summary>
-        private const int MIN_QUAD_SIZE = Game1.BLOCK_WIDTH * 3;
+        private const int MIN_QUAD_SIZE = Game1.METER_LENGTH * 3;
 
         private IList<IPhysical> phobs = new List<IPhysical>();
 
@@ -127,12 +127,12 @@ namespace Yuuki2TheGame.Physics
 
         public static float PixelsToMeters(int pixels)
         {
-            return pixels / (float) Game1.BLOCK_WIDTH;
+            return pixels / (float) Game1.METER_LENGTH;
         }
 
         public static int MetersToPixels(float physUnits)
         {
-            return (int) Math.Round(physUnits * Game1.BLOCK_WIDTH);
+            return (int) Math.Round(physUnits * Game1.METER_LENGTH);
         }
 
         private void CorrectCollision(IPhysical phob, ContactType type, Point newPos)

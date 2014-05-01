@@ -272,11 +272,11 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return _x / (float)Game1.BLOCK_WIDTH;
+                return _x / (float)Game1.METER_LENGTH;
             }
             set
             {
-                int newX = (int)Math.Round(value * Game1.BLOCK_WIDTH);
+                int newX = (int)Math.Round(value * Game1.METER_LENGTH);
                 X = newX;
             }
         }
@@ -288,11 +288,11 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return _y / (float)Game1.BLOCK_HEIGHT;
+                return _y / (float)Game1.METER_LENGTH;
             }
             set
             {
-                int newY = (int)Math.Round(value * Game1.BLOCK_HEIGHT);
+                int newY = (int)Math.Round(value * Game1.METER_LENGTH);
                 Y = newY;
             }
         }
@@ -304,11 +304,11 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return _width / (float)Game1.BLOCK_WIDTH;
+                return _width / (float)Game1.METER_LENGTH;
             }
             set
             {
-                int newX = (int)Math.Round(value * Game1.BLOCK_WIDTH);
+                int newX = (int)Math.Round(value * Game1.METER_LENGTH);
                 Width = newX;
             }
         }
@@ -320,19 +320,19 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return _height / (float)Game1.BLOCK_HEIGHT;
+                return _height / (float)Game1.METER_LENGTH;
             }
             set
             {
-                int newY = (int)Math.Round(value * Game1.BLOCK_HEIGHT);
+                int newY = (int)Math.Round(value * Game1.METER_LENGTH);
                 Height = newY;
             }
         }
 
         /// <summary>
         /// The position of this ScreenEntity measured in meters. The pixel size of a meter may
-        /// be determined by referring to <see cref="Game1.BLOCK_WIDTH"/> and
-        /// <see cref="Game1.BLOCK_HEIGHT"/>.
+        /// be determined by referring to <see cref="Game1.METER_LENGTH"/> and
+        /// <see cref="Game1.METER_LENGTH"/>.
         /// </summary>
         public Vector2 BlockPosition
         {
@@ -342,16 +342,16 @@ namespace Yuuki2TheGame.Core
             }
             set
             {
-                int newX = (int)Math.Round(value.X * Game1.BLOCK_WIDTH);
-                int newY = (int)Math.Round(value.Y * Game1.BLOCK_HEIGHT);
+                int newX = (int)Math.Round(value.X * Game1.METER_LENGTH);
+                int newY = (int)Math.Round(value.Y * Game1.METER_LENGTH);
                 Position = new Point(newX, newY);
             }
         }
 
         /// <summary>
         /// The size of this ScreenEntity measured in meter. The pixel size of a meter may
-        /// be determined by referring to <see cref="Game1.BLOCK_WIDTH"/> and
-        /// <see cref="Game1.BLOCK_HEIGHT"/>.
+        /// be determined by referring to <see cref="Game1.METER_LENGTH"/> and
+        /// <see cref="Game1.METER_LENGTH"/>.
         /// </summary>
         public Vector2 BlockSize
         {
@@ -361,8 +361,8 @@ namespace Yuuki2TheGame.Core
             }
             set
             {
-                int newX = (int)Math.Round(value.X * Game1.BLOCK_WIDTH);
-                int newY = (int)Math.Round(value.Y * Game1.BLOCK_HEIGHT);
+                int newX = (int)Math.Round(value.X * Game1.METER_LENGTH);
+                int newY = (int)Math.Round(value.Y * Game1.METER_LENGTH);
                 Size = new Point(newX, newY);
             }
         }

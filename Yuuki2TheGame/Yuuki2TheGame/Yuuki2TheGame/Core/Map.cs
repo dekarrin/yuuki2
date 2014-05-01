@@ -47,10 +47,10 @@ namespace Yuuki2TheGame.Core
 
         public IList<Block> QueryPixels(Rectangle rect)
         {
-            int x1 = (int)(rect.X / (float) Game1.BLOCK_WIDTH);
-            int y1 = (int)(rect.Y / (float) Game1.BLOCK_HEIGHT);
-            int x2 = (int)((rect.X + rect.Width - 1) / (float)Game1.BLOCK_WIDTH);
-            int y2 = (int)((rect.Y + rect.Height - 1) / (float)Game1.BLOCK_HEIGHT);
+            int x1 = (int)(rect.X / (float) Game1.METER_LENGTH);
+            int y1 = (int)(rect.Y / (float) Game1.METER_LENGTH);
+            int x2 = (int)((rect.X + rect.Width - 1) / (float)Game1.METER_LENGTH);
+            int y2 = (int)((rect.Y + rect.Height - 1) / (float)Game1.METER_LENGTH);
             if (rect.X < 0)
             {
                 x1--;
@@ -136,8 +136,8 @@ namespace Yuuki2TheGame.Core
 
         public Block BlockAtCoordinate(int x, int y)
         {
-            int indexX = (int)(x/Game1.BLOCK_WIDTH);
-            int indexY = (int)(y/Game1.BLOCK_HEIGHT);
+            int indexX = (int)(x/Game1.METER_LENGTH);
+            int indexY = (int)(y/Game1.METER_LENGTH);
             
             if (indexX < this.world.Count && indexX >= 0 && indexY > 0 && indexY < this.world[indexX].Count)
             {

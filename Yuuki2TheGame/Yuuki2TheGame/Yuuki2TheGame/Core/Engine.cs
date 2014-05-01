@@ -61,11 +61,11 @@ namespace Yuuki2TheGame.Core
         {
             ManualPhysStepMode = false;
             _map = new Map(size.X, size.Y);
-            spawn = new Point(0, (size.Y / 2) * Game1.BLOCK_HEIGHT - 30);
+            spawn = new Point(0, (size.Y / 2) * Game1.METER_LENGTH - 30);
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);
-            Rectangle camLimits = new Rectangle(0, 0, Game1.BLOCK_WIDTH * Game1.WORLD_WIDTH, Game1.BLOCK_HEIGHT * Game1.WORLD_HEIGHT);
+            Rectangle camLimits = new Rectangle(0, 0, Game1.METER_LENGTH * Game1.WORLD_WIDTH, Game1.METER_LENGTH * Game1.WORLD_HEIGHT);
             Camera = new Camera(new Point(Game1.GAME_WIDTH, Game1.GAME_HEIGHT), Player, new Point(-100, -300), camLimits);
             physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_MEDIUM_DENSITY, PHYS_SURFACE_FRICTION, PHYS_TIMESCALE);
             physics.AddMap(_map);
@@ -116,8 +116,8 @@ namespace Yuuki2TheGame.Core
 
         public void Click(int x, int y)
         {
-            int globalx = (x + this.Camera.Position.X) / Game1.BLOCK_WIDTH;
-            int globaly = (y + this.Camera.Position.Y) / Game1.BLOCK_HEIGHT;
+            int globalx = (x + this.Camera.Position.X) / Game1.METER_LENGTH;
+            int globaly = (y + this.Camera.Position.Y) / Game1.METER_LENGTH;
             Point p = new Point(globalx, globaly);
 
             if (globalx <= Game1.WORLD_WIDTH && globalx >= 0 && globaly <= Game1.WORLD_HEIGHT && globaly >= 0)

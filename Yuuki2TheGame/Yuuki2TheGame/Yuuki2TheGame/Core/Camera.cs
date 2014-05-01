@@ -77,7 +77,7 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return new Point(X % Game1.BLOCK_WIDTH, Y % Game1.BLOCK_HEIGHT);
+                return new Point(X % Game1.METER_LENGTH, Y % Game1.METER_LENGTH);
             }
         }
 

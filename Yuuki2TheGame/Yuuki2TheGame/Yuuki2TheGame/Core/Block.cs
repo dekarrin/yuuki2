@@ -62,7 +62,7 @@ namespace Yuuki2TheGame.Core
             set { id = value; }
         }
 
-        public Block(int id, int mapx, int mapy) : base(new Point(Game1.BLOCK_WIDTH, Game1.BLOCK_HEIGHT))
+        public Block(int id, int mapx, int mapy) : base(new Point(Game1.METER_LENGTH, Game1.METER_LENGTH))
         {
             this.ID = id;
 

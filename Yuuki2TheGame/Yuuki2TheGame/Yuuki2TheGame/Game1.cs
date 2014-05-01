@@ -29,8 +29,7 @@ namespace Yuuki2TheGame
         public const int GAME_WIDTH = 800;
         public const int GAME_HEIGHT = 600;
 
-        public const int BLOCK_WIDTH = 16;
-        public const int BLOCK_HEIGHT = 16;
+        public const int METER_LENGTH = 16;
 
         /// <summary>
         /// Contains the number of blocks that are on the screen.
@@ -49,7 +48,7 @@ namespace Yuuki2TheGame
             graphics.PreferredBackBufferHeight = GAME_HEIGHT;
             graphics.ApplyChanges();
             Content.RootDirectory = "Content";
-            blocksOnScreen = new Point (GAME_WIDTH / BLOCK_WIDTH + 1, GAME_HEIGHT / BLOCK_HEIGHT + 1);
+            blocksOnScreen = new Point (GAME_WIDTH / METER_LENGTH + 1, GAME_HEIGHT / METER_LENGTH + 1);
             gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
         }
 
@@ -120,7 +119,7 @@ namespace Yuuki2TheGame
         protected override void Draw(GameTime gameTime)
         {
             Sprite bg = gameEngine.GetBackground(GAME_WIDTH, GAME_HEIGHT);
-            IList<Sprite> tiles = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y, BLOCK_WIDTH, BLOCK_HEIGHT);
+            IList<Sprite> tiles = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y, METER_LENGTH, METER_LENGTH);
             IList<Sprite> chars = gameEngine.GetCharacters(GAME_WIDTH, GAME_HEIGHT);
             bg.Texture = NameToTexture(bg.TextureID);
             ProcessSpriteGraphics(tiles);
