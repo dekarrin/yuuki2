@@ -21,6 +21,7 @@ namespace Yuuki2TheGame.Core
 
         public PlayerCharacter(string name, Point pixelLocation, int health, int baseAttack, int baseArmor) : base(name, pixelLocation, new Point(WIDTH, HEIGHT), health, baseAttack, baseArmor)
         {
+            this.Inventory = new Inventory();
         }
 
         protected override void ContactMaskChanged(int oldValue)

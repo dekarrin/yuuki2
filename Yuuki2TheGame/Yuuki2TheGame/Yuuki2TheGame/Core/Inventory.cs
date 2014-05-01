@@ -5,48 +5,83 @@ using System.Text;
 
 namespace Yuuki2TheGame.Core
 {
+    class InventorySlot
+    {
+        public Item Item { get; set; }
+
+        public int Count { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public InventorySlot(Item item)
+        {
+            this.Item = item;
+            Count = 0;
+            IsActive = false;
+        }
+    }
+
     class Inventory
     {
-        private List<Item> inventory;
+        private List<InventorySlot> slots;
 
-        public Inventory(){
-            inventory = new List<Item>();
-        }
-
-        public bool FindItem(Item i){
-            return inventory.Exists(x => i.ID == x.ID);
-        }
-
-        public void Add(Item n){
-            if (n.Stackable && this.FindItem(n))
+        public Inventory(int size)
+        {
+            slots = new List<InventorySlot>();
+            for (int i = 0; i < size; i++)
             {
-                //not broken anymore B]
-                inventory.Find(x => n.ID == x.ID).Count++;
+                slots.Add(new InventorySlot(null));
+            }
+        }
+
+        public bool Contains(Item i)
+        {
+            return slots.Exists(x => x.Item.ID == i.ID);
+        }
+
+        public void Add(Item item)
+        {
+            if (item.Stackable && this.Contains(item))
+            {
+                slots.Find(x => item.ID == x.Item.ID).Count++;
             }
             else
             {
-                inventory.Add(n);
+                InventorySlot empty = GetNextEmptySlot();
+                empty.Item = item;
+                empty.Count = 1;
             }
+        }
+
+        public InventorySlot GetNextEmptySlot()
+        {
+            return slots.Find(x => x.Item == null);
         }
 
         //removes one instance of the item.
         public void Remove(Item n)
         {
-            
-            if(n.Stackable && this.FindItem(n))
+            if (Contains(n))
             {
-                inventory.Find(x => n.ID == x.ID).Count--;
-            }
-            else
-            {
-                inventory.RemoveAll(x => n.ID == x.ID);
+                if (n.Stackable)
+                {
+                    InventorySlot sl = slots.Find(x => n.ID == x.Item.ID);
+                    sl.Count++;
+                }
+                else
+                {
+                    InventorySlot sl = slots.Find(x => n.ID == x.Item.ID);
+                    sl.Item = null;
+                    sl.Count = 0;
+                    sl.IsActive = false;
+                }
             }
 
         }
 
         public void Empty()
         {
-            inventory.Clear();
+            slots.Clear();
         }
         
     }

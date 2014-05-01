@@ -101,7 +101,10 @@ namespace Yuuki2TheGame
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
-            controls.Update(gameTime);
+            if (IsActive)
+            {
+                controls.Update(gameTime);
+            }
             gameEngine.Update(gameTime);
             base.Update(gameTime);
 
@@ -143,6 +146,7 @@ namespace Yuuki2TheGame
             Vector2 pos = new Vector2(currentMouse.X, currentMouse.Y);
 
             spriteBatch.Draw(bg.Texture, pos, Color.White);
+            DrawInventory();
             if (DebugMode)
             {
                 DrawDebugInfo();
@@ -159,6 +163,11 @@ namespace Yuuki2TheGame
             base.Draw(gameTime);
   
             
+        }
+
+        private void DrawInventory()
+        {
+
         }
 
         private void BindControls()
@@ -181,6 +190,10 @@ namespace Yuuki2TheGame
             KeyAction stopLeft = delegate(KeyEventArgs e) {
                 gameEngine.Player.StopMovingLeft();
             };
+            controls.BindKeyDown(Keys.Escape, delegate(KeyEventArgs e)
+            {
+                gameEngine.OverlayMode = !gameEngine.OverlayMode;
+            }, false);
             controls.BindKeyDown(Keys.Left, startLeft, false);
             controls.BindKeyDown(Keys.A, startLeft, false);
             controls.BindKeyUp(Keys.Left, stopLeft);

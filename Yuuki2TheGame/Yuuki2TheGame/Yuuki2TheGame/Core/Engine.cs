@@ -21,6 +21,8 @@ namespace Yuuki2TheGame.Core
 
         public const float PHYS_SURFACE_FRICTION = 0.3f;
 
+        public bool OverlayMode { get; set; }
+
         private bool _recording = false;
 
         public bool RecordPhysStep
@@ -59,6 +61,7 @@ namespace Yuuki2TheGame.Core
 
         public Engine(Point size)
         {
+            OverlayMode = false;
             ManualPhysStepMode = false;
             _map = new Map(size.X, size.Y);
             spawn = new Point(0, (size.Y / 2) * Game1.METER_LENGTH - 30);
@@ -81,6 +84,11 @@ namespace Yuuki2TheGame.Core
             {
                 Camera.TargetOffsetX += 1;
             }
+        }
+
+        public IList<InventorySlot> GetQuickSlots()
+        {
+
         }
 
         public void Update(GameTime gameTime)

@@ -363,7 +363,7 @@ namespace Yuuki2TheGame
 
         public ControlManager()
         {
-            ClickMoveTolerance = 1;
+            ClickMoveTolerance = 5;
             DoubleClickTimeTolerance = 500;
         }
 

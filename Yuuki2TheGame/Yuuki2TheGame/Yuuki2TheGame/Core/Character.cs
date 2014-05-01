@@ -43,7 +43,7 @@ namespace Yuuki2TheGame.Core
 
         public int BaseArmor { get; set; }
 
-        public object Inventory { get; set; }
+        public Inventory Inventory { get; protected set; }
 
         public delegate void DeathHandler(object source, EventArgs e);
 
