@@ -51,8 +51,6 @@ namespace Yuuki2TheGame.Core
 
         private List<Item> _items = new List<Item>();
 
-        private bool mouseLeftLocked = false;
-
         private Point spawn;
 
         private PhysicsController physics;
@@ -72,7 +70,6 @@ namespace Yuuki2TheGame.Core
             physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_MEDIUM_DENSITY, PHYS_SURFACE_FRICTION, PHYS_TIMESCALE);
             physics.AddMap(_map);
             physics.AddPhob(Player);
-            //Player.ApplyImpulse(new Vector2(10000, 0));
         }
 
         private int TESTcycle = 0;
@@ -117,33 +114,23 @@ namespace Yuuki2TheGame.Core
             physics.Step(0.016f);
         }
 
-        private void UpdateBlockInput(GameTime gameTime)
+        public void Click(int x, int y)
         {
-            MouseState mouseState = Mouse.GetState();
-            if (mouseState.LeftButton == ButtonState.Pressed && !mouseLeftLocked)
-            {
-                mouseLeftLocked = true;
-                int globalx = (mouseState.X + this.Camera.Position.X) / Game1.BLOCK_WIDTH;
-                int globaly = (mouseState.Y + this.Camera.Position.Y) / Game1.BLOCK_HEIGHT;
-                Point p = new Point(globalx, globaly);
+            int globalx = (x + this.Camera.Position.X) / Game1.BLOCK_WIDTH;
+            int globaly = (y + this.Camera.Position.Y) / Game1.BLOCK_HEIGHT;
+            Point p = new Point(globalx, globaly);
 
-                if (globalx <= Game1.WORLD_WIDTH && globalx >= 0 && globaly <= Game1.WORLD_HEIGHT && globaly >= 0)
-                {
-                    Block block = _map.BlockAt(p);
-                    //TODO: Make this.responsible with a single method!
-                    if (block != null)
-                    {
-                        _map.DestroyBlock(p);
-                    }
-                    else
-                    {
-                        _map.AddBlock(p);
-                    }
-                }
-            }
-            else if (mouseState.LeftButton == ButtonState.Released)
+            if (globalx <= Game1.WORLD_WIDTH && globalx >= 0 && globaly <= Game1.WORLD_HEIGHT && globaly >= 0)
             {
-                mouseLeftLocked = false;
+                Block block = _map.BlockAt(p);
+                if (block != null)
+                {
+                    _map.DestroyBlock(p);
+                }
+                else
+                {
+                    _map.AddBlock(p);
+                }
             }
         }
 

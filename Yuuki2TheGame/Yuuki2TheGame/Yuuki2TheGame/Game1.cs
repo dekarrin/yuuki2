@@ -39,8 +39,6 @@ namespace Yuuki2TheGame
 
         public bool DebugMode { get; set; }
 
-        private bool debugKeyLocked = false;
-
         private SpriteFont font;
 
         public Game1()
@@ -94,10 +92,6 @@ namespace Yuuki2TheGame
             // TODO: Unload any non ContentManager content here
         }
 
-        bool leftKeyLocked = false;
-
-        bool rightKeyLocked = false;
-
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -105,110 +99,19 @@ namespace Yuuki2TheGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            controls.Update(gameTime);
-            /*
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
-			
-            KeyboardState keyState = Keyboard.GetState();
-            if (!leftKeyLocked && keyState.IsKeyDown(Keys.Left))
-            {
-                leftKeyLocked = true;
-                gameEngine.Player.StartMovingLeft();
-            }
-            if (!rightKeyLocked && keyState.IsKeyDown(Keys.Right))
-            {
-                rightKeyLocked = true;
-                gameEngine.Player.StartMovingRight();
-            }
-            if (leftKeyLocked && keyState.IsKeyUp(Keys.Left))
-            {
-                leftKeyLocked = false;
-                gameEngine.Player.StopMovingLeft();
-            }
-            if (rightKeyLocked && keyState.IsKeyUp(Keys.Right))
-            {
-                rightKeyLocked = false;
-                gameEngine.Player.StopMovingRight();
-            }
-            // TODO: Individual key resets
-            if (!pressedJump && (keyState.IsKeyDown(Keys.W) || keyState.IsKeyDown(Keys.Space) || keyState.IsKeyDown(Keys.Up)))
-            {
-                gameEngine.Player.Jump();
-                pressedJump = true;
-            }
-            else if (pressedJump && (keyState.IsKeyUp(Keys.W) && keyState.IsKeyUp(Keys.Space) && keyState.IsKeyUp(Keys.Up)))
-            {
-                pressedJump = false;
-            }
-            if (!debugKeyLocked && keyState.IsKeyDown(Keys.F4))
-            {
-                debugKeyLocked = true;
-                DebugMode = !DebugMode;
-            }
-            else if (debugKeyLocked && keyState.IsKeyUp(Keys.F4))
-            {
-                debugKeyLocked = false;
-            }
-            if (!physKeyLocked && keyState.IsKeyDown(Keys.F5))
-            {
-                physKeyLocked = true;
-                gameEngine.ManualPhysStepMode = !gameEngine.ManualPhysStepMode;
-            }
-            else if (physKeyLocked && keyState.IsKeyUp(Keys.F5))
-            {
-                physKeyLocked = false;
-            }
-            if (!physStepKeyLocked && keyState.IsKeyDown(Keys.F8) && gameEngine.ManualPhysStepMode)
-            {
-                physStepKeyLocked = true;
-                gameEngine.StepPhysics();
-            }
-            else if (physStepKeyLocked && keyState.IsKeyUp(Keys.F8))
-            {
-                physStepKeyLocked = false;
-            }
-            if (!recKeyLocked && keyState.IsKeyDown(Keys.F6))
-            {
-                recKeyLocked = true;
-                gameEngine.RecordPhysStep = !gameEngine.RecordPhysStep;
-            }
-            else if (recKeyLocked && keyState.IsKeyUp(Keys.F6))
-            {
-                recKeyLocked = false;
-            }
-            if (!respawnKeyLocked && keyState.IsKeyDown(Keys.F7))
-            {
-                respawnKeyLocked = true;
-                gameEngine.Respawn();
-            }
-            else if (respawnKeyLocked && keyState.IsKeyUp(Keys.F7))
-            {
-                respawnKeyLocked = false;
-            }*/
+            controls.Update(gameTime);
             gameEngine.Update(gameTime);
             base.Update(gameTime);
 
         }
 
-        private bool mouseLeftLocked = false;
-    
-        private bool respawnKeyLocked = false;
-
         public static void Debug(String str)
         {
             System.Diagnostics.Debug.WriteLine(str);
         }
-
-        private bool recKeyLocked = false;
-
-        private bool pressedJump = false;
-       
-
-        private bool physKeyLocked = false;
-
-        private bool physStepKeyLocked = false;
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -261,7 +164,52 @@ namespace Yuuki2TheGame
 
         private void BindControls()
         {
-
+            controls.BindMouseButtonClick(MouseButton.LEFT, delegate(MouseButtonEventArgs e) {
+                gameEngine.Click(e.X, e.Y);
+            });
+            KeyAction jump = delegate(KeyEventArgs e) {
+                gameEngine.Player.Jump();
+            };
+            KeyAction startRight = delegate(KeyEventArgs e) {
+                gameEngine.Player.StartMovingRight();
+            };
+            KeyAction startLeft = delegate(KeyEventArgs e) {
+                gameEngine.Player.StartMovingLeft();
+            };
+            KeyAction stopRight = delegate(KeyEventArgs e) {
+                gameEngine.Player.StopMovingRight();
+            };
+            KeyAction stopLeft = delegate(KeyEventArgs e) {
+                gameEngine.Player.StopMovingLeft();
+            };
+            controls.BindKeyDown(Keys.Left, startLeft, false);
+            controls.BindKeyDown(Keys.A, startLeft, false);
+            controls.BindKeyUp(Keys.Left, stopLeft);
+            controls.BindKeyUp(Keys.A, stopLeft);
+            controls.BindKeyDown(Keys.Right, startRight, false);
+            controls.BindKeyDown(Keys.D, startRight, false);
+            controls.BindKeyUp(Keys.Right, stopRight);
+            controls.BindKeyUp(Keys.D, stopRight);
+            controls.BindKeyDown(Keys.W, jump, false);
+            controls.BindKeyDown(Keys.Space, jump, false);
+            controls.BindKeyDown(Keys.Up, jump, false);
+            controls.BindKeyDown(Keys.F4, delegate(KeyEventArgs e) {
+                DebugMode = !DebugMode;
+            }, false);
+            controls.BindKeyDown(Keys.F5, delegate(KeyEventArgs e) {
+                gameEngine.ManualPhysStepMode = !gameEngine.ManualPhysStepMode;
+            }, false);
+            controls.BindKeyDown(Keys.F6, delegate(KeyEventArgs e) {
+                gameEngine.RecordPhysStep = !gameEngine.RecordPhysStep;
+            }, false);
+            controls.BindKeyDown(Keys.F7, delegate(KeyEventArgs e) {
+                gameEngine.Respawn();
+            }, false);
+            controls.BindKeyDown(Keys.F8, delegate(KeyEventArgs e) {
+                if (gameEngine.ManualPhysStepMode) {
+                    gameEngine.StepPhysics();
+                }
+            }, false);
         }
 
         private void DrawDebugInfo()

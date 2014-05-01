@@ -92,7 +92,7 @@ namespace Yuuki2TheGame
             Start = new Point(startX, startY);
             Delta = new Point(dx, dy);
             Time = new TimeSpan(0, 0, 0, 0, ms);
-            Speed = dist / (((double)ms) * 1000.0);
+            Speed = dist / (((double)ms) / 1000.0);
         }
     }
 
@@ -151,7 +151,7 @@ namespace Yuuki2TheGame
             this.Value = value;
             Delta = oldValue - value;
             Time = ms;
-            Speed = Math.Abs(Delta) / (((double)ms) * 1000.0);
+            Speed = Math.Abs(Delta) / (((double)ms) / 1000.0);
         }
     }
 
@@ -227,6 +227,10 @@ namespace Yuuki2TheGame
         private class MouseButtonHandler
         {
             public MouseButton button;
+
+            public bool setStart = false;
+
+            public bool startLocked = false;
 
             public bool inDrag = false;
 
@@ -373,54 +377,59 @@ namespace Yuuki2TheGame
             UpdateMouseButtons(gt, mse);
         }
 
-        public void AddScrollListener(string name, int minDistance, int checkInterval, MouseScrollAction scrollUpAction, MouseScrollAction scrollDownAction)
+        public void AddMouseScrollListener(string name, int minDistance, int checkInterval, MouseScrollAction scrollUpAction, MouseScrollAction scrollDownAction)
         {
+            MouseState mse = Mouse.GetState();
             MouseScrollHandler msh = new MouseScrollHandler();
             msh.minDist = minDistance;
             msh.checkInterval = ((long)checkInterval) * 10000L;
             msh.OnScrollUp = scrollUpAction;
             msh.OnScrollDown = scrollDownAction;
+            msh.startValue = mse.ScrollWheelValue;
             scrollHandlers[name] = msh;
         }
 
-        public void RemoveScrollListener(string name)
+        public void RemoveMouseScrollListener(string name)
         {
             scrollHandlers.Remove(name);
         }
 
-        public void BindScrollUp(string listenerName, MouseScrollAction action)
+        public void BindMouseScrollUp(string listenerName, MouseScrollAction action)
         {
             if (!scrollHandlers.ContainsKey(listenerName))
             {
-                AddScrollListener(listenerName, 0, 0, null, null);
+                AddMouseScrollListener(listenerName, 0, 0, null, null);
             }
             scrollHandlers[listenerName].OnScrollUp = action;
         }
 
-        public void BindScrollDown(string listenerName, MouseScrollAction action)
+        public void BindMouseScrollDown(string listenerName, MouseScrollAction action)
         {
             if (!scrollHandlers.ContainsKey(listenerName))
             {
-                AddScrollListener(listenerName, 0, 0, null, null);
+                AddMouseScrollListener(listenerName, 0, 0, null, null);
             }
             scrollHandlers[listenerName].OnScrollDown = action;
         }
 
-        public void BindScrollUp(MouseScrollAction action) {
-            BindScrollUp(DEFAULT_NAME, action);
+        public void BindMouseScrollUp(MouseScrollAction action) {
+            BindMouseScrollUp(DEFAULT_NAME, action);
         }
 
-        public void BindScrollDown(MouseScrollAction action) {
-            BindScrollDown(DEFAULT_NAME, action);
+        public void BindMouseScrollDown(MouseScrollAction action) {
+            BindMouseScrollDown(DEFAULT_NAME, action);
         }
 
         public void AddMouseMoveListener(string name, int minDistX, int minDistY, double minDistTotal, int checkInterval, MouseMoveAction moveAction)
         {
+            MouseState mse = Mouse.GetState();
             MouseMoveHandler mmh = new MouseMoveHandler();
             mmh.minDistX = minDistX;
             mmh.minDistY = minDistY;
             mmh.minDist = minDistTotal;
             mmh.checkInterval = ((long)checkInterval) * 10000L;
+            mmh.startX = mse.X;
+            mmh.startY = mse.Y;
             mmh.OnMove = moveAction;
             moveHandlers[name] = mmh;
         }
@@ -444,18 +453,18 @@ namespace Yuuki2TheGame
             BindMouseMove(DEFAULT_NAME, action);
         }
 
-        public void AddKeyListener(string name, Keys key, long downFireLimit, long minHoldTime, KeyAction downAction, KeyAction upAction)
+        public void AddKeyListener(string name, Keys key, long downFireLimit, int minHoldTime, KeyAction downAction, KeyAction upAction)
         {
             KeyHandler kh = new KeyHandler();
             kh.key = key;
             kh.fireLimit = downFireLimit;
-            kh.minTime = minHoldTime;
+            kh.minTime = ((long) minHoldTime) * 10000L;
             kh.OnDown = downAction;
             kh.OnUp = upAction;
             keyHandlers[name] = kh;
         }
 
-        public void AddKeyListener(Keys key, long downFireLimit, long minHoldTime, KeyAction downAction, KeyAction upAction) {
+        public void AddKeyListener(Keys key, long downFireLimit, int minHoldTime, KeyAction downAction, KeyAction upAction) {
             AddKeyListener(DEFAULT_NAME + KeyName(key), key, downFireLimit, minHoldTime, downAction, upAction);
         }
 
@@ -477,11 +486,11 @@ namespace Yuuki2TheGame
             keyHandlers[listenerName].OnUp = action;
         }
 
-        public void BindKeyDown(string listenerName, Keys key, KeyAction action)
+        public void BindKeyDown(string listenerName, Keys key, KeyAction action, bool fireContinuously)
         {
             if (!keyHandlers.ContainsKey(listenerName))
             {
-                AddKeyListener(listenerName, key, 0, 0, null, null);
+                AddKeyListener(listenerName, key, ((fireContinuously) ? 0 : 1), 0, null, null);
             }
             keyHandlers[listenerName].OnDown = action;
         }
@@ -491,17 +500,17 @@ namespace Yuuki2TheGame
             BindKeyUp(DEFAULT_NAME + KeyName(key), key, action);
         }
 
-        public void BindKeyDown(Keys key, KeyAction action)
+        public void BindKeyDown(Keys key, KeyAction action, bool fireContinuously)
         {
-            BindKeyDown(DEFAULT_NAME + KeyName(key), key, action);
+            BindKeyDown(DEFAULT_NAME + KeyName(key), key, action, fireContinuously);
         }
 
-        public void AddMouseButtonListener(string name, MouseButton button, long downFireLimit, long minHoldTime, MouseButtonAction downAction, MouseButtonAction upAction, MouseAction dragStartAction, MouseDragAction dragFinishAction, MouseButtonAction clickAction, MouseButtonAction clickAndDownAction, MouseButtonAction doubleClickAction)
+        public void AddMouseButtonListener(string name, MouseButton button, long downFireLimit, int minHoldTime, MouseButtonAction downAction, MouseButtonAction upAction, MouseAction dragStartAction, MouseDragAction dragFinishAction, MouseButtonAction clickAction, MouseButtonAction clickAndDownAction, MouseButtonAction doubleClickAction)
         {
             MouseButtonHandler mbh = new MouseButtonHandler();
             mbh.button = button;
             mbh.fireLimit = downFireLimit;
-            mbh.minTime = minHoldTime;
+            mbh.minTime = ((long)minHoldTime) * 10000L;
             mbh.OnDown = downAction;
             mbh.OnUp = upAction;
             mbh.OnClick = clickAction;
@@ -512,7 +521,7 @@ namespace Yuuki2TheGame
             buttonHandlers[name] = mbh;
         }
 
-        public void AddMouseButtonListener(MouseButton button, long downFireLimit, long minHoldTime, MouseButtonAction downAction, MouseButtonAction upAction, MouseAction dragStartAction, MouseDragAction dragFinishAction, MouseButtonAction clickAction, MouseButtonAction clickAndDownAction, MouseButtonAction doubleClickAction)
+        public void AddMouseButtonListener(MouseButton button, long downFireLimit, int minHoldTime, MouseButtonAction downAction, MouseButtonAction upAction, MouseAction dragStartAction, MouseDragAction dragFinishAction, MouseButtonAction clickAction, MouseButtonAction clickAndDownAction, MouseButtonAction doubleClickAction)
         {
             AddMouseButtonListener(DEFAULT_NAME + ButtonName(button), button, downFireLimit, minHoldTime, downAction, upAction, dragStartAction, dragFinishAction, clickAction, clickAndDownAction, doubleClickAction);
         }
@@ -527,18 +536,18 @@ namespace Yuuki2TheGame
             RemoveMouseButtonListener(DEFAULT_NAME + ButtonName(button));
         }
 
-        public void BindMouseButtonDown(string name, MouseButton button, MouseButtonAction action)
+        public void BindMouseButtonDown(string name, MouseButton button, MouseButtonAction action, bool fireContinuously)
         {
             if (!buttonHandlers.ContainsKey(name))
             {
-                AddMouseButtonListener(name, button, 0, 0, null, null, null, null, null, null, null);
+                AddMouseButtonListener(name, button, ((fireContinuously) ? 0 : 1), 0, null, null, null, null, null, null, null);
             }
             buttonHandlers[name].OnDown = action;
         }
 
-        public void BindMouseButtonDown(MouseButton button, MouseButtonAction action)
+        public void BindMouseButtonDown(MouseButton button, MouseButtonAction action, bool fireContinuously)
         {
-            BindMouseButtonDown(DEFAULT_NAME + ButtonName(button), button, action);
+            BindMouseButtonDown(DEFAULT_NAME + ButtonName(button), button, action, fireContinuously);
         }
 
         public void BindMouseButtonUp(string name, MouseButton button, MouseButtonAction action)
@@ -640,6 +649,7 @@ namespace Yuuki2TheGame
             long time = gt.TotalGameTime.Ticks;
             foreach (MouseButtonHandler h in buttonHandlers.Values)
             {
+                bool justPushed = false;
                 long timeDown = time - h.startTime;
                 long timeLastClick = time - h.clickTime;
                 int dx = mse.X - h.startX;
@@ -652,11 +662,13 @@ namespace Yuuki2TheGame
                     h.fireCount = 0;
                     h.startTime = time;
                     h.inDrag = false;
-                    if (timeLastClick > DoubleClickTimeTolerance)
+                    if ((timeLastClick / 10000.0) > DoubleClickTimeTolerance)
                     {
-                        h.startX = h.startY = 0;
+                        h.startX = mse.X;
+                        h.startY = mse.Y;
                         h.firedClickDown = false;
                     }
+                    justPushed = true;
                 }
                 else if (h.pushed && mse.IsButtonUp(h.button))
                 {
@@ -672,7 +684,12 @@ namespace Yuuki2TheGame
                         }
                         if (!h.inDrag && inClickBounds)
                         {
-                            if (timeLastClick <= DoubleClickTimeTolerance)
+                            if (h.OnClick != null)
+                            {
+                                h.OnClick(eargs);
+                            }
+                            h.clickTime = time;
+                            if ((timeLastClick / 10000.0) <= DoubleClickTimeTolerance)
                             {
                                 if (h.OnDoubleClick != null)
                                 {
@@ -680,31 +697,25 @@ namespace Yuuki2TheGame
                                 }
                                 h.clickTime = 0;
                             }
-                            else
-                            {
-                                if (h.OnClick != null)
-                                {
-                                    h.OnClick(eargs);
-                                }
-                                h.clickTime = time;
-                            }
                         }
-                        else if (h.inDrag && h.OnDragFinish != null)
-                        {
-                            long dtime = time - h.dragStartTime;
-                            h.OnDragFinish(new MouseDragEventArgs(mse.X, mse.Y, h.dragStartX, h.dragStartY, dtime));
+                        else {
+                            if (h.inDrag && h.OnDragFinish != null)
+                            {
+                                long dtime = time - h.dragStartTime;
+                                h.OnDragFinish(new MouseDragEventArgs(mse.X, mse.Y, h.dragStartX, h.dragStartY, dtime));
+                            }
                         }
                     }
                 }
                 if (h.pushed)
                 {
-                    if (!inClickBounds)
+                    if (!justPushed && !inClickBounds && !h.inDrag)
                     {
                         h.dragStartX = h.startX;
                         h.dragStartY = h.startY;
                         if (!h.inDrag && h.OnDragStart != null)
                         {
-                            h.OnDragStart(new MouseEventArgs(mse.X, mse.Y));
+                            h.OnDragStart(new MouseEventArgs(h.dragStartX, h.dragStartY));
                         }
                         h.inDrag = true;
                         h.dragStartTime = time;
@@ -716,7 +727,7 @@ namespace Yuuki2TheGame
                             h.fireCount++;
                             h.OnDown(new MouseButtonEventArgs(mse.X, mse.Y, h.button, timeDown, h.minTime, h.fireCount));
                         }
-                        if (timeLastClick <= DoubleClickTimeTolerance)
+                        if ((timeLastClick / 10000.0) <= DoubleClickTimeTolerance)
                         {
                             if (!h.inDrag)
                             {
@@ -729,8 +740,6 @@ namespace Yuuki2TheGame
                         }
                         else
                         {
-                            h.startX = mse.X;
-                            h.startY = mse.Y;
                             h.firedClickDown = false;
                         }
                     }
@@ -784,6 +793,13 @@ namespace Yuuki2TheGame
                         hlr.startValue = mse.ScrollWheelValue;
                         hlr.lastFire = time;
                     }
+                    else if (delta > 0 && hlr.OnScrollUp != null)
+                    {
+                        long timeSinceFire = time - hlr.lastFire;
+                        hlr.OnScrollUp(new MouseScrollEventArgs(mse.X, mse.Y, mse.ScrollWheelValue, hlr.startValue, timeSinceFire));
+                        hlr.startValue = mse.ScrollWheelValue;
+                        hlr.lastFire = time;
+                    }
                 }
             }
         }
@@ -793,12 +809,11 @@ namespace Yuuki2TheGame
             long timeSinceCheck = time - handler.lastCheck;
             if (timeSinceCheck >= handler.checkInterval)
             {
-                // TODO: SET startX and startY at user creation of event!
                 handler.lastCheck = time;
                 int distx = Math.Abs(mse.X - handler.startX);
                 int disty = Math.Abs(mse.Y - handler.startY);
                 double dist = Math.Sqrt((distx * distx) + (disty * disty));
-                if (handler.OnMove != null && distx >= handler.minDistX && disty >= handler.minDistY && dist >= handler.minDist)
+                if (handler.OnMove != null && distx >= handler.minDistX && disty >= handler.minDistY && dist >= handler.minDist && dist > 0)
                 {
                     long timeSinceFire = time - handler.lastFire;
                     handler.OnMove(new MouseMoveEventArgs(mse.X, mse.Y, handler.startX, handler.startY, timeSinceFire));
