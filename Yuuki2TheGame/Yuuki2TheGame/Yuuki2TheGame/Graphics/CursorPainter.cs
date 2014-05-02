@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Yuuki2TheGame.Graphics
 {
@@ -15,15 +16,14 @@ namespace Yuuki2TheGame.Graphics
     {
         private static CursorPainter instance;
 
-        private CursorPainter(GraphicsDevice device)
-            : base(device)
+        private CursorPainter()
         { }
 
-        public static CursorPainter GetInstance(GraphicsDevice device)
+        public static CursorPainter GetInstance()
         {
             if (CursorPainter.instance == null)
             {
-                CursorPainter.instance = new CursorPainter(device);
+                CursorPainter.instance = new CursorPainter();
             }
             return CursorPainter.instance;
         }
@@ -31,13 +31,19 @@ namespace Yuuki2TheGame.Graphics
         protected override void Init()
         { }
 
-        protected override void Load(ContentManager content)
-        { }
+        protected override IDictionary<string, Texture2D> Load(ContentManager content)
+        {
+            return new Dictionary<string, Texture2D>();
+        }
 
         protected override void Unload(ContentManager content)
         { }
 
         protected override void Paint(GameTime gameTime, SpriteBatch batch)
-        { }
+        {
+            MouseState currentMouse = Mouse.GetState();
+            Vector2 pos = new Vector2(currentMouse.X, currentMouse.Y);
+            batch.Draw(DefaultTexture, pos, Color.White);
+        }
     }
 }

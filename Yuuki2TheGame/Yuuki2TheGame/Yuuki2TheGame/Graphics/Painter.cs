@@ -14,30 +14,23 @@ namespace Yuuki2TheGame.Graphics
         /// <summary>
         /// The GraphicsDevice that we are drawing on.
         /// </summary>
-        protected readonly GraphicsDevice GraphicsDevice;
+        public GraphicsDevice GraphicsDevice { protected get; set; }
 
         /// <summary>
         /// The default font to use for drawing text. This is not guarenteed to be set, so check
         /// before using.
         /// </summary>
-        protected SpriteFont DefaultFont;
+        public SpriteFont DefaultFont { protected get; set; }
+
+        public Texture2D DefaultTexture { protected get; set; }
+
+        private IDictionary<string, Texture2D> textureCache;
 
         /// <summary>
         /// Creates a new Painter instance.
         /// </summary>
-        /// <param name="graphics">The graphics device that the Painter will be drawing on.</param>
-        public Painter(GraphicsDevice graphics)
+        public Painter()
         {
-            GraphicsDevice = graphics;
-        }
-
-        /// <summary>
-        /// Sets the default font to use for this Painter. May be required by derived classes.
-        /// </summary>
-        /// <param name="font">The font to set as the default.</param>
-        public void SetDefaultFont(SpriteFont font)
-        {
-            this.DefaultFont = font;
         }
         
         /// <summary>
@@ -55,7 +48,7 @@ namespace Yuuki2TheGame.Graphics
         /// <param name="content">The content manager to use for loading content.</param>
         public void LoadContent(ContentManager content)
         {
-            Load(content);
+            textureCache = Load(content);
         }
 
         /// <summary>
@@ -96,6 +89,32 @@ namespace Yuuki2TheGame.Graphics
             return tex;
         }
 
+        protected void ConvertIDs(IList<Sprite> sprites)
+        {
+            foreach (Sprite spr in sprites)
+            {
+                //TODO: use preloaded graphics
+                spr.Texture = IDToTexture(spr.TextureID);
+            }
+        }
+
+        /// <summary>
+        /// Attempts to convert the resource name into a texture. If resource name is null, default texture is used.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        protected Texture2D IDToTexture(string name)
+        {
+            if (name != null && textureCache.ContainsKey(name))
+            {
+                return textureCache[name];
+            }
+            else
+            {
+                return DefaultTexture;
+            }
+        }
+
         /// <summary>
         /// Called by Initialize(). Override to provide behavior that must execute before
         /// content is loaded.
@@ -106,7 +125,8 @@ namespace Yuuki2TheGame.Graphics
         /// Called by LoadContent(). Override to load graphical assets with the ContentManager.
         /// </summary>
         /// <param name="content">The content manager to use for loading.</param>
-        protected abstract void Load(ContentManager content);
+        /// <returns>A dictionary mapping names to Texture2D resources.</returns>
+        protected abstract IDictionary<string, Texture2D> Load(ContentManager content);
 
         /// <summary>
         /// Called by UnloadContent(). Override to dispose of graphical assets.

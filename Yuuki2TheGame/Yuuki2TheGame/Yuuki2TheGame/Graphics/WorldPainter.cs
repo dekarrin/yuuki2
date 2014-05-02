@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Yuuki2TheGame.Core;
 
 namespace Yuuki2TheGame.Graphics
 {
@@ -15,15 +16,24 @@ namespace Yuuki2TheGame.Graphics
     {
         private static WorldPainter instance;
 
-        private WorldPainter(GraphicsDevice device)
-            : base(device)
-        { }
+        private Engine engine;
 
-        public static WorldPainter GetInstance(GraphicsDevice device)
+        private int xBlocks;
+
+        private int yBlocks;
+
+        private WorldPainter(Engine game, int xBlocks, int yBlocks)
+        {
+            this.engine = game;
+            this.xBlocks = xBlocks;
+            this.yBlocks = yBlocks;
+        }
+
+        public static WorldPainter GetInstance(Engine game, int xBlocks, int yBlocks)
         {
             if (WorldPainter.instance == null)
             {
-                WorldPainter.instance = new WorldPainter(device);
+                WorldPainter.instance = new WorldPainter(game, xBlocks, yBlocks);
             }
             return WorldPainter.instance;
         }
@@ -31,13 +41,28 @@ namespace Yuuki2TheGame.Graphics
         protected override void Init()
         { }
 
-        protected override void Load(ContentManager content)
-        { }
+        protected override IDictionary<string, Texture2D> Load(ContentManager content)
+        {
+            return new Dictionary<string, Texture2D>();
+        }
 
         protected override void Unload(ContentManager content)
         { }
 
         protected override void Paint(GameTime gameTime, SpriteBatch batch)
-        { }
+        {
+            IList<Sprite> tiles = engine.GetView(xBlocks, yBlocks);
+            IList<Sprite> chars = engine.GetCharacters();
+            ConvertIDs(tiles);
+            ConvertIDs(chars);
+            foreach (Sprite sp in tiles)
+            {
+                batch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
+            }
+            foreach (Sprite sp in chars)
+            {
+                batch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
+            }
+        }
     }
 }

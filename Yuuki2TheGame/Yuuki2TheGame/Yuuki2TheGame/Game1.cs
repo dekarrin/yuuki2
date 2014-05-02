@@ -21,8 +21,6 @@ namespace Yuuki2TheGame
         public const int WORLD_WIDTH = 100;
         public const int WORLD_HEIGHT = 100;
 
-        public const int INVEN_SLOT_LENGTH = 30;
-
         public const int GAME_WIDTH = 800;
         public const int GAME_HEIGHT = 600;
 
@@ -42,24 +40,18 @@ namespace Yuuki2TheGame
 
         private IList<Painter> painters;
 
-        private Texture2D fullScreenSolid;
-
-        private Texture2D invenSlotSolid;
-
         /// <summary>
         /// Contains the number of blocks that are on the screen.
         /// </summary>
         private Point blocksOnScreen;
 
-        public bool DebugMode { get; set; }
-
         public Game1()
         {
-            DebugMode = false;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             blocksOnScreen = new Point (GAME_WIDTH / METER_LENGTH + 1, GAME_HEIGHT / METER_LENGTH + 1);
             painters = new List<Painter>();
+            gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
             CreatePainters();
         }
 
@@ -72,7 +64,6 @@ namespace Yuuki2TheGame
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
             InitializePainters();
             BindControls();
             SetWindowSize();
@@ -89,11 +80,10 @@ namespace Yuuki2TheGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            LoadPainterContent();
-            fullScreenSolid = null;//CreateRect(GAME_WIDTH, GAME_HEIGHT);
-            invenSlotSolid = null;//CreateRect(INVEN_SLOT_LENGTH, INVEN_SLOT_LENGTH);
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
             font = Content.Load<SpriteFont>("SegoeUI");
+            SetPainterDefaults(defaultTexture, font);
+            LoadPainterContent();
         }
 
         /// <summary>
@@ -136,66 +126,14 @@ namespace Yuuki2TheGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            Sprite bg = gameEngine.GetBackground(GAME_WIDTH, GAME_HEIGHT);
-            IList<Sprite> tiles = gameEngine.GetView(blocksOnScreen.X, blocksOnScreen.Y, METER_LENGTH, METER_LENGTH);
-            IList<Sprite> chars = gameEngine.GetCharacters(GAME_WIDTH, GAME_HEIGHT);
-            bg.Texture = NameToTexture(bg.TextureID);
-            ProcessSpriteGraphics(tiles);
-            ProcessSpriteGraphics(chars);
             GraphicsDevice.Clear(Color.Black);
-
             spriteBatch.Begin();
-            // draw bg first ALWAYS!
-            spriteBatch.Draw(bg.Texture, bg.Destination, bg.Source, Color.Pink);
-            foreach (Sprite sp in tiles)
+            foreach (Painter p in painters)
             {
-                spriteBatch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
-            }
-            foreach (Sprite sp in chars)
-            {
-                spriteBatch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
-            }
-            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            MouseState currentMouse = Mouse.GetState();
-            Vector2 pos = new Vector2(currentMouse.X, currentMouse.Y);
-
-            spriteBatch.Draw(bg.Texture, pos, Color.White);
-            DrawInventory();
-            if (DebugMode)
-            {
-                DrawDebugInfo();
-            }
-            if (gameEngine.ManualPhysStepMode)
-            {
-                DrawManualPhysInfo();
-            }
-            if (gameEngine.RecordPhysStep)
-            {
-                DrawRecordingPhysStep();
+                p.Draw(gameTime, spriteBatch);
             }
             spriteBatch.End();
             base.Draw(gameTime);
-  
-            
-        }
-
-        private void DrawInventory()
-        {
-            if (gameEngine.InInventoryScreen)
-            {
-                spriteBatch.Draw(fullScreenSolid, fullScreenSolid.Bounds, new Color(0, 0, 0, 128));
-            }
-            IList<InventorySlot> quicks = gameEngine.Player.Inventory.QuickSlots;
-            Rectangle drawRect = invenSlotSolid.Bounds;
-            drawRect.Y = 10;
-            drawRect.X = 0;
-            for (int i = 0; i < quicks.Count; i++)
-            {
-                drawRect.X += 10;
-                spriteBatch.Draw(invenSlotSolid, drawRect, new Color(217, 154, 154));
-                drawRect.X += INVEN_SLOT_LENGTH;
-            }
         }
 
         private void BindControls()
@@ -234,7 +172,7 @@ namespace Yuuki2TheGame
             controls.BindKeyDown(Keys.Space, jump, false);
             controls.BindKeyDown(Keys.Up, jump, false);
             controls.BindKeyDown(Keys.F4, delegate(KeyEventArgs e) {
-                DebugMode = !DebugMode;
+                gameEngine.InDebugMode = !gameEngine.InDebugMode;
             }, false);
             controls.BindKeyDown(Keys.F5, delegate(KeyEventArgs e) {
                 gameEngine.ManualPhysStepMode = !gameEngine.ManualPhysStepMode;
@@ -252,64 +190,14 @@ namespace Yuuki2TheGame
             }, false);
         }
 
-        private void DrawDebugInfo()
-        {
-            PlayerCharacter pc = gameEngine.Player;
-            Vector2 s = pc.PhysPosition;
-            Vector2 v = pc.Velocity;
-            Vector2 a = pc.Acceleration;
-            Vector2 f = pc.Force;
-            string[] debug = new string[5];
-            debug[0] = string.Format("P:({0}, {1})", s.X, s.Y);
-            debug[1] = string.Format("V:({0}, {1})", v.X, v.Y);
-            debug[2] = string.Format("A:({0}, {1})", a.X, a.Y);
-            debug[3] = string.Format("F:({0}, {1})", f.X, f.Y);
-            debug[4] = string.Format("M:{0}  C:{1}  G:{2}", pc.Mass, Convert.ToString(pc.ContactMask, 2).PadLeft(4, '0'), pc.IsOnGround());
-            for (int i = 0; i < debug.Length; i++)
-            {
-                spriteBatch.DrawString(font, debug[i], new Vector2(5, i * 15), Color.Red);
-            }
-        }
-
-        private void DrawManualPhysInfo()
-        {
-            string debug = "Hit F8 to step physics or F5 to turn on auto step";
-            spriteBatch.DrawString(font, debug, new Vector2(200, 0), Color.Red);
-        }
-
-        private void DrawRecordingPhysStep()
-        {
-            string debug = "(recording)";
-            spriteBatch.DrawString(font, debug, new Vector2(720, 0), Color.Red);
-        }
-
-        private void ProcessSpriteGraphics(IList<Sprite> sprites)
-        {
-            foreach (Sprite spr in sprites)
-            {
-                //TODO: use preloaded graphics
-                spr.Texture = NameToTexture(spr.TextureID);
-            }
-        }
-
-        /// <summary>
-        /// Attempts to convert the resource name into a texture. If resource name is null, default texture is used.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        private Texture2D NameToTexture(string name)
-        {
-            return Content.Load<Texture2D>(name != null ? name : @"Tiles/default_tile");
-        }
-
         private void CreatePainters()
         {
             // First in this list means first to paint.
-            painters.Add(BackgroundPainter.GetInstance(GraphicsDevice));
-            painters.Add(WorldPainter.GetInstance(GraphicsDevice));
-            painters.Add(HudPainter.GetInstance(GraphicsDevice));
-            painters.Add(DebugPainter.GetInstance(GraphicsDevice));
-            painters.Add(CursorPainter.GetInstance(GraphicsDevice));
+            painters.Add(BackgroundPainter.GetInstance(gameEngine, GAME_WIDTH, GAME_HEIGHT));
+            painters.Add(WorldPainter.GetInstance(gameEngine, blocksOnScreen.X, blocksOnScreen.Y));
+            painters.Add(HudPainter.GetInstance(gameEngine, GAME_WIDTH, GAME_HEIGHT));
+            painters.Add(DebugPainter.GetInstance(gameEngine));
+            painters.Add(CursorPainter.GetInstance());
         }
 
         private void LoadPainterContent()
@@ -333,6 +221,16 @@ namespace Yuuki2TheGame
             foreach (Painter p in painters)
             {
                 p.Initialize();
+            }
+        }
+
+        private void SetPainterDefaults(Texture2D defTexture, SpriteFont defFont)
+        {
+            foreach (Painter p in painters)
+            {
+                p.DefaultFont = defFont;
+                p.DefaultTexture = defTexture;
+                p.GraphicsDevice = GraphicsDevice;
             }
         }
 

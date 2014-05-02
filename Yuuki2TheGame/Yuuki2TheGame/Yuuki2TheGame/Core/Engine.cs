@@ -23,6 +23,8 @@ namespace Yuuki2TheGame.Core
 
         public bool InInventoryScreen { get; set; }
 
+        public bool InDebugMode { get; set; }
+
         private bool _recording = false;
 
         public bool RecordPhysStep
@@ -63,6 +65,7 @@ namespace Yuuki2TheGame.Core
         {
             InInventoryScreen = false;
             ManualPhysStepMode = false;
+            InDebugMode = false;
             _map = new Map(size.X, size.Y);
             spawn = new Point(0, (size.Y / 2) * Game1.METER_LENGTH - 30);
             // temp vars until we can meet with the team
@@ -160,7 +163,7 @@ namespace Yuuki2TheGame.Core
         /// <param name="tileWidth">Width of a tile.</param>
         /// <param name="tileHeight">Height of a tile.</param>
         /// <returns></returns>
-        public IList<Sprite> GetView(int numX, int numY, int tileWidth, int tileHeight)
+        public IList<Sprite> GetView(int numX, int numY)
         {
             Vector2 pos = Camera.BlockPosition;
             Point coords = new Point((int) pos.X, (int) pos.Y);
@@ -173,8 +176,8 @@ namespace Yuuki2TheGame.Core
                     Point tilecoords = new Point(coords.X + i, coords.Y + j);
                     if (tilecoords.X >= 0 && tilecoords.Y >= 0 && _map.BlockAt(tilecoords) != null)
                     {
-                        Point position = new Point(i * tileWidth - offsets.X, j * tileHeight - offsets.Y);
-                        Sprite spr = new Sprite(position, new Point(tileWidth, tileHeight), _map.BlockAt(tilecoords).Texture);
+                        Point position = new Point(i * Game1.METER_LENGTH - offsets.X, j * Game1.METER_LENGTH - offsets.Y);
+                        Sprite spr = new Sprite(position, new Point(Game1.METER_LENGTH, Game1.METER_LENGTH), _map.BlockAt(tilecoords).Texture);
                         view.Add(spr);
                     }
                 }
@@ -212,7 +215,7 @@ namespace Yuuki2TheGame.Core
             return spr;
         }
 
-        public IList<Sprite> GetCharacters(int screenWidth, int screenHeight)
+        public IList<Sprite> GetCharacters()
         {
             // TODO: OPTIMIZE! We should be using quadtrees or something...
             Rectangle view = Camera.Bounds;
