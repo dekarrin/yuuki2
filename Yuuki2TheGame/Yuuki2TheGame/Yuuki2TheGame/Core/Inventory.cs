@@ -25,7 +25,30 @@ namespace Yuuki2TheGame.Core
     {
         private List<InventorySlot> slots;
 
-        public int QuickSlotsCount { get; set; }
+        private int _activeSlot = 0;
+
+        public int QuickSlotsCount { get; private set;  }
+
+        public int ActiveSlot
+        {
+            get
+            {
+                return _activeSlot;
+            }
+            set
+            {
+                slots[_activeSlot].IsActive = false;
+                if (value >= 0)
+                {
+                    _activeSlot = value % QuickSlotsCount;
+                }
+                else
+                {
+                    _activeSlot = QuickSlotsCount - 1;
+                }
+                slots[_activeSlot].IsActive = true;
+            }
+        }
 
         public IList<InventorySlot> QuickSlots
         {
@@ -35,14 +58,15 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public Inventory(int size)
+        public Inventory(int size, int quicks)
         {
             slots = new List<InventorySlot>();
             for (int i = 0; i < size; i++)
             {
                 slots.Add(new InventorySlot(null));
             }
-            QuickSlotsCount = 8;
+            QuickSlotsCount = quicks;
+            ActiveSlot = 0;
         }
 
         public bool Contains(Item i)

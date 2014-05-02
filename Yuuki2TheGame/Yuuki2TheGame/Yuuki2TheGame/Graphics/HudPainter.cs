@@ -77,7 +77,12 @@ namespace Yuuki2TheGame.Graphics
                 drawRect.X += SLOT_SPACING;
                 Rectangle innerDraw = new Rectangle(drawRect.X + SLOT_BORDER, drawRect.Y + SLOT_BORDER, drawRect.Width - (SLOT_BORDER * 2), drawRect.Height - (SLOT_BORDER * 2));
                 batch.Draw(invenSlotBorder, drawRect, new Color(24, 24, 24));
-                batch.Draw(invenSlotSolid, innerDraw, new Color(217, 154, 154));
+                Color color = new Color(217, 154, 154);
+                if (quicks[i].IsActive)
+                {
+                    color = new Color(255, 122, 122);
+                }
+                batch.Draw(invenSlotSolid, innerDraw, color);
                 drawRect.X += SLOT_LENGTH;
             }
         }

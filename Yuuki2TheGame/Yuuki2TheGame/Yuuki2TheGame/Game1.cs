@@ -26,6 +26,10 @@ namespace Yuuki2TheGame
 
         public const int METER_LENGTH = 16;
 
+        public const int INVENTORY_ITEMS = 32;
+
+        public const int QUICK_SLOTS = 8;
+
         private GraphicsDeviceManager graphics;
 
         private SpriteBatch spriteBatch;
@@ -187,6 +191,46 @@ namespace Yuuki2TheGame
                 if (gameEngine.ManualPhysStepMode) {
                     gameEngine.StepPhysics();
                 }
+            }, false);
+            controls.BindMouseScrollUp(delegate(MouseScrollEventArgs e)
+            {
+                gameEngine.Player.Inventory.ActiveSlot--;
+            });
+            controls.BindMouseScrollDown(delegate(MouseScrollEventArgs e)
+            {
+                gameEngine.Player.Inventory.ActiveSlot++;
+            });
+            controls.BindKeyDown(Keys.D1, delegate(KeyEventArgs e)
+            {
+                gameEngine.Player.Inventory.ActiveSlot = 0;
+            }, false);
+            controls.BindKeyDown(Keys.D2, delegate(KeyEventArgs e)
+            {
+                gameEngine.Player.Inventory.ActiveSlot = 1;
+            }, false);
+            controls.BindKeyDown(Keys.D3, delegate(KeyEventArgs e)
+            {
+                gameEngine.Player.Inventory.ActiveSlot = 2;
+            }, false);
+            controls.BindKeyDown(Keys.D4, delegate(KeyEventArgs e)
+            {
+                gameEngine.Player.Inventory.ActiveSlot = 3;
+            }, false);
+            controls.BindKeyDown(Keys.D5, delegate(KeyEventArgs e)
+            {
+                gameEngine.Player.Inventory.ActiveSlot = 4;
+            }, false);
+            controls.BindKeyDown(Keys.D6, delegate(KeyEventArgs e)
+            {
+                gameEngine.Player.Inventory.ActiveSlot = 5;
+            }, false);
+            controls.BindKeyDown(Keys.D7, delegate(KeyEventArgs e)
+            {
+                gameEngine.Player.Inventory.ActiveSlot = 6;
+            }, false);
+            controls.BindKeyDown(Keys.D8, delegate(KeyEventArgs e)
+            {
+                gameEngine.Player.Inventory.ActiveSlot = 7;
             }, false);
         }
 
