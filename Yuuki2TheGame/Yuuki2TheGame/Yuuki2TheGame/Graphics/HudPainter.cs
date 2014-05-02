@@ -64,12 +64,23 @@ namespace Yuuki2TheGame.Graphics
             Texture2D fullScreenSolid = IDToTexture("$overlay");
             Texture2D invenSlotSolid = IDToTexture("$slot");
             Texture2D invenSlotBorder = IDToTexture("$slot_border");
+            IList<InventorySlot> quicks = engine.Player.Inventory.QuickSlots;
+            IList<InventorySlot> slots = engine.Player.Inventory.Slots;
+            Rectangle drawRect = invenSlotBorder.Bounds;
             if (engine.InInventoryScreen)
             {
+                drawRect.Y = SLOT_SPACING;
+                drawRect.X = 0;
                 batch.Draw(fullScreenSolid, fullScreenSolid.Bounds, new Color(0, 0, 0, 128));
+                for (int i = quicks.Count; i < slots.Count; i++)
+                {
+                    drawRect.Y = SLOT_SPACING + ((i / quicks.Count) * (SLOT_LENGTH + SLOT_SPACING));
+                    drawRect.X = SLOT_SPACING + ((i % quicks.Count) * (SLOT_LENGTH + SLOT_SPACING));
+                    Rectangle innerDraw = new Rectangle(drawRect.X + SLOT_BORDER, drawRect.Y + SLOT_BORDER, drawRect.Width - (SLOT_BORDER * 2), drawRect.Height - (SLOT_BORDER * 2));
+                    batch.Draw(invenSlotBorder, drawRect, new Color(24, 24, 24));
+                    batch.Draw(invenSlotSolid, innerDraw, new Color(232, 255, 217));
+                }
             }
-            IList<InventorySlot> quicks = engine.Player.Inventory.QuickSlots;
-            Rectangle drawRect = invenSlotBorder.Bounds;
             drawRect.Y = SLOT_SPACING;
             drawRect.X = 0;
             for (int i = 0; i < quicks.Count; i++)

@@ -127,6 +127,18 @@ namespace Yuuki2TheGame.Core
 
         public void Click(int x, int y)
         {
+            if (InInventoryScreen)
+            {
+
+            }
+            else
+            {
+                ClickBlock(x, y);
+            }
+        }
+
+        private void ClickBlock(int x, int y)
+        {
             int globalx = (x + this.Camera.Position.X) / Game1.METER_LENGTH;
             int globaly = (y + this.Camera.Position.Y) / Game1.METER_LENGTH;
             Point p = new Point(globalx, globaly);

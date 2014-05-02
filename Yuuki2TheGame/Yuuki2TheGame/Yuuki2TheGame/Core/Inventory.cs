@@ -23,7 +23,7 @@ namespace Yuuki2TheGame.Core
 
     class Inventory
     {
-        private List<InventorySlot> slots;
+        public List<InventorySlot> Slots { get; private set; }
 
         private int _activeSlot = 0;
 
@@ -37,7 +37,7 @@ namespace Yuuki2TheGame.Core
             }
             set
             {
-                slots[_activeSlot].IsActive = false;
+                Slots[_activeSlot].IsActive = false;
                 if (value >= 0)
                 {
                     _activeSlot = value % QuickSlotsCount;
@@ -46,7 +46,7 @@ namespace Yuuki2TheGame.Core
                 {
                     _activeSlot = QuickSlotsCount - 1;
                 }
-                slots[_activeSlot].IsActive = true;
+                Slots[_activeSlot].IsActive = true;
             }
         }
 
@@ -54,16 +54,16 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return slots.Take(QuickSlotsCount).ToList();
+                return Slots.Take(QuickSlotsCount).ToList();
             }
         }
 
         public Inventory(int size, int quicks)
         {
-            slots = new List<InventorySlot>();
+            Slots = new List<InventorySlot>();
             for (int i = 0; i < size; i++)
             {
-                slots.Add(new InventorySlot(null));
+                Slots.Add(new InventorySlot(null));
             }
             QuickSlotsCount = quicks;
             ActiveSlot = 0;
@@ -71,14 +71,14 @@ namespace Yuuki2TheGame.Core
 
         public bool Contains(Item i)
         {
-            return slots.Exists(x => x.Item.ID == i.ID);
+            return Slots.Exists(x => x.Item.ID == i.ID);
         }
 
         public void Add(Item item)
         {
             if (item.Stackable && this.Contains(item))
             {
-                slots.Find(x => item.ID == x.Item.ID).Count++;
+                Slots.Find(x => item.ID == x.Item.ID).Count++;
             }
             else
             {
@@ -90,7 +90,7 @@ namespace Yuuki2TheGame.Core
 
         public InventorySlot GetNextEmptySlot()
         {
-            return slots.Find(x => x.Item == null);
+            return Slots.Find(x => x.Item == null);
         }
 
         //removes one instance of the item.
@@ -100,12 +100,12 @@ namespace Yuuki2TheGame.Core
             {
                 if (n.Stackable)
                 {
-                    InventorySlot sl = slots.Find(x => n.ID == x.Item.ID);
+                    InventorySlot sl = Slots.Find(x => n.ID == x.Item.ID);
                     sl.Count++;
                 }
                 else
                 {
-                    InventorySlot sl = slots.Find(x => n.ID == x.Item.ID);
+                    InventorySlot sl = Slots.Find(x => n.ID == x.Item.ID);
                     sl.Item = null;
                     sl.Count = 0;
                     sl.IsActive = false;
@@ -116,7 +116,7 @@ namespace Yuuki2TheGame.Core
 
         public void Empty()
         {
-            slots.Clear();
+            Slots.Clear();
         }
         
     }
