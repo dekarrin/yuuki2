@@ -42,6 +42,7 @@ namespace Yuuki2TheGame.Core
             {
                 slots.Add(new InventorySlot(null));
             }
+            QuickSlotsCount = 8;
         }
 
         public bool Contains(Item i)

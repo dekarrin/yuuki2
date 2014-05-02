@@ -85,8 +85,14 @@
     <Compile Include="Core\Inventory.cs" />
     <Compile Include="Core\Map.cs" />
     <Compile Include="Extensions\ExtensionMethods.cs" />
+    <Compile Include="Graphics\BackgroundPainter.cs" />
+    <Compile Include="Graphics\CursorPainter.cs" />
+    <Compile Include="Graphics\DebugPainter.cs" />
+    <Compile Include="Graphics\HudPainter.cs" />
+    <Compile Include="Graphics\Painter.cs" />
     <Compile Include="Graphics\Sprite.cs" />
     <Compile Include="Graphics\Tile.cs" />
+    <Compile Include="Graphics\WorldPainter.cs" />
     <Compile Include="Physics\DragModel.cs" />
     <Compile Include="Physics\IPhysical.cs" />
     <Compile Include="Physics\IQuadObject.cs" />

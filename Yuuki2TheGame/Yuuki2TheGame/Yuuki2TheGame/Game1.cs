@@ -18,20 +18,33 @@ namespace Yuuki2TheGame
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        Engine gameEngine;
-        Texture2D defaultTexture;
-
         public const int WORLD_WIDTH = 100;
         public const int WORLD_HEIGHT = 100;
+
+        public const int INVEN_SLOT_LENGTH = 30;
 
         public const int GAME_WIDTH = 800;
         public const int GAME_HEIGHT = 600;
 
         public const int METER_LENGTH = 16;
 
-        private Texture2D fullScreenRect;
+        private GraphicsDeviceManager graphics;
+
+        private SpriteBatch spriteBatch;
+
+        private Engine gameEngine;
+
+        private Texture2D defaultTexture;
+
+        private ControlManager controls = new ControlManager();
+
+        private SpriteFont font;
+
+        private IList<Painter> painters;
+
+        private Texture2D fullScreenSolid;
+
+        private Texture2D invenSlotSolid;
 
         /// <summary>
         /// Contains the number of blocks that are on the screen.
@@ -40,21 +53,15 @@ namespace Yuuki2TheGame
 
         public bool DebugMode { get; set; }
 
-        private SpriteFont font;
-
         public Game1()
         {
             DebugMode = false;
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = GAME_WIDTH;
-            graphics.PreferredBackBufferHeight = GAME_HEIGHT;
-            graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             blocksOnScreen = new Point (GAME_WIDTH / METER_LENGTH + 1, GAME_HEIGHT / METER_LENGTH + 1);
-            gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
+            painters = new List<Painter>();
+            CreatePainters();
         }
-
-        ControlManager controls = new ControlManager();
 
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
@@ -65,7 +72,10 @@ namespace Yuuki2TheGame
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
+            InitializePainters();
             BindControls();
+            SetWindowSize();
             int butts = 0;
             butts++;
             base.Initialize();
@@ -79,7 +89,9 @@ namespace Yuuki2TheGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            fullScreenRect = CreateRect(GAME_WIDTH, GAME_HEIGHT);
+            LoadPainterContent();
+            fullScreenSolid = null;//CreateRect(GAME_WIDTH, GAME_HEIGHT);
+            invenSlotSolid = null;//CreateRect(INVEN_SLOT_LENGTH, INVEN_SLOT_LENGTH);
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
             font = Content.Load<SpriteFont>("SegoeUI");
         }
@@ -91,6 +103,7 @@ namespace Yuuki2TheGame
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+            UnloadPainterContent();
         }
 
         /// <summary>
@@ -171,20 +184,18 @@ namespace Yuuki2TheGame
         {
             if (gameEngine.InInventoryScreen)
             {
-                spriteBatch.Draw(fullScreenRect, fullScreenRect.Bounds, new Color(0, 0, 0, 128));
+                spriteBatch.Draw(fullScreenSolid, fullScreenSolid.Bounds, new Color(0, 0, 0, 128));
             }
-        }
-
-        private Texture2D CreateRect(int width, int height)
-        {
-            Texture2D tex = new Texture2D(graphics.GraphicsDevice, width, height, false, SurfaceFormat.Color);
-            Color[] data = new Color[width * height];
-            for (int i = 0; i < data.Length; i++)
+            IList<InventorySlot> quicks = gameEngine.Player.Inventory.QuickSlots;
+            Rectangle drawRect = invenSlotSolid.Bounds;
+            drawRect.Y = 10;
+            drawRect.X = 0;
+            for (int i = 0; i < quicks.Count; i++)
             {
-                data[i] = new Color(0, 0, 0, 255);
+                drawRect.X += 10;
+                spriteBatch.Draw(invenSlotSolid, drawRect, new Color(217, 154, 154));
+                drawRect.X += INVEN_SLOT_LENGTH;
             }
-            tex.SetData(data);
-            return tex;
         }
 
         private void BindControls()
@@ -289,6 +300,47 @@ namespace Yuuki2TheGame
         private Texture2D NameToTexture(string name)
         {
             return Content.Load<Texture2D>(name != null ? name : @"Tiles/default_tile");
+        }
+
+        private void CreatePainters()
+        {
+            // First in this list means first to paint.
+            painters.Add(BackgroundPainter.GetInstance(GraphicsDevice));
+            painters.Add(WorldPainter.GetInstance(GraphicsDevice));
+            painters.Add(HudPainter.GetInstance(GraphicsDevice));
+            painters.Add(DebugPainter.GetInstance(GraphicsDevice));
+            painters.Add(CursorPainter.GetInstance(GraphicsDevice));
+        }
+
+        private void LoadPainterContent()
+        {
+            foreach (Painter p in painters)
+            {
+                p.LoadContent(Content);
+            }
+        }
+
+        private void UnloadPainterContent()
+        {
+            foreach (Painter p in painters)
+            {
+                p.UnloadContent(Content);
+            }
+        }
+
+        private void InitializePainters()
+        {
+            foreach (Painter p in painters)
+            {
+                p.Initialize();
+            }
+        }
+
+        private void SetWindowSize()
+        {
+            graphics.PreferredBackBufferWidth = GAME_WIDTH;
+            graphics.PreferredBackBufferHeight = GAME_HEIGHT;
+            graphics.ApplyChanges();
         }
     }
 }
