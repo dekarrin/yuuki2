@@ -16,7 +16,11 @@ namespace Yuuki2TheGame.Graphics
     {
         private static HudPainter instance;
 
-        public const int INVEN_SLOT_LENGTH = 30;
+        public const int SLOT_LENGTH = 40;
+
+        public const int SLOT_BORDER = 2;
+
+        public const int SLOT_SPACING = 2;
 
         private Engine engine;
 
@@ -47,7 +51,8 @@ namespace Yuuki2TheGame.Graphics
         {
             IDictionary<string, Texture2D> dict = new Dictionary<string, Texture2D>();
             dict["$overlay"] = CreateRectTexture(width, height);
-            dict["$slot"] = CreateRectTexture(INVEN_SLOT_LENGTH, INVEN_SLOT_LENGTH);
+            dict["$slot"] = CreateRectTexture(SLOT_LENGTH - (SLOT_BORDER * 2), SLOT_LENGTH - (SLOT_BORDER * 2));
+            dict["$slot_border"] = CreateRectTexture(SLOT_LENGTH, SLOT_LENGTH);
             return dict;
         }
 
@@ -58,19 +63,22 @@ namespace Yuuki2TheGame.Graphics
         {
             Texture2D fullScreenSolid = IDToTexture("$overlay");
             Texture2D invenSlotSolid = IDToTexture("$slot");
+            Texture2D invenSlotBorder = IDToTexture("$slot_border");
             if (engine.InInventoryScreen)
             {
                 batch.Draw(fullScreenSolid, fullScreenSolid.Bounds, new Color(0, 0, 0, 128));
             }
             IList<InventorySlot> quicks = engine.Player.Inventory.QuickSlots;
-            Rectangle drawRect = invenSlotSolid.Bounds;
-            drawRect.Y = 10;
+            Rectangle drawRect = invenSlotBorder.Bounds;
+            drawRect.Y = SLOT_SPACING;
             drawRect.X = 0;
             for (int i = 0; i < quicks.Count; i++)
             {
-                drawRect.X += 10;
-                batch.Draw(invenSlotSolid, drawRect, new Color(217, 154, 154));
-                drawRect.X += INVEN_SLOT_LENGTH;
+                drawRect.X += SLOT_SPACING;
+                Rectangle innerDraw = new Rectangle(drawRect.X + SLOT_BORDER, drawRect.Y + SLOT_BORDER, drawRect.Width - (SLOT_BORDER * 2), drawRect.Height - (SLOT_BORDER * 2));
+                batch.Draw(invenSlotBorder, drawRect, new Color(24, 24, 24));
+                batch.Draw(invenSlotSolid, innerDraw, new Color(217, 154, 154));
+                drawRect.X += SLOT_LENGTH;
             }
         }
     }
