@@ -76,7 +76,7 @@ namespace Yuuki2TheGame.Core
 
         public void Add(Item item)
         {
-            if (item.Stackable && this.Contains(item))
+            if (item.IsStackable && this.Contains(item))
             {
                 Slots.Find(x => item.ID == x.Item.ID).Count++;
             }
@@ -98,7 +98,7 @@ namespace Yuuki2TheGame.Core
         {
             if (Contains(n))
             {
-                if (n.Stackable)
+                if (n.IsStackable)
                 {
                     InventorySlot sl = Slots.Find(x => n.ID == x.Item.ID);
                     sl.Count++;
