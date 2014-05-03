@@ -15,20 +15,20 @@ namespace Yuuki2TheGame.Core
 
         public int Width { get; private set; }
 
-        public List<List<Block>> world { get; private set; }
+        public IList<IList<Block>> World { get; private set; }
 
-        public Map(int height, int width)
+        public Map(int width, int height)
         {
-            GenerateWorld(height, width);
+            World = GenerateWorld(width, height);
         }
 
-        public List<List<Block>> GenerateWorld(int height, int width)
+        public IList<IList<Block>> GenerateWorld(int width, int height)
         {
             Width = width;
             Height = height;
-            world = new List<List<Block>>();
+            IList<IList<Block>> world = new List<IList<Block>>();
             for(int x = 0; x < Width; x++){ //Temporary algorithm: Iterates through all blocks on the bottom half of the map.
-                List<Block> slice = new List<Block>();
+                IList<Block> slice = new List<Block>();
                 for (int y = 0; y < Height; y++)
                 {
                     if (y > Height / 2)
@@ -87,9 +87,9 @@ namespace Yuuki2TheGame.Core
                 {
                     int x = rect.X + i;
                     int y = rect.Y + j;
-                    if (x >= 0 && y >= 0 && x < world.Count && y < world[x].Count)
+                    if (x >= 0 && y >= 0 && x < World.Count && y < World[x].Count)
                     {
-                        Block b = world[x][y];
+                        Block b = World[x][y];
                         if (b != null)
                         {
                             results.Add(b);
@@ -103,7 +103,7 @@ namespace Yuuki2TheGame.Core
         public void Update(GameTime gameTime)
         {
             // apply physics to blocks
-            foreach (List<Block> slice in world)
+            foreach (List<Block> slice in World)
             {
                 foreach (Block b in slice)
                 {
@@ -122,17 +122,17 @@ namespace Yuuki2TheGame.Core
         /// <returns></returns>
         public Block BlockAt(Point p)
         {
-            return world[p.X][p.Y];
+            return World[p.X][p.Y];
         }
 
         public void DestroyBlock(Point p)
         {
-            world[p.X][p.Y] = null;
+            World[p.X][p.Y] = null;
         }
 
         public void AddBlock(Point p)
         {
-            world[p.X][p.Y] = new Block(1, p.X, p.Y);
+            World[p.X][p.Y] = new Block(1, p.X, p.Y);
         }
 
         public Block BlockAtCoordinate(int x, int y)
@@ -140,9 +140,9 @@ namespace Yuuki2TheGame.Core
             int indexX = (int)(x/Game1.METER_LENGTH);
             int indexY = (int)(y/Game1.METER_LENGTH);
             
-            if (indexX < this.world.Count && indexX >= 0 && indexY > 0 && indexY < this.world[indexX].Count)
+            if (indexX < this.World.Count && indexX >= 0 && indexY > 0 && indexY < this.World[indexX].Count)
             {
-                return this.world[indexX][indexY];
+                return this.World[indexX][indexY];
             }
             else
             {
