@@ -197,6 +197,12 @@ namespace Yuuki2TheGame.Core
             return view;
         }
 
+        public void GiveItem(ItemID id)
+        {
+            Item item = Item.Create(id);
+            Player.Inventory.Add(item);
+        }
+
         public PlayerCharacter Player { get; private set; }
 
         public IList<GameCharacter> Characters

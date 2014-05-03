@@ -16,8 +16,65 @@ namespace Yuuki2TheGame.Core
         Bomb
     }
 
+    enum ItemID
+    {
+        BlockStone,
+        BlockWood,
+        BlockDirt,
+        BlockGrass,
+        AxeNormal = Item.ID_LIMIT_IDK + 1,
+        ShovelNormal = Item.ID_LIMIT_AXE + 1,
+        PickaxeNormal = Item.ID_LIMIT_SHOVEL + 1,
+        Potion = Item.ID_LIMIT_PICKAXE + 1,
+        Bomb
+    }
+
+    struct ItemData
+    {
+        public int MaxStack;
+        public bool IsStackable;
+        public int Level;
+        public int Durability;
+        public string Name;
+        public string Texture;
+        public BlockID BlockID;
+        public ItemType Type;
+        public ItemData(ItemType type, string name, int stack, int level, int durability, string texture)
+        {
+            this.Type = type;
+            this.Name = name;
+            this.MaxStack = stack;
+            IsStackable = (stack > 1);
+            this.Level = level;
+            this.Durability = durability;
+            this.Texture = texture;
+            this.BlockID = BlockID.Dirt;
+        }
+        public ItemData(BlockID blockId, string name, int stack, string texture)
+        {
+            this.Type = ItemType.Block;
+            this.Name = name;
+            this.MaxStack = stack;
+            IsStackable = (stack > 1);
+            this.Level = 0;
+            this.Durability = 0;
+            this.Texture = texture;
+            this.BlockID = blockId;
+        }
+    }
+
     abstract class Item
     {
+        private static IDictionary<ItemID, ItemData> types = new Dictionary<ItemID, ItemData>();
+
+        static Item()
+        {
+            types[ItemID.BlockDirt] = new ItemData(BlockID.Dirt, "Dirt", MAX_BLOCK_STACK, @"Items\dirt");
+            types[ItemID.BlockGrass] = new ItemData(BlockID.Grass, "Grass", MAX_BLOCK_STACK, @"Items\grass");
+            types[ItemID.BlockStone] = new ItemData(BlockID.Stone, "Stone", MAX_BLOCK_STACK, @"Items\stone");
+            types[ItemID.BlockWood] = new ItemData(BlockID.Wood, "Wood", MAX_BLOCK_STACK, @"Items\wood");
+        }
+
         public const int MAX_BLOCK_STACK = 200;
 
         public const int MAX_AXE_STACK = 10;
@@ -62,25 +119,14 @@ namespace Yuuki2TheGame.Core
         public int Durability { get; set; }
 
         public int MaxDurability { get; protected set; }
-        
-        public int ID
-        {
-            get {return _id;}
-            set
-            {
-                if (value > 0)
-                {
-                    _id = value;
-                }
-                else
-                { 
-                    _id = 1; 
-                }
-            }
-        }
+
+        public ItemID ID { get; private set; }
+
         public string Name { get; set; }
 
-        public string TextureID { get; protected set; }
+        public string Texture { get; protected set; }
+
+        public BlockID BlockID { get; protected set; }
 
         public ItemType Type { get; protected set; }
 
@@ -91,42 +137,65 @@ namespace Yuuki2TheGame.Core
         /// <param name="id"></param>
         /// <param name="itemName"></param>
         /// <returns></returns>
-        public static Item Create(int id, string name, int toolLevel, int toolDurability)
+        protected static Item CreateTool(ItemID id, string name, int toolLevel, int toolDurability)
         {
             Item created = null;
-            if (id <= ID_LIMIT_BLOCK)
+            if ((int)id <= ID_LIMIT_BLOCK)
             {
-                created = new BlockItem(id, name);
+                created = new BlockItem(id, name, BlockID.Dirt);
             }
-            else if (id <= ID_LIMIT_IDK)
+            else if ((int)id <= ID_LIMIT_IDK)
             {
                 created = null;
             }
-            else if (id <= ID_LIMIT_AXE)
+            else if ((int)id <= ID_LIMIT_AXE)
             {
                 created = new AxeItem(id, name, toolLevel, toolDurability);
             }
-            else if (id <= ID_LIMIT_SHOVEL)
+            else if ((int)id <= ID_LIMIT_SHOVEL)
             {
                 created = new ShovelItem(id, name, toolLevel, toolDurability);
             }
-            else if (id <= ID_LIMIT_PICKAXE)
+            else if ((int)id <= ID_LIMIT_PICKAXE)
             {
                 created = new PickaxeItem(id, name, toolLevel, toolDurability);
             }
             return created;
         }
 
-        public static Item Create(int id, string name)
+        protected static Item CreateBlock(ItemID id, string name, BlockID bid)
         {
-            return Create(id, name, 0, 0);
+            Item created = null;
+            if ((int)id <= ID_LIMIT_BLOCK)
+            {
+                created = new BlockItem(id, name, bid);
+            }
+            else
+            {
+                created = CreateTool(id, name, 0, 0);
+            }
+            return created;
         }
 
-        protected Item(int id, string name)
+        public static Item Create(ItemID id)
+        {
+            Item created = null;
+            ItemData data = Item.types[id];
+            if ((int)id <= ID_LIMIT_BLOCK)
+            {
+                created = new BlockItem(id, data.Name, data.BlockID);
+            }
+            else
+            {
+                created = CreateTool(id, data.Name, data.Level, data.Durability);
+            }
+            return created;
+        }
+
+        protected Item(ItemID id, string name)
         {
             ID = id;
-            Name = name;
-            MaxStack = 0;
+            ItemData data = Item.types[ID];
         }
 
         public void ChangeName(string DesiredName)
@@ -140,12 +209,13 @@ namespace Yuuki2TheGame.Core
 
     class BlockItem : Item
     {
-        public BlockItem(int id, string name)
+        public BlockItem(ItemID id, string name, BlockID blockId)
             : base(id, name)
         {
             IsStackable = true;
             Type = ItemType.Block;
             MaxStack = MAX_BLOCK_STACK;
+            BlockID = blockId;
         }
 
         public override int Use(Map m, Point p, PlayerCharacter c)
@@ -157,7 +227,7 @@ namespace Yuuki2TheGame.Core
 
     abstract class ToolItem : Item
     {
-        public ToolItem(int id, string name, int level, int durability)
+        public ToolItem(ItemID id, string name, int level, int durability)
             : base(id, name)
         {
             IsStackable = true;
@@ -167,7 +237,7 @@ namespace Yuuki2TheGame.Core
 
     class AxeItem : ToolItem
     {
-        public AxeItem(int id, string name, int level, int durability)
+        public AxeItem(ItemID id, string name, int level, int durability)
             : base(id, name, level, durability)
         {
             Type = ItemType.Axe;
@@ -204,7 +274,7 @@ namespace Yuuki2TheGame.Core
 
     class ShovelItem : ToolItem
     {
-        public ShovelItem(int id, string name, int level, int durability)
+        public ShovelItem(ItemID id, string name, int level, int durability)
             : base(id, name, level, durability)
         {
             Type = ItemType.Shovel;
@@ -241,7 +311,7 @@ namespace Yuuki2TheGame.Core
 
     class PickaxeItem : ToolItem
     {
-        public PickaxeItem(int id, string name, int level, int durability)
+        public PickaxeItem(ItemID id, string name, int level, int durability)
             : base(id, name, level, durability)
         {
             Type = ItemType.Pickaxe;
@@ -278,7 +348,7 @@ namespace Yuuki2TheGame.Core
 
     class ConsumableItem : Item
     {
-        public ConsumableItem(int id, string name)
+        public ConsumableItem(ItemID id, string name)
             : base(id, name)
         {
             Type = ItemType.Consumable;
@@ -298,7 +368,7 @@ namespace Yuuki2TheGame.Core
 
     class BombItem : Item
     {
-        public BombItem(int id, string name, int level)
+        public BombItem(ItemID id, string name, int level)
             : base(id, name)
         {
             Level = level;
