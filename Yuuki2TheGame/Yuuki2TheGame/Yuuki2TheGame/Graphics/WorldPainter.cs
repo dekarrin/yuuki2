@@ -47,7 +47,7 @@ namespace Yuuki2TheGame.Graphics
             textures[@"Tiles\wood"] = content.Load<Texture2D>(@"Tiles\wood");
             textures[@"Tiles\stone"] = content.Load<Texture2D>(@"Tiles\stone");
             textures[@"Tiles\dirt"] = content.Load<Texture2D>(@"Tiles\dirt");
-            textures[@"Tiles\dirt_grass"] = content.Load<Texture2D>(@"Tiles\dirt_grass");
+            textures[@"Tiles\grass"] = content.Load<Texture2D>(@"Tiles\grass");
             return textures;
         }
 

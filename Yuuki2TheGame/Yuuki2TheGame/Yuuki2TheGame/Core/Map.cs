@@ -169,12 +169,12 @@ namespace Yuuki2TheGame.Core
         private bool CheckDirtGrassSwitch(IList<IList<Block>> world, int x, int y)
         {
             bool switchBlock = false;
-            if (world[x][y].ID == BlockID.Dirt)
+            if (world[x][y] != null && world[x][y].ID == BlockID.Dirt)
             {
                 switchBlock = true;
-                for (int i = y - 1; i >= 0; i++)
+                for (int i = y - 1; i >= 0; i--)
                 {
-                    if (world[x][y - i] != null)
+                    if (world[x][i] != null)
                     {
                         switchBlock = false;
                         break;
