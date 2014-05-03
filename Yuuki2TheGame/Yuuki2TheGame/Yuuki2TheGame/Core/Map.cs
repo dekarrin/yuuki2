@@ -128,12 +128,34 @@ namespace Yuuki2TheGame.Core
 
         public void DestroyBlock(Point p)
         {
+            Block b = World[p.X][p.Y];
             World[p.X][p.Y] = null;
+            for (int i = p.Y + 1; i < Height; i++)
+            {
+                if (CheckDirtGrassSwitch(World, p.X, i))
+                {
+                    World[p.X][i] = new Block(BlockID.Grass, p.X, i);
+                    break;
+                }
+            }
         }
 
         public void AddBlock(Point p)
         {
-            World[p.X][p.Y] = new Block(1, p.X, p.Y);
+            Block b = new Block(1, p.X, p.Y);
+            World[p.X][p.Y] = b;
+            if (CheckDirtGrassSwitch(World, p.X, p.Y))
+            {
+                World[p.X][p.Y] = new Block(BlockID.Grass, p.X, p.Y);
+            }
+            for (int i = p.Y + 1; i < Height; i++)
+            {
+                if (World[p.X][i] != null && World[p.X][i].ID == BlockID.Grass)
+                {
+                    World[p.X][i] = new Block(BlockID.Dirt, p.X, i);
+                    break;
+                }
+            }
         }
 
         public Block BlockAtCoordinate(int x, int y)
@@ -161,6 +183,7 @@ namespace Yuuki2TheGame.Core
                     if (CheckDirtGrassSwitch(world, x, y))
                     {
                         world[x][y] = new Block(BlockID.Grass, x, y);
+                        break;
                     }
                 }
             }
