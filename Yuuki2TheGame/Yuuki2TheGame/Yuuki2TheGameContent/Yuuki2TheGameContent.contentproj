@@ -56,8 +56,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Tiles\dirt_grass.png">
-      <Name>dirt_grass</Name>
+    <Compile Include="Tiles\grass.png">
+      <Name>grass</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

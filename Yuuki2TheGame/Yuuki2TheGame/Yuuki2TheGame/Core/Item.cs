@@ -177,7 +177,7 @@ namespace Yuuki2TheGame.Core
         public override int Use(Map m, Point p, PlayerCharacter c)
         {
             Block b = m.BlockAt(p);
-            if (m.BlockAt(p).Type == (int)WoodType.Type)
+            if (m.BlockAt(p).ID == BlockID.Wood)
             {
                 int health;
                 int CurrentHealth = m.BlockAt(p).MiningHealth;
@@ -214,7 +214,7 @@ namespace Yuuki2TheGame.Core
         public override int Use(Map m, Point p, PlayerCharacter c)
         {
             Block b = m.BlockAt(p);
-            if (m.BlockAt(p).Type == (int)DirtType.Type)
+            if (m.BlockAt(p).ID == BlockID.Dirt)
             {
                 int health;
                 int CurrentHealth = m.BlockAt(p).MiningHealth;
@@ -251,7 +251,7 @@ namespace Yuuki2TheGame.Core
         public override int Use(Map m, Point p, PlayerCharacter c)
         {
             Block b = m.BlockAt(p);
-            if (m.BlockAt(p).Type == (int)GroundType.Type)
+            if (m.BlockAt(p).ID == BlockID.Stone)
             {
                 int health;
                 int CurrentHealth = m.BlockAt(p).MiningHealth;

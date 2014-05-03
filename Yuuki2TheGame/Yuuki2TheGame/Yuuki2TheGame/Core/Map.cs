@@ -33,7 +33,8 @@ namespace Yuuki2TheGame.Core
                 {
                     if (y > Height / 2)
                     {
-                        slice.Add(new Block(1, x, y)); //Uses Blocks of ID = 1 for the time being.
+                        int type = Math.Min(x / (Width / 3), 2);
+                        slice.Add(new Block(type, x, y));
                     }
                     else
                     {
