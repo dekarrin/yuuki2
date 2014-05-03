@@ -146,31 +146,17 @@ namespace Yuuki2TheGame.Core
             World[p.X][p.Y] = b;
             if (CheckDirtGrassSwitch(World, p.X, p.Y))
             {
-                World[p.X][p.Y] = new Block(BlockID.Grass, p.X, p.Y);
+                SetBlock(BlockID.Grass, p.X, p.Y);
             }
-            for (int i = p.Y + 1; i < Height; i++)
+            if (World[p.X][p.Y + 1] != null && World[p.X][p.Y + 1].ID == BlockID.Grass)
             {
-                if (World[p.X][i] != null && World[p.X][i].ID == BlockID.Grass)
-                {
-                    World[p.X][i] = new Block(BlockID.Dirt, p.X, i);
-                    break;
-                }
+                SetBlock(BlockID.Dirt, p.X, p.Y + 1);
             }
         }
 
-        public Block BlockAtCoordinate(int x, int y)
+        private void SetBlock(BlockID id, int x, int y)
         {
-            int indexX = (int)(x/Game1.METER_LENGTH);
-            int indexY = (int)(y/Game1.METER_LENGTH);
-            
-            if (indexX < this.World.Count && indexX >= 0 && indexY > 0 && indexY < this.World[indexX].Count)
-            {
-                return this.World[indexX][indexY];
-            }
-            else
-            {
-                return null;
-            }
+            World[x][y] = new Block(id, x, y);
         }
 
         //Sets dirts to grasses if they are the top
@@ -194,14 +180,9 @@ namespace Yuuki2TheGame.Core
             bool switchBlock = false;
             if (world[x][y] != null && world[x][y].ID == BlockID.Dirt)
             {
-                switchBlock = true;
-                for (int i = y - 1; i >= 0; i--)
+                if (y > 0)
                 {
-                    if (world[x][i] != null)
-                    {
-                        switchBlock = false;
-                        break;
-                    }
+                    switchBlock = (world[x][y - 1] == null);
                 }
             }
             return switchBlock;

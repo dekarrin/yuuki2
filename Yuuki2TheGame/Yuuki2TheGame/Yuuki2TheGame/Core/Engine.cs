@@ -244,24 +244,5 @@ namespace Yuuki2TheGame.Core
             }
             return chars;
         }
-
-        /// <summary>
-        /// Determines whether the provided bounding box is touching the ground.
-        /// </summary>
-        /// <param name="boundingBox">The bounding box to check.</param>
-        /// <returns>A Boolean value that indicates whether the specified bounding box is touching the ground.</returns>
-        public static bool ObjectIsOnGround(Rectangle boundingBox)
-         {
-            for (int x = boundingBox.Left; x <= boundingBox.Right; x++)
-            {
-                Block block = _map.BlockAtCoordinate(x, boundingBox.Bottom);
-                if (block != null)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
     }
 }
