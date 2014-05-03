@@ -80,6 +80,8 @@ namespace Yuuki2TheGame.Core
         }
         public string Name { get; set; }
 
+        public string TextureID { get; protected set; }
+
         public ItemType Type { get; protected set; }
 
         /// <summary>
