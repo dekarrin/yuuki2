@@ -54,6 +54,10 @@ namespace Yuuki2TheGame.Core
 
         public BlockID ID { get; set; }
 
+        public Block(BlockID id, int mapx, int mapy)
+            : this((int)id, mapx, mapy)
+        {}
+
         public Block(int id, int mapx, int mapy) : base(new Point(Game1.METER_LENGTH, Game1.METER_LENGTH))
         {
             if (Enum.IsDefined(typeof(BlockID), id))

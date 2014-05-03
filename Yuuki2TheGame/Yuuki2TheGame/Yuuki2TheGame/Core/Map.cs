@@ -43,6 +43,7 @@ namespace Yuuki2TheGame.Core
                 }
                 world.Add(slice);
             }
+            CheckAllDirtBlocks(world);
             return world;
         }
 
@@ -148,6 +149,39 @@ namespace Yuuki2TheGame.Core
             {
                 return null;
             }
+        }
+
+        //Sets dirts to grasses if they are the top
+        private void CheckAllDirtBlocks(IList<IList<Block>> world)
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    if (CheckDirtGrassSwitch(world, x, y))
+                    {
+                        world[x][y] = new Block(BlockID.Grass, x, y);
+                    }
+                }
+            }
+        }
+
+        private bool CheckDirtGrassSwitch(IList<IList<Block>> world, int x, int y)
+        {
+            bool switchBlock = false;
+            if (world[x][y].ID == BlockID.Dirt)
+            {
+                switchBlock = true;
+                for (int i = y - 1; i >= 0; i++)
+                {
+                    if (world[x][y - i] != null)
+                    {
+                        switchBlock = false;
+                        break;
+                    }
+                }
+            }
+            return switchBlock;
         }
     }
 }
