@@ -46,11 +46,7 @@ namespace Yuuki2TheGame.Core
 
         public int LevelRequired { get; private set; }
 
-        public void Update(GameTime gt)
-        {
-        }
-
-        public int MiningHealth { get; set; }
+        public int Health { get; set; }
 
         public BlockID ID { get; private set; }
 
@@ -70,21 +66,45 @@ namespace Yuuki2TheGame.Core
             }
             else
             {
-                bid = BlockID.Dirt;
+                bid = Block.types.First(x => true).Key;
             }
             Initialize(bid, mapx, mapy);
 		}
+
+        /// <summary>
+        /// Does damage to this block.
+        /// </summary>
+        /// <param name="basePower">Amount of damage if this block is not weak to the attack.</param>
+        /// <param name="highPower">Amount of damage if this block is weak to the attack.</param>
+        /// <param name="weakBlocks">A collection if IDs that the attacker specializes in destroying.
+        /// If this Block's ID is included, the attack does additional damage.</param>
+        /// <returns>Whether this block was completely destroyed.</returns>
+        public void Damage(int basePower, int highPower, ICollection<BlockID> weakBlocks)
+        {
+            if (weakBlocks.Contains(this.ID))
+            {
+                Health -= highPower;
+            }
+            else
+            {
+                Health -= basePower;
+            }
+        }
+
+        public void Update(GameTime gt)
+        {
+        }
 
         private void Initialize(BlockID id, int mapx, int mapy)
         {
             if (!Block.types.ContainsKey(id))
             {
-                id = BlockID.Dirt;
+                id = Block.types.First(x => true).Key;
             }
             BlockData data = Block.types[id];
             this.ID = id;
             this.LevelRequired = data.LevelRequired;
-            this.MiningHealth = data.Health;
+            this.Health = data.Health;
             this.Texture = data.Texture;
             this.BlockPosition = new Vector2(mapx, mapy);
         }

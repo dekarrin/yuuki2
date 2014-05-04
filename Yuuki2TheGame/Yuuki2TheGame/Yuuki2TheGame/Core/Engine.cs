@@ -152,7 +152,7 @@ namespace Yuuki2TheGame.Core
                 }
                 else
                 {
-                    _map.AddBlock(p, BlockID.Dirt);
+                    _map.AddBlock(BlockID.Dirt, p);
                 }
             }
         }

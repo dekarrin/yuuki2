@@ -140,7 +140,7 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public bool AddBlock(Point p, BlockID id)
+        public bool AddBlock(BlockID id, Point p)
         {
             if (World[p.X][p.Y] == null)
             {
@@ -160,6 +160,16 @@ namespace Yuuki2TheGame.Core
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Drops an item on to the map.
+        /// </summary>
+        /// <param name="item">The item being dropped.</param>
+        /// <param name="position">The absolute pixel coordinates where the item should be dropped.</param>
+        public void AddItem(Item item, Point position)
+        {
+            // TODO: Implement item dropping
         }
 
         private void SetBlock(BlockID id, int x, int y)
