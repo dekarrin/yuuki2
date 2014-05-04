@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Yuuki2TheGame.Graphics;
 using Yuuki2TheGame.Physics;
-using FileHelpers;
-using Yuuki2TheGame.Data;
 
 namespace Yuuki2TheGame.Core
 {
@@ -16,15 +15,43 @@ namespace Yuuki2TheGame.Core
 
         public const float PHYS_GRAVITY = 9.806f;
 
-        public const float PHYS_TIMESCALE = 0.001f;
+        public const float PHYS_TIMESCALE = 1.0f;
 
-        public static List<GameObjectData> items = new List<GameObjectData>();
+        public const float PHYS_MEDIUM_DENSITY = 1.225f;
+
+        public const float PHYS_SURFACE_FRICTION = 0.3f;
+
+        private bool _recording = false;
+
+        SoundEngine audioEngine;
+
+        public bool RecordPhysStep
+        {
+            get
+            {
+                return _recording;
+            }
+            set
+            {
+                if (value)
+                {
+                    physics.StartRecording();
+                }
+                else
+                {
+                    physics.StopRecording();
+                }
+                _recording = value;
+            }
+        }
+
+        public bool ManualPhysStepMode { get; set; }
+
+        private static Map _map;
 
         private List<GameCharacter> _characters = new List<GameCharacter>();
 
         private List<Item> _items = new List<Item>();
-
-        public Map _map; ///shhhh just let it happen
 
         private Point spawn;
 
@@ -34,26 +61,18 @@ namespace Yuuki2TheGame.Core
 
         public Engine(Point size)
         {
-            FileHelperEngine e = new FileHelperEngine(typeof(GameObjectData));
-            GameObjectData[] temp = (GameObjectData[])e.ReadFile(@"ObjectData.csv");
-
-            foreach (GameObjectData record in temp)
-            {
-                items.Add(record);
-            }
-
-
+            ManualPhysStepMode = false;
             _map = new Map(size.X, size.Y);
-            spawn = new Point(0, (size.Y / 2) * Game1.BLOCK_HEIGHT - 30);
+            spawn = new Point(0, (size.Y / 2) * Game1.METER_LENGTH - 30);
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
             _characters.Add(Player);
-            Camera = new Camera(Player, new Point(-100, -300));
-            physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_TIMESCALE);
+            Rectangle camLimits = new Rectangle(0, 0, Game1.METER_LENGTH * Game1.WORLD_WIDTH, Game1.METER_LENGTH * Game1.WORLD_HEIGHT);
+            Camera = new Camera(new Point(Game1.GAME_WIDTH, Game1.GAME_HEIGHT), Player, new Point(-100, -300), camLimits);
+            physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_MEDIUM_DENSITY, PHYS_SURFACE_FRICTION, PHYS_TIMESCALE);
             physics.AddMap(_map);
             physics.AddPhob(Player);
-
-
+            audioEngine = new SoundEngine(Game1.GameAudio);
         }
 
         private int TESTcycle = 0;
@@ -69,7 +88,10 @@ namespace Yuuki2TheGame.Core
 
         public void Update(GameTime gameTime)
         {
-            //TESTCamMove();
+            if (RecordPhysStep)
+            {
+                _recording = physics.RecordingQueryTime;
+            }
             foreach (GameCharacter c in _characters)
             {
                 c.Update(gameTime);
@@ -79,7 +101,42 @@ namespace Yuuki2TheGame.Core
                 i.Update(gameTime);
             }
             _map.Update(gameTime);
-            physics.Update(gameTime);
+            if (!ManualPhysStepMode)
+            {
+                physics.Update(gameTime);
+            }
+        }
+
+        public void Respawn()
+        {
+            Player.Teleport(spawn);
+        }
+
+        public void StepPhysics()
+        {
+            physics.Step(0.016f);
+        }
+
+        public void Click(int x, int y)
+        {
+            int globalx = (x + this.Camera.Position.X) / Game1.METER_LENGTH;
+            int globaly = (y + this.Camera.Position.Y) / Game1.METER_LENGTH;
+            Point p = new Point(globalx, globaly);
+
+            if (globalx <= Game1.WORLD_WIDTH && globalx >= 0 && globaly <= Game1.WORLD_HEIGHT && globaly >= 0)
+            {
+                Block block = _map.BlockAt(p);
+                if (block != null)
+                {
+                    _map.DestroyBlock(p);
+                    audioEngine.PlaySound(Game1.GameAudio);
+                }
+                else
+                {
+                    _map.AddBlock(p);
+                    audioEngine.PlaySound(Game1.GameAudio);
+                }
+            }
         }
 
         public void RemovePhysical(IPhysical phob)
@@ -102,8 +159,9 @@ namespace Yuuki2TheGame.Core
         /// <returns></returns>
         public IList<Sprite> GetView(int numX, int numY, int tileWidth, int tileHeight)
         {
-            Point coords = Camera.Coordinates;
-            Point offsets = Camera.Offsets;
+            Vector2 pos = Camera.BlockPosition;
+            Point coords = new Point((int) pos.X, (int) pos.Y);
+            Point offsets = Camera.BlockOffsets;
             IList<Sprite> view = new List<Sprite>();
             for (int i = 0; i < numX && coords.X + i < _map.Width; i++)
             {
@@ -141,8 +199,8 @@ namespace Yuuki2TheGame.Core
 
         public Sprite GetBackground(int screenWidth, int screenHeight)
         {
-            int x = Math.Abs(Math.Min(Camera.Location.X, 0));
-            int y = Math.Abs(Math.Min(Camera.Location.Y, 0));
+            int x = Math.Abs(Math.Min(Camera.Position.X, 0));
+            int y = Math.Abs(Math.Min(Camera.Position.Y, 0));
             int width = screenWidth - x;
             int height = screenHeight - y;
             // Above will need to be changed if we want to make worlds that are smaller than the screen
@@ -154,19 +212,38 @@ namespace Yuuki2TheGame.Core
         public IList<Sprite> GetCharacters(int screenWidth, int screenHeight)
         {
             // TODO: OPTIMIZE! We should be using quadtrees or something...
-            Rectangle view = new Rectangle(Camera.Location.X, Camera.Location.Y, screenWidth, screenHeight);
+            Rectangle view = Camera.Bounds;
             IList<Sprite> chars = new List<Sprite>();
             foreach (GameCharacter c in _characters)
             {
-                if (c.BoundingBox.Intersects(view))
+                if (c.Bounds.Intersects(view))
                 {
-                    Point position = new Point(c.BoundingBox.X - Camera.Location.X, c.BoundingBox.Y - Camera.Location.Y);
+                    Point position = new Point(c.Bounds.X - Camera.Position.X, c.Bounds.Y - Camera.Position.Y);
                     Point size = new Point(c.Width, c.Height);
                     Sprite spr = new Sprite(position, size, c.Texture);
                     chars.Add(spr);
                 }
             }
             return chars;
+        }
+
+        /// <summary>
+        /// Determines whether the provided bounding box is touching the ground.
+        /// </summary>
+        /// <param name="boundingBox">The bounding box to check.</param>
+        /// <returns>A Boolean value that indicates whether the specified bounding box is touching the ground.</returns>
+        public static bool ObjectIsOnGround(Rectangle boundingBox)
+         {
+            for (int x = boundingBox.Left; x <= boundingBox.Right; x++)
+            {
+                Block block = _map.BlockAtCoordinate(x, boundingBox.Bottom);
+                if (block != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
