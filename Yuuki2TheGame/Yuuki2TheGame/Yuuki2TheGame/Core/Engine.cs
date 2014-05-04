@@ -61,6 +61,24 @@ namespace Yuuki2TheGame.Core
 
         public Camera Camera { get; set; }
 
+        public PlayerCharacter Player { get; private set; }
+
+        public IList<GameCharacter> Characters
+        {
+            get
+            {
+                return _characters.AsReadOnly();
+            }
+        }
+
+        public IList<Item> Items
+        {
+            get
+            {
+                return _items.AsReadOnly();
+            }
+        }
+
         public Engine(Point size)
         {
             InInventoryScreen = false;
@@ -76,6 +94,7 @@ namespace Yuuki2TheGame.Core
             physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_MEDIUM_DENSITY, PHYS_SURFACE_FRICTION, PHYS_TIMESCALE);
             physics.AddMap(_map);
             physics.AddPhob(Player);
+            GiveItem(ItemID.BlockDirt);
         }
 
         private int TESTcycle = 0;
@@ -157,16 +176,6 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public void RemovePhysical(IPhysical phob)
-        {
-            physics.RemovePhob(phob);
-        }
-
-        public void AddPhysical(IPhysical phob)
-        {
-            physics.AddPhob(phob);
-        }
-
         /// <summary>
         /// Gets all tiles that need to be displayed.
         /// </summary>
@@ -201,24 +210,6 @@ namespace Yuuki2TheGame.Core
         {
             Item item = new Item(id);
             Player.Inventory.Add(item);
-        }
-
-        public PlayerCharacter Player { get; private set; }
-
-        public IList<GameCharacter> Characters
-        {
-            get
-            {
-                return _characters.AsReadOnly();
-            }
-        }
-
-        public IList<Item> Items
-        {
-            get
-            {
-                return _items.AsReadOnly();
-            }
         }
 
         public Sprite GetBackground(int screenWidth, int screenHeight)

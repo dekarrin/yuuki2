@@ -18,9 +18,19 @@ namespace Yuuki2TheGame.Graphics
 
         public const int SLOT_LENGTH = 40;
 
-        public const int SLOT_BORDER = 2;
+        public const int SLOT_BORDER_WIDTH = 2;
 
         public const int SLOT_SPACING = 2;
+
+        public static readonly Color SLOT_BORDER_COLOR = new Color(24, 24, 24);
+
+        public static readonly Color QUICK_SLOT_COLOR = new Color(217, 154, 154);
+
+        public static readonly Color ACTIVE_SLOT_COLOR = new Color(255, 122, 122);
+
+        public static readonly Color OVERLAY_SLOT_COLOR = new Color(232, 255, 217);
+
+        public static readonly Color OVERLAY_COLOR = new Color(0, 0, 0, 128);
 
         private Engine engine;
 
@@ -47,55 +57,65 @@ namespace Yuuki2TheGame.Graphics
         protected override void Init()
         { }
 
-        protected override IDictionary<string, Texture2D> Load(ContentManager content)
+        protected override void Load()
         {
-            IDictionary<string, Texture2D> dict = new Dictionary<string, Texture2D>();
-            dict["$overlay"] = CreateRectTexture(width, height);
-            dict["$slot"] = CreateRectTexture(SLOT_LENGTH - (SLOT_BORDER * 2), SLOT_LENGTH - (SLOT_BORDER * 2));
-            dict["$slot_border"] = CreateRectTexture(SLOT_LENGTH, SLOT_LENGTH);
-            return dict;
+            CreateRect("$overlay", width, height);
+            CreateRect("$slot", SLOT_LENGTH - (SLOT_BORDER_WIDTH * 2), SLOT_LENGTH - (SLOT_BORDER_WIDTH * 2));
+            CreateRect("$slot_border", SLOT_LENGTH, SLOT_LENGTH);
         }
 
-        protected override void Unload(ContentManager content)
+        protected override void Unload()
         { }
 
         protected override void Paint(GameTime gameTime, SpriteBatch batch)
         {
-            Texture2D fullScreenSolid = IDToTexture("$overlay");
-            Texture2D invenSlotSolid = IDToTexture("$slot");
-            Texture2D invenSlotBorder = IDToTexture("$slot_border");
-            IList<InventorySlot> quicks = engine.Player.Inventory.QuickSlots;
-            IList<InventorySlot> slots = engine.Player.Inventory.Slots;
-            Rectangle drawRect = invenSlotBorder.Bounds;
             if (engine.InInventoryScreen)
             {
-                drawRect.Y = SLOT_SPACING;
-                drawRect.X = 0;
-                batch.Draw(fullScreenSolid, fullScreenSolid.Bounds, new Color(0, 0, 0, 128));
-                for (int i = quicks.Count; i < slots.Count; i++)
-                {
-                    drawRect.Y = SLOT_SPACING + ((i / quicks.Count) * (SLOT_LENGTH + SLOT_SPACING));
-                    drawRect.X = SLOT_SPACING + ((i % quicks.Count) * (SLOT_LENGTH + SLOT_SPACING));
-                    Rectangle innerDraw = new Rectangle(drawRect.X + SLOT_BORDER, drawRect.Y + SLOT_BORDER, drawRect.Width - (SLOT_BORDER * 2), drawRect.Height - (SLOT_BORDER * 2));
-                    batch.Draw(invenSlotBorder, drawRect, new Color(24, 24, 24));
-                    batch.Draw(invenSlotSolid, innerDraw, new Color(232, 255, 217));
-                }
+                DrawOverlay(batch);
             }
-            drawRect.Y = SLOT_SPACING;
-            drawRect.X = 0;
-            for (int i = 0; i < quicks.Count; i++)
+            DrawQuickSlots(batch);
+        }
+
+        private void DrawOverlay(SpriteBatch batch)
+        {
+            IList<InventorySlot> quicks = engine.Player.Inventory.QuickSlots;
+            IList<InventorySlot> slots = engine.Player.Inventory.Slots;
+            Texture2D overlay = TextureFromID("$overlay");
+            Rectangle overlayRect = new Rectangle(0, 0, Game1.GAME_WIDTH, Game1.GAME_HEIGHT);
+            batch.Draw(overlay, overlayRect, OVERLAY_COLOR);
+            for (int i = engine.Player.Inventory.QuickSlotsCount; i < slots.Count; i++)
             {
-                drawRect.X += SLOT_SPACING;
-                Rectangle innerDraw = new Rectangle(drawRect.X + SLOT_BORDER, drawRect.Y + SLOT_BORDER, drawRect.Width - (SLOT_BORDER * 2), drawRect.Height - (SLOT_BORDER * 2));
-                batch.Draw(invenSlotBorder, drawRect, new Color(24, 24, 24));
-                Color color = new Color(217, 154, 154);
-                if (quicks[i].IsActive)
-                {
-                    color = new Color(255, 122, 122);
-                }
-                batch.Draw(invenSlotSolid, innerDraw, color);
-                drawRect.X += SLOT_LENGTH;
+                int x = SLOT_SPACING + ((i % quicks.Count) * (SLOT_LENGTH + SLOT_SPACING));
+                int y = SLOT_SPACING + ((i / quicks.Count) * (SLOT_LENGTH + SLOT_SPACING));
+                DrawSlot(batch, slots[i], x, y, OVERLAY_SLOT_COLOR);
             }
+        }
+
+        private void DrawQuickSlots(SpriteBatch batch)
+        {
+            IList<InventorySlot> slots = engine.Player.Inventory.QuickSlots;
+            int x = 0;
+            for (int i = 0; i < slots.Count; i++)
+            {
+                x += SLOT_SPACING;
+                DrawSlot(batch, slots[i], x, SLOT_SPACING, QUICK_SLOT_COLOR);
+                x += SLOT_LENGTH;
+            }
+        }
+
+        private void DrawSlot(SpriteBatch batch, InventorySlot slot, int x, int y, Color color)
+        {
+            Texture2D invenSlotMain = TextureFromID("$slot");
+            Texture2D invenSlotBorder = TextureFromID("$slot_border");
+            Rectangle slotRect = invenSlotMain.Bounds;
+            Rectangle borderRect = invenSlotBorder.Bounds;
+            borderRect.X = x;
+            borderRect.Y = y;
+            slotRect.X = x + SLOT_BORDER_WIDTH;
+            slotRect.Y = y + SLOT_BORDER_WIDTH;
+            batch.Draw(invenSlotBorder, borderRect, SLOT_BORDER_COLOR);
+            Color insideColor = (slot.IsActive) ? ACTIVE_SLOT_COLOR : color;
+            batch.Draw(invenSlotMain, slotRect, insideColor);
         }
     }
 }

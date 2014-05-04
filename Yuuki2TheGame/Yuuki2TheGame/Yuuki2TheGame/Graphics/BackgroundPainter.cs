@@ -41,18 +41,16 @@ namespace Yuuki2TheGame.Graphics
         protected override void Init()
         { }
 
-        protected override IDictionary<string, Texture2D> Load(ContentManager content)
-        {
-            return new Dictionary<string, Texture2D>();
-        }
+        protected override void Load()
+        { }
 
-        protected override void Unload(ContentManager content)
+        protected override void Unload()
         { }
 
         protected override void Paint(GameTime gameTime, SpriteBatch batch)
         {
             Sprite bg = engine.GetBackground(width, height);
-            bg.Texture = IDToTexture(bg.TextureID);
+            bg.Texture = TextureFromID(bg.TextureID);
             batch.Draw(bg.Texture, bg.Destination, bg.Source, Color.Pink);
 
         }

@@ -71,14 +71,14 @@ namespace Yuuki2TheGame.Core
 
         public bool Contains(Item i)
         {
-            return Slots.Exists(x => x.Item.ID == i.ID);
+            return Slots.Exists(x => x.Item != null && x.Item.ID == i.ID);
         }
 
         public void Add(Item item)
         {
             if (item.IsStackable && this.Contains(item))
             {
-                Slots.Find(x => item.ID == x.Item.ID).Count++;
+                Slots.Find(x => x.Item != null && x.Item.ID == item.ID).Count++;
             }
             else
             {
@@ -100,12 +100,12 @@ namespace Yuuki2TheGame.Core
             {
                 if (n.IsStackable)
                 {
-                    InventorySlot sl = Slots.Find(x => n.ID == x.Item.ID);
+                    InventorySlot sl = Slots.Find(x => x.Item != null && x.Item.ID == n.ID);
                     sl.Count++;
                 }
                 else
                 {
-                    InventorySlot sl = Slots.Find(x => n.ID == x.Item.ID);
+                    InventorySlot sl = Slots.Find(x => x.Item != null && x.Item.ID == n.ID);
                     sl.Item = null;
                     sl.Count = 0;
                     sl.IsActive = false;

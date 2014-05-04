@@ -31,12 +31,10 @@ namespace Yuuki2TheGame.Graphics
         protected override void Init()
         { }
 
-        protected override IDictionary<string, Texture2D> Load(ContentManager content)
-        {
-            return new Dictionary<string, Texture2D>();
-        }
+        protected override void Load()
+        { }
 
-        protected override void Unload(ContentManager content)
+        protected override void Unload()
         { }
 
         protected override void Paint(GameTime gameTime, SpriteBatch batch)

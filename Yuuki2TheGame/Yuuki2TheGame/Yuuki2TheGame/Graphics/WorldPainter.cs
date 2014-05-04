@@ -41,17 +41,15 @@ namespace Yuuki2TheGame.Graphics
         protected override void Init()
         { }
 
-        protected override IDictionary<string, Texture2D> Load(ContentManager content)
+        protected override void Load()
         {
-            IDictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
-            textures[@"Tiles\wood"] = content.Load<Texture2D>(@"Tiles\wood");
-            textures[@"Tiles\stone"] = content.Load<Texture2D>(@"Tiles\stone");
-            textures[@"Tiles\dirt"] = content.Load<Texture2D>(@"Tiles\dirt");
-            textures[@"Tiles\grass"] = content.Load<Texture2D>(@"Tiles\grass");
-            return textures;
+            LoadTexture(@"Tiles\wood");
+            LoadTexture(@"Tiles\stone");
+            LoadTexture(@"Tiles\dirt");
+            LoadTexture(@"Tiles\grass");
         }
 
-        protected override void Unload(ContentManager content)
+        protected override void Unload()
         { }
 
         protected override void Paint(GameTime gameTime, SpriteBatch batch)
