@@ -56,7 +56,7 @@ namespace Yuuki2TheGame
         private Point blocksOnScreen;
         public GameState gamestate = GameState.Menu;
         List<MainMenu> menuButtons = new List<MainMenu>();
-        //Texture2D mainmenuTexture;
+        Texture2D mainmenuTexture;
         Texture2D newGameButton;
 
         public Game1()
@@ -105,8 +105,8 @@ namespace Yuuki2TheGame
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-          //  mainmenuTexture = Content.Load<Texture2D>(@"BackGround/Minecraft");
-            newGameButton = Content.Load<Texture2D>(@"Tiles/dirt");
+           mainmenuTexture = Content.Load<Texture2D>(@"Menupics/YUKKI21");
+            newGameButton = Content.Load<Texture2D>(@"Menupics/YUKKI2");
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
 
         }
@@ -297,16 +297,19 @@ namespace Yuuki2TheGame
             spriteBatch.Begin();
             IsMouseVisible = true;
           
-            string Title = "Yuuki 2";
+         //   string Title = "Yuuki 2";
 
-            //spriteBatch.Draw(mainmenuTexture,
-            //    new Rectangle(0, 0, Window.ClientBounds.Width,
-            //        Window.ClientBounds.Height), null,
-            //        Color.White, 0, Vector2.Zero,
-            //        SpriteEffects.None, 1);
-
-          //  spriteBatch.Draw(newGameButton, new Vector2(400, 100), Color.White);
-            spriteBatch.DrawString(spriteManager.font, Title, new Vector2(350, 100), Color.Black);
+            spriteBatch.Draw(mainmenuTexture,
+                new Rectangle(0, 0, Window.ClientBounds.Width,
+                    Window.ClientBounds.Height), null,
+                    Color.White, 0, Vector2.Zero,
+                    SpriteEffects.None, 1);
+            spriteBatch.Draw(newGameButton,
+    new Rectangle(290, 80, 200, 100), null,
+        Color.White, 0, Vector2.Zero,
+        SpriteEffects.None, 1);
+         //  spriteBatch.Draw(newGameButton, new Vector2(50, 30), Color.White);
+          //  spriteBatch.DrawString(spriteManager.font, Title, new Vector2(350, 100), Color.Black);
             foreach (MainMenu m in menuButtons)
             {
                 m.Draw(spriteBatch, spriteManager.font);
