@@ -140,17 +140,25 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public void AddBlock(Point p)
+        public bool AddBlock(Point p, BlockID id)
         {
-            Block b = new Block(1, p.X, p.Y);
-            World[p.X][p.Y] = b;
-            if (CheckDirtGrassSwitch(World, p.X, p.Y))
+            if (World[p.X][p.Y] == null)
             {
-                SetBlock(BlockID.Grass, p.X, p.Y);
+                Block b = new Block(id, p.X, p.Y);
+                World[p.X][p.Y] = b;
+                if (CheckDirtGrassSwitch(World, p.X, p.Y))
+                {
+                    SetBlock(BlockID.Grass, p.X, p.Y);
+                }
+                if (World[p.X][p.Y + 1] != null && World[p.X][p.Y + 1].ID == BlockID.Grass)
+                {
+                    SetBlock(BlockID.Dirt, p.X, p.Y + 1);
+                }
+                return true;
             }
-            if (World[p.X][p.Y + 1] != null && World[p.X][p.Y + 1].ID == BlockID.Grass)
+            else
             {
-                SetBlock(BlockID.Dirt, p.X, p.Y + 1);
+                return false;
             }
         }
 

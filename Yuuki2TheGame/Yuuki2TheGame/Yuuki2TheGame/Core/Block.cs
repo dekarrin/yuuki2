@@ -44,7 +44,7 @@ namespace Yuuki2TheGame.Core
             types[BlockID.Grass] = new BlockData("Grass", 3, 100, @"Tiles\grass");
         }
 
-        public int LevelRequired { get; set; }
+        public int LevelRequired { get; private set; }
 
         public void Update(GameTime gt)
         {
@@ -52,31 +52,41 @@ namespace Yuuki2TheGame.Core
 
         public int MiningHealth { get; set; }
 
-        public BlockID ID { get; set; }
+        public BlockID ID { get; private set; }
 
         public Block(BlockID id, int mapx, int mapy)
-            : this((int)id, mapx, mapy)
-        {}
-
-        public Block(int id, int mapx, int mapy) : base(new Point(Game1.METER_LENGTH, Game1.METER_LENGTH))
+            : base(new Point(Game1.METER_LENGTH, Game1.METER_LENGTH))
         {
+            Initialize(id, mapx, mapy);
+        }
+
+        public Block(int id, int mapx, int mapy)
+            : base(new Point(Game1.METER_LENGTH, Game1.METER_LENGTH))
+        {
+            BlockID bid;
             if (Enum.IsDefined(typeof(BlockID), id))
             {
-                this.ID = (BlockID)id;
+                bid = (BlockID)id;
             }
             else
             {
-                this.ID = BlockID.Dirt;
+                bid = BlockID.Dirt;
             }
-            if (!Block.types.ContainsKey(this.ID))
+            Initialize(bid, mapx, mapy);
+		}
+
+        private void Initialize(BlockID id, int mapx, int mapy)
+        {
+            if (!Block.types.ContainsKey(id))
             {
-                this.ID = BlockID.Dirt;
+                id = BlockID.Dirt;
             }
-            BlockData data = Block.types[this.ID];
+            BlockData data = Block.types[id];
+            this.ID = id;
             this.LevelRequired = data.LevelRequired;
             this.MiningHealth = data.Health;
             this.Texture = data.Texture;
-            BlockPosition = new Vector2(mapx, mapy);
-		}
+            this.BlockPosition = new Vector2(mapx, mapy);
+        }
     }
 }

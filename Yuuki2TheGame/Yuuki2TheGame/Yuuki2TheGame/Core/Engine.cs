@@ -152,7 +152,7 @@ namespace Yuuki2TheGame.Core
                 }
                 else
                 {
-                    _map.AddBlock(p);
+                    _map.AddBlock(p, BlockID.Dirt);
                 }
             }
         }
@@ -199,7 +199,7 @@ namespace Yuuki2TheGame.Core
 
         public void GiveItem(ItemID id)
         {
-            Item item = Item.Create(id);
+            Item item = new Item(id);
             Player.Inventory.Add(item);
         }
 
