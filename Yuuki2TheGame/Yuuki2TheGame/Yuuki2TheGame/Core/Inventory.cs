@@ -7,9 +7,24 @@ namespace Yuuki2TheGame.Core
 {
     class InventorySlot
     {
+        private int _count = 0;
+
         public Item Item { get; set; }
 
-        public int Count { get; set; }
+        public int Count {
+            get
+            {
+                return _count;
+            }
+            set
+            {
+                _count = Math.Max(0, value);
+                if (_count == 0)
+                {
+                    Item = null;
+                }
+            }
+        }
 
         public bool IsActive { get; set; }
 
@@ -29,7 +44,15 @@ namespace Yuuki2TheGame.Core
 
         public int QuickSlotsCount { get; private set;  }
 
-        public int ActiveSlot
+        public InventorySlot ActiveSlot
+        {
+            get
+            {
+                return Slots[_activeSlot];
+            }
+        }
+
+        public int ActiveSlotNumber
         {
             get
             {
@@ -66,7 +89,7 @@ namespace Yuuki2TheGame.Core
                 Slots.Add(new InventorySlot(null));
             }
             QuickSlotsCount = quicks;
-            ActiveSlot = 0;
+            ActiveSlotNumber = 0;
         }
 
         public bool Contains(Item i)
@@ -74,23 +97,41 @@ namespace Yuuki2TheGame.Core
             return Slots.Exists(x => x.Item != null && x.Item.ID == i.ID);
         }
 
-        public void Add(Item item)
+        public bool Add(Item item)
         {
-            if (item.IsStackable && this.Contains(item))
+            bool added = false;
+            if (this.Contains(item))
             {
-                Slots.Find(x => x.Item != null && x.Item.ID == item.ID).Count++;
+                InventorySlot slot = Slots.Find(x => x.Item != null && x.Item.ID == item.ID && x.Count < x.Item.StackSize);
+                if (slot != null)
+                {
+                    slot.Count++;
+                    added = true;
+                }
             }
-            else
+            if (!added)
             {
                 InventorySlot empty = GetNextEmptySlot();
-                empty.Item = item;
-                empty.Count = 1;
+                if (empty != null)
+                {
+                    empty.Item = item;
+                    empty.Count = 1;
+                    added = true;
+                }
             }
+            return added;
         }
 
         public InventorySlot GetNextEmptySlot()
         {
-            return Slots.Find(x => x.Item == null);
+            if (IsFull())
+            {
+                return null;
+            }
+            else
+            {
+                return Slots.Find(x => x.Item == null);
+            }
         }
 
         //removes one instance of the item.
@@ -112,6 +153,24 @@ namespace Yuuki2TheGame.Core
                 }
             }
 
+        }
+
+        /// <summary>
+        /// Returns whether all slots have something in them.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsFull()
+        {
+            bool full = true;
+            foreach (InventorySlot slot in Slots)
+            {
+                if (slot.Item == null)
+                {
+                    full = false;
+                    break;
+                }
+            }
+            return full;
         }
 
         public void Empty()

@@ -14,17 +14,19 @@ namespace Yuuki2TheGame.Graphics
         /// <summary>
         /// The GraphicsDevice that we are drawing on.
         /// </summary>
-        public GraphicsDevice GraphicsDevice { protected get; set; }
+        public static GraphicsDevice GraphicsDevice { protected get; set; }
 
         /// <summary>
         /// The default font to use for drawing text. This is not guarenteed to be set, so check
         /// before using.
         /// </summary>
-        public SpriteFont DefaultFont { protected get; set; }
+        public static SpriteFont DefaultFont { protected get; set; }
 
-        public Texture2D DefaultTexture { protected get; set; }
+        public static Texture2D DefaultTexture { protected get; set; }
 
         private static IDictionary<string, Texture2D> TextureCache = new Dictionary<string, Texture2D>();
+
+        private static IDictionary<string, SpriteFont> FontCache = new Dictionary<string, SpriteFont>();
 
         private enum ContentType
         {
@@ -102,7 +104,7 @@ namespace Yuuki2TheGame.Graphics
         {
             if (!Painter.TextureCache.ContainsKey(id))
             {
-                Texture2D tex = new Texture2D(GraphicsDevice, width, height, false, SurfaceFormat.Color);
+                Texture2D tex = new Texture2D(Painter.GraphicsDevice, width, height, false, SurfaceFormat.Color);
                 Color[] data = new Color[width * height];
                 for (int i = 0; i < data.Length; i++)
                 {
@@ -127,6 +129,14 @@ namespace Yuuki2TheGame.Graphics
             }
         }
 
+        protected void LoadFont(string id)
+        {
+            if (Content != null && !Painter.FontCache.ContainsKey(id))
+            {
+                Painter.FontCache[id] = Content.Load<SpriteFont>(id);
+            }
+        }
+
         protected void ConvertIDs(IList<Sprite> sprites)
         {
             foreach (Sprite spr in sprites)
@@ -148,7 +158,19 @@ namespace Yuuki2TheGame.Graphics
             }
             else
             {
-                return DefaultTexture;
+                return Painter.DefaultTexture;
+            }
+        }
+
+        protected SpriteFont FontFromID(string name)
+        {
+            if (name != null && Painter.FontCache.ContainsKey(name))
+            {
+                return Painter.FontCache[name];
+            }
+            else
+            {
+                return Painter.DefaultFont;
             }
         }
 

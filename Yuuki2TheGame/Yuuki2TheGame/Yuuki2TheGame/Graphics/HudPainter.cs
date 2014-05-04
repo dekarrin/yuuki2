@@ -22,6 +22,8 @@ namespace Yuuki2TheGame.Graphics
 
         public const int SLOT_SPACING = 2;
 
+        public const int SLOT_TEXT_PADDING = 3;
+
         public static readonly Color SLOT_BORDER_COLOR = new Color(24, 24, 24);
 
         public static readonly Color QUICK_SLOT_COLOR = new Color(217, 154, 154);
@@ -62,6 +64,11 @@ namespace Yuuki2TheGame.Graphics
             CreateRect("$overlay", width, height);
             CreateRect("$slot", SLOT_LENGTH - (SLOT_BORDER_WIDTH * 2), SLOT_LENGTH - (SLOT_BORDER_WIDTH * 2));
             CreateRect("$slot_border", SLOT_LENGTH, SLOT_LENGTH);
+            LoadTexture(@"Items\dirt");
+            LoadTexture(@"Items\grass");
+            LoadTexture(@"Items\stone");
+            LoadTexture(@"Items\wood");
+            LoadFont(@"Fonts\Inven");
         }
 
         protected override void Unload()
@@ -116,6 +123,25 @@ namespace Yuuki2TheGame.Graphics
             batch.Draw(invenSlotBorder, borderRect, SLOT_BORDER_COLOR);
             Color insideColor = (slot.IsActive) ? ACTIVE_SLOT_COLOR : color;
             batch.Draw(invenSlotMain, slotRect, insideColor);
+            if (slot.Item != null)
+            {
+                Texture2D itemTex = TextureFromID(slot.Item.Texture);
+                Rectangle itemRect = new Rectangle();
+                itemRect.Width = itemRect.Height = SLOT_LENGTH / 2;
+                itemRect.X = x + (SLOT_LENGTH / 2) - (itemRect.Width / 2);
+                itemRect.Y = y + (SLOT_LENGTH / 2) - (itemRect.Height / 2);
+                batch.Draw(itemTex, itemRect, Color.White);
+                if (slot.Count > 1)
+                {
+                    SpriteFont f = FontFromID(@"Fonts\Inven");
+                    Vector2 pos = new Vector2();
+                    string cnt = slot.Count.ToString();
+                    Vector2 size = f.MeasureString(cnt);
+                    pos.X = x + SLOT_BORDER_WIDTH + SLOT_TEXT_PADDING;
+                    pos.Y = y + SLOT_LENGTH - size.Y - SLOT_TEXT_PADDING;
+                    batch.DrawString(f, slot.Count.ToString(), pos, Color.Black);
+                }
+            }
         }
     }
 }

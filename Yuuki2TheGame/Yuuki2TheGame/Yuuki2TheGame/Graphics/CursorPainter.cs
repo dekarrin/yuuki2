@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Yuuki2TheGame.Core;
 
 namespace Yuuki2TheGame.Graphics
 {
@@ -16,14 +17,24 @@ namespace Yuuki2TheGame.Graphics
     {
         private static CursorPainter instance;
 
-        private CursorPainter()
-        { }
+        private readonly Engine engine;
 
-        public static CursorPainter GetInstance()
+        public static readonly Color CURSOR_COLOR = new Color(0xff, 0x52, 0x7a);
+
+        public const int ITEM_LENGTH = 15;
+
+        public const int ITEM_OFFSET = 5;
+
+        private CursorPainter(Engine gameEngine)
+        {
+            this.engine = gameEngine;
+        }
+
+        public static CursorPainter GetInstance(Engine gameEngine)
         {
             if (CursorPainter.instance == null)
             {
-                CursorPainter.instance = new CursorPainter();
+                CursorPainter.instance = new CursorPainter(gameEngine);
             }
             return CursorPainter.instance;
         }
@@ -32,7 +43,13 @@ namespace Yuuki2TheGame.Graphics
         { }
 
         protected override void Load()
-        { }
+        {
+            LoadTexture("cursor");
+            LoadTexture(@"Items\dirt");
+            LoadTexture(@"Items\grass");
+            LoadTexture(@"Items\stone");
+            LoadTexture(@"Items\wood");
+        }
 
         protected override void Unload()
         { }
@@ -41,7 +58,15 @@ namespace Yuuki2TheGame.Graphics
         {
             MouseState currentMouse = Mouse.GetState();
             Vector2 pos = new Vector2(currentMouse.X, currentMouse.Y);
-            batch.Draw(DefaultTexture, pos, Color.White);
+            Texture2D tex = TextureFromID("cursor");
+            batch.Draw(tex, pos, CURSOR_COLOR);
+            InventorySlot slot = engine.Player.Inventory.ActiveSlot;
+            if (slot.Item != null)
+            {
+                Texture2D itemTex = TextureFromID(slot.Item.Texture);
+                Rectangle itemRect = new Rectangle((int)pos.X + ITEM_OFFSET, (int)pos.Y + ITEM_OFFSET, ITEM_LENGTH, ITEM_LENGTH);
+                batch.Draw(itemTex, itemRect, Color.White);
+            }
         }
     }
 }

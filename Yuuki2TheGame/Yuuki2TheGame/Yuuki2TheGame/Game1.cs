@@ -84,8 +84,8 @@ namespace Yuuki2TheGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
-            font = Content.Load<SpriteFont>("SegoeUI");
+            defaultTexture = Content.Load<Texture2D>(@"Tiles\default_tile");
+            font = Content.Load<SpriteFont>(@"Fonts\Default");
             SetPainterDefaults(defaultTexture, font);
             LoadPainterContent();
         }
@@ -145,19 +145,24 @@ namespace Yuuki2TheGame
             controls.BindMouseButtonClick(MouseButton.LEFT, delegate(MouseButtonEventArgs e) {
                 gameEngine.Click(e.X, e.Y);
             });
-            KeyAction jump = delegate(KeyEventArgs e) {
+            KeyAction jump = delegate(KeyEventArgs e)
+            {
                 gameEngine.Player.Jump();
             };
-            KeyAction startRight = delegate(KeyEventArgs e) {
+            KeyAction startRight = delegate(KeyEventArgs e)
+            {
                 gameEngine.Player.StartMovingRight();
             };
-            KeyAction startLeft = delegate(KeyEventArgs e) {
+            KeyAction startLeft = delegate(KeyEventArgs e)
+            {
                 gameEngine.Player.StartMovingLeft();
             };
-            KeyAction stopRight = delegate(KeyEventArgs e) {
+            KeyAction stopRight = delegate(KeyEventArgs e)
+            {
                 gameEngine.Player.StopMovingRight();
             };
-            KeyAction stopLeft = delegate(KeyEventArgs e) {
+            KeyAction stopLeft = delegate(KeyEventArgs e)
+            {
                 gameEngine.Player.StopMovingLeft();
             };
             controls.BindKeyDown(Keys.Escape, delegate(KeyEventArgs e)
@@ -172,65 +177,74 @@ namespace Yuuki2TheGame
             controls.BindKeyDown(Keys.D, startRight, false);
             controls.BindKeyUp(Keys.Right, stopRight);
             controls.BindKeyUp(Keys.D, stopRight);
-            controls.BindKeyDown(Keys.W, jump, false);
-            controls.BindKeyDown(Keys.Space, jump, false);
-            controls.BindKeyDown(Keys.Up, jump, false);
-            controls.BindKeyDown(Keys.F4, delegate(KeyEventArgs e) {
+            controls.BindKeyDown(Keys.W, jump, true);
+            controls.BindKeyDown(Keys.Space, jump, true);
+            controls.BindKeyDown(Keys.Up, jump, true);
+            controls.BindKeyDown(Keys.F3, delegate(KeyEventArgs e)
+            {
+                gameEngine.GiveItem(ItemID.BlockDirt, 1);
+            }, true);
+            controls.BindKeyDown(Keys.F4, delegate(KeyEventArgs e)
+            {
                 gameEngine.InDebugMode = !gameEngine.InDebugMode;
             }, false);
-            controls.BindKeyDown(Keys.F5, delegate(KeyEventArgs e) {
+            controls.BindKeyDown(Keys.F5, delegate(KeyEventArgs e)
+            {
                 gameEngine.ManualPhysStepMode = !gameEngine.ManualPhysStepMode;
             }, false);
-            controls.BindKeyDown(Keys.F6, delegate(KeyEventArgs e) {
+            controls.BindKeyDown(Keys.F6, delegate(KeyEventArgs e)
+            {
                 gameEngine.RecordPhysStep = !gameEngine.RecordPhysStep;
             }, false);
-            controls.BindKeyDown(Keys.F7, delegate(KeyEventArgs e) {
+            controls.BindKeyDown(Keys.F7, delegate(KeyEventArgs e)
+            {
                 gameEngine.Respawn();
             }, false);
-            controls.BindKeyDown(Keys.F8, delegate(KeyEventArgs e) {
+            controls.BindKeyDown(Keys.F8, delegate(KeyEventArgs e)
+            {
                 if (gameEngine.ManualPhysStepMode) {
                     gameEngine.StepPhysics();
                 }
             }, false);
             controls.BindMouseScrollUp(delegate(MouseScrollEventArgs e)
             {
-                gameEngine.Player.Inventory.ActiveSlot--;
+                gameEngine.Player.Inventory.ActiveSlotNumber--;
             });
             controls.BindMouseScrollDown(delegate(MouseScrollEventArgs e)
             {
-                gameEngine.Player.Inventory.ActiveSlot++;
+                gameEngine.Player.Inventory.ActiveSlotNumber++;
             });
             controls.BindKeyDown(Keys.D1, delegate(KeyEventArgs e)
             {
-                gameEngine.Player.Inventory.ActiveSlot = 0;
+                gameEngine.Player.Inventory.ActiveSlotNumber = 0;
             }, false);
             controls.BindKeyDown(Keys.D2, delegate(KeyEventArgs e)
             {
-                gameEngine.Player.Inventory.ActiveSlot = 1;
+                gameEngine.Player.Inventory.ActiveSlotNumber = 1;
             }, false);
             controls.BindKeyDown(Keys.D3, delegate(KeyEventArgs e)
             {
-                gameEngine.Player.Inventory.ActiveSlot = 2;
+                gameEngine.Player.Inventory.ActiveSlotNumber = 2;
             }, false);
             controls.BindKeyDown(Keys.D4, delegate(KeyEventArgs e)
             {
-                gameEngine.Player.Inventory.ActiveSlot = 3;
+                gameEngine.Player.Inventory.ActiveSlotNumber = 3;
             }, false);
             controls.BindKeyDown(Keys.D5, delegate(KeyEventArgs e)
             {
-                gameEngine.Player.Inventory.ActiveSlot = 4;
+                gameEngine.Player.Inventory.ActiveSlotNumber = 4;
             }, false);
             controls.BindKeyDown(Keys.D6, delegate(KeyEventArgs e)
             {
-                gameEngine.Player.Inventory.ActiveSlot = 5;
+                gameEngine.Player.Inventory.ActiveSlotNumber = 5;
             }, false);
             controls.BindKeyDown(Keys.D7, delegate(KeyEventArgs e)
             {
-                gameEngine.Player.Inventory.ActiveSlot = 6;
+                gameEngine.Player.Inventory.ActiveSlotNumber = 6;
             }, false);
             controls.BindKeyDown(Keys.D8, delegate(KeyEventArgs e)
             {
-                gameEngine.Player.Inventory.ActiveSlot = 7;
+                gameEngine.Player.Inventory.ActiveSlotNumber = 7;
             }, false);
         }
 
@@ -241,7 +255,7 @@ namespace Yuuki2TheGame
             painters.Add(WorldPainter.GetInstance(gameEngine, blocksOnScreen.X, blocksOnScreen.Y));
             painters.Add(HudPainter.GetInstance(gameEngine, GAME_WIDTH, GAME_HEIGHT));
             painters.Add(DebugPainter.GetInstance(gameEngine));
-            painters.Add(CursorPainter.GetInstance());
+            painters.Add(CursorPainter.GetInstance(gameEngine));
         }
 
         private void LoadPainterContent()
@@ -270,12 +284,9 @@ namespace Yuuki2TheGame
 
         private void SetPainterDefaults(Texture2D defTexture, SpriteFont defFont)
         {
-            foreach (Painter p in painters)
-            {
-                p.DefaultFont = defFont;
-                p.DefaultTexture = defTexture;
-                p.GraphicsDevice = GraphicsDevice;
-            }
+            Painter.DefaultFont = defFont;
+            Painter.DefaultTexture = defTexture;
+            Painter.GraphicsDevice = GraphicsDevice;
         }
 
         private void SetWindowSize()

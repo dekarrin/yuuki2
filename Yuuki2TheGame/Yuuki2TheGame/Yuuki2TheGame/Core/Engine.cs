@@ -94,7 +94,6 @@ namespace Yuuki2TheGame.Core
             physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_MEDIUM_DENSITY, PHYS_SURFACE_FRICTION, PHYS_TIMESCALE);
             physics.AddMap(_map);
             physics.AddPhob(Player);
-            GiveItem(ItemID.BlockDirt);
         }
 
         private int TESTcycle = 0;
@@ -152,27 +151,30 @@ namespace Yuuki2TheGame.Core
             }
             else
             {
-                ClickBlock(x, y);
+                ClickWorld(x, y);
             }
         }
 
-        private void ClickBlock(int x, int y)
+        private void ClickWorld(int x, int y)
         {
-            int globalx = (x + this.Camera.Position.X) / Game1.METER_LENGTH;
-            int globaly = (y + this.Camera.Position.Y) / Game1.METER_LENGTH;
-            Point p = new Point(globalx, globaly);
-
-            if (globalx <= Game1.WORLD_WIDTH && globalx >= 0 && globaly <= Game1.WORLD_HEIGHT && globaly >= 0)
+            InventorySlot slot = Player.Inventory.ActiveSlot;
+            if (slot.Item != null)
             {
-                Block block = _map.BlockAt(p);
-                if (block != null)
+                int globalx = (x + this.Camera.Position.X) / Game1.METER_LENGTH;
+                int globaly = (y + this.Camera.Position.Y) / Game1.METER_LENGTH;
+                Point coords = new Point(globalx, globaly);
+
+                if (globalx <= Game1.WORLD_WIDTH && globalx >= 0 && globaly <= Game1.WORLD_HEIGHT && globaly >= 0)
                 {
-                    _map.DestroyBlock(p);
+                    Block block = _map.BlockAt(coords);
+                    if (block != null)
+                    {
+                        _map.DestroyBlock(coords);
+                    }
                 }
-                else
-                {
-                    _map.AddBlock(BlockID.Dirt, p);
-                }
+                Point pos = new Point(x, y);
+                int used = slot.Item.Use(pos, coords, _map, Player);
+                slot.Count -= used;
             }
         }
 
@@ -206,10 +208,13 @@ namespace Yuuki2TheGame.Core
             return view;
         }
 
-        public void GiveItem(ItemID id)
+        public void GiveItem(ItemID id, int count)
         {
             Item item = new Item(id);
-            Player.Inventory.Add(item);
+            for (int i = 0; i < count; i++)
+            {
+                Player.Inventory.Add(item);
+            }
         }
 
         public Sprite GetBackground(int screenWidth, int screenHeight)
