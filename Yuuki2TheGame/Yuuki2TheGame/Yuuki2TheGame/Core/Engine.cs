@@ -192,18 +192,12 @@ namespace Yuuki2TheGame.Core
             Point coords = new Point((int) pos.X, (int) pos.Y);
             Point offsets = Camera.BlockOffsets;
             IList<Sprite> view = new List<Sprite>();
-            for (int i = 0; i < numX && coords.X + i < _map.Width; i++)
+            IList<Block> blocks = _map.QueryPixels(Camera.Bounds);
+            foreach (Block b in blocks)
             {
-                for (int j = 0; j < numY && coords.Y + j < _map.Height; j++)
-                {
-                    Point tilecoords = new Point(coords.X + i, coords.Y + j);
-                    if (tilecoords.X >= 0 && tilecoords.Y >= 0 && _map.BlockAt(tilecoords) != null)
-                    {
-                        Point position = new Point(i * Game1.METER_LENGTH - offsets.X, j * Game1.METER_LENGTH - offsets.Y);
-                        Sprite spr = new Sprite(position, new Point(Game1.METER_LENGTH, Game1.METER_LENGTH), _map.BlockAt(tilecoords).Texture);
-                        view.Add(spr);
-                    }
-                }
+                Sprite spr = b.Sprite;
+                spr.Position = new Point(spr.Position.X - Camera.X, spr.Position.Y - Camera.Y);
+                view.Add(spr);
             }
             return view;
         }
