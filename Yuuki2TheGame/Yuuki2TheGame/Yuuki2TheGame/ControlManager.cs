@@ -492,6 +492,7 @@ namespace Yuuki2TheGame
             {
                 AddKeyListener(listenerName, key, ((fireContinuously) ? 0 : 1), 0, null, null);
             }
+            keyHandlers[listenerName].fireLimit = ((fireContinuously) ? 0 : 1);
             keyHandlers[listenerName].OnDown = action;
         }
 
@@ -542,6 +543,7 @@ namespace Yuuki2TheGame
             {
                 AddMouseButtonListener(name, button, ((fireContinuously) ? 0 : 1), 0, null, null, null, null, null, null, null);
             }
+            buttonHandlers[name].fireLimit = ((fireContinuously) ? 0 : 1);
             buttonHandlers[name].OnDown = action;
         }
 
