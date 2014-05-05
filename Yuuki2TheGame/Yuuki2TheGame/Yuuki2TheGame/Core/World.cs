@@ -232,7 +232,7 @@ namespace Yuuki2TheGame.Core
                     break;
                 }
             }
-            Engine.AudioEngine.PlaySound(Game1.GameAudio);
+            //Engine.AudioEngine.PlaySound(Game1.GameAudio);
         }
 
         public bool AddBlock(BlockID id, Point p)
@@ -249,7 +249,7 @@ namespace Yuuki2TheGame.Core
                 {
                     SetBlock(BlockID.Dirt, p.X, p.Y + 1);
                 }
-                Engine.AudioEngine.PlaySound(Game1.GameAudio);
+                //Engine.AudioEngine.PlaySound(Game1.GameAudio);
                 return true;
             }
             else
