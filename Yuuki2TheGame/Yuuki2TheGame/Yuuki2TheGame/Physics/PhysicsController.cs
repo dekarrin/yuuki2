@@ -9,20 +9,13 @@ namespace Yuuki2TheGame.Physics
 {
     class PhysicsController
     {
-        /// <summary>
-        /// Contains the setters that give the engine access to private physical properties.
-        /// </summary>
-        private struct PhobAccessors
-        {
-            public PhysicsPrivateSetter<int> setContactMask;
-        }
 
         public bool RecordingQueryTime { get; private set; }
 
         /// <summary>
-        /// Maps Phobs to their PhobAccessors struct.
+        /// Maps Phobs to their PhysicsPrivateMethod struct.
         /// </summary>
-        private IDictionary<IPhysical, PhobAccessors> accessors = new Dictionary<IPhysical,PhobAccessors>();
+        private IDictionary<IPhysical, PhysicsPrivateMethods> accessors = new Dictionary<IPhysical, PhysicsPrivateMethods>();
 
         private Vector2 globalAcceleration;
 
@@ -43,13 +36,17 @@ namespace Yuuki2TheGame.Physics
 
         private IList<long> queryTimes = new List<long>();
 
-        private Map map;
+        private World map;
         
         private float mediumDensity;
 
         private float timescale;
 
         private float friction;
+
+        private volatile bool inUpdate = false;
+
+        private IList<IPhysical> deferredRemovals = new List<IPhysical>();
 
         public PhysicsController(float wind, float gravity, float density, float friction, float timescale)
         {
@@ -59,7 +56,7 @@ namespace Yuuki2TheGame.Physics
             this.globalAcceleration = new Vector2(wind, gravity);
         }
 
-        public void AddMap(Map map)
+        public void AddMap(World map)
         {
             this.map = map;
         }
@@ -75,20 +72,27 @@ namespace Yuuki2TheGame.Physics
 
         public void Step(float secs)
         {
+            inUpdate = true;
             foreach (IPhysical phob in phobs)
             {
                 phob.UpdatePhysics(secs * timescale);
-                CheckCollision(phob, ContactType.DOWN);
-                CheckCollision(phob, ContactType.UP);
-                CheckCollision(phob, ContactType.RIGHT);
-                CheckCollision(phob, ContactType.LEFT);
+                CheckLandCollision(phob, ContactType.DOWN);
+                CheckLandCollision(phob, ContactType.UP);
+                CheckLandCollision(phob, ContactType.RIGHT);
+                CheckLandCollision(phob, ContactType.LEFT);
+                CheckPhobCollision(phob);
             }
+            inUpdate = false;
+            foreach (IPhysical phob in deferredRemovals)
+            {
+                RemovePhob(phob);
+            }
+            deferredRemovals.Clear();
         }
 
         public void AddPhob(IPhysical obj)
         {
-            PhobAccessors acc = new PhobAccessors();
-            acc.setContactMask = obj.AddToEngine(globalAcceleration, mediumDensity, friction);
+            PhysicsPrivateMethods acc = obj.AddToEngine(globalAcceleration, mediumDensity, friction);
             accessors[obj] = acc;
             phobs.Add(obj);
             phobTree.Insert(obj);
@@ -96,9 +100,16 @@ namespace Yuuki2TheGame.Physics
 
         public void RemovePhob(IPhysical obj)
         {
-            phobs.Remove(obj);
-            phobTree.Remove(obj);
-            obj.RemoveFromEngine();
+            if (!inUpdate)
+            {
+                phobs.Remove(obj);
+                phobTree.Remove(obj);
+                obj.RemoveFromEngine();
+            }
+            else
+            {
+                deferredRemovals.Add(obj);
+            }
         }
 
         public void StartRecording()
@@ -135,7 +146,7 @@ namespace Yuuki2TheGame.Physics
             return (int) Math.Round(physUnits * Game1.METER_LENGTH);
         }
 
-        private void CorrectCollision(IPhysical phob, ContactType type, Point newPos)
+        private void CorrectLandCollision(IPhysical phob, ContactType type, Point newPos)
         {
             phob.PhysPosition = new Vector2(PixelsToMeters(newPos.X), PixelsToMeters(newPos.Y));
             Vector2 vCorrection;
@@ -155,9 +166,25 @@ namespace Yuuki2TheGame.Physics
             phob.Velocity = vCorrection;
         }
 
-        private void CheckCollision(IPhysical phob, ContactType type)
+        /// <summary>
+        /// Checks for a collision between two phobs.
+        /// </summary>
+        /// <param name="phob"></param>
+        private void CheckPhobCollision(IPhysical phob)
         {
-            Block contact = CheckContact(phob, type);
+            IList<IPhysical> results = phobTree.Query(phob.Bounds);
+            foreach (IPhysical contacted in results)
+            {
+                if (contacted != phob)
+                {
+                    accessors[phob].notifyCollide(contacted);
+                }
+            }
+        }
+
+        private void CheckLandCollision(IPhysical phob, ContactType type)
+        {
+            Block contact = CheckLandContact(phob, type);
             if (contact != null && !phob.IsInContact(type))
             {
                 Point correction;
@@ -180,7 +207,7 @@ namespace Yuuki2TheGame.Physics
                         correction = new Point(contact.Bounds.Left - phob.Bounds.Width, phob.Bounds.Y);
                         break;
                 }
-                CorrectCollision(phob, type, correction);
+                CorrectLandCollision(phob, type, correction);
                 accessors[phob].setContactMask(phob.ContactMask | (int)type);
             }
             else if (contact == null && phob.IsInContact(type))
@@ -189,7 +216,7 @@ namespace Yuuki2TheGame.Physics
             }
         }
 
-        private Block CheckContact(IPhysical toCheck, ContactType type)
+        private Block CheckLandContact(IPhysical toCheck, ContactType type)
         {
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
             Rectangle bounds = toCheck.Bounds;

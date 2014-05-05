@@ -6,202 +6,312 @@ using Microsoft.Xna.Framework;
 
 namespace Yuuki2TheGame.Core
 {
+
     enum ItemType
     {
-        Block = 1,
+        Hands,
+        Block,
         Axe,
-        PickAxe,
+        Pickaxe,
         Shovel,
+        Consumable,
+        Bomb
     }
-    class Item : IUpdateable
+
+    enum ItemID
     {
-        private int id;
-        private string name;
-        private int type;
-        private int level;
-        private bool stack;
-        private int _maxstack;
-        private bool equipable;
-        private int count;
-        private int blockdamage;
-        OnUse action;
+        Hands,
+        BlockStone,
+        BlockWood,
+        BlockDirt,
+        BlockGrass,
+        AxeNormal,
+        ShovelNormal,
+        PickaxeNormal,
+        Potion,
+        Bomb
+    }
+    
+    /// <summary>
+    /// A method for an item to perform its action when used.
+    /// </summary>
+    /// <param name="caller">The Item instance that is calling the action.</param>
+    /// <param name="position">The absolute pixel coordinates of where the item was used.</param>
+    /// <param name="coordinates">The absolute physical coordinates of where the item was used.</param>
+    /// <param name="map">The map with the current data.</param>
+    /// <param name="user">The character that used the item.</param>
+    /// <returns>How many of that inventory item was used up during the process of using it.</returns>
+    delegate int ItemAction(Item caller, Point position, Point coordinates, World map, GameCharacter user);
 
+    struct ItemTypeData
+    {
+        public readonly ItemAction Action;
+        public readonly ICollection<BlockID> Effectives;
 
-        private int _updateOrder = 0;
+        public ItemTypeData(BlockID[] effectives, ItemAction action)
+        {
+            this.Action = action;
+            this.Effectives = new HashSet<BlockID>(effectives);
+        }
 
-        public int UpdateOrder
+        public ItemTypeData(BlockID effective, ItemAction action)
+            : this(new[] { effective }, action)
+        { }
+
+        public ItemTypeData(ItemAction action)
+        {
+            this.Action = action;
+            this.Effectives = new HashSet<BlockID>();
+        }
+    }
+
+    struct ItemData
+    {
+        public readonly int StackSize;
+        public readonly int Level;
+        public readonly int Durability;
+        public readonly string Name;
+        public readonly string Texture;
+        public readonly BlockID BlockID;
+        public readonly ItemType Type;
+
+        public ItemData(ItemType type, string name, int stack, string texture, int level, int durability)
+        {
+            this.Type = type;
+            this.Name = name;
+            this.StackSize = ((stack >= 1) ? stack : 1);
+            this.Level = level;
+            this.Durability = durability;
+            this.Texture = texture;
+            this.BlockID = BlockID.Dirt;
+        }
+
+        public ItemData(BlockID blockId, string name, int stack, string texture)
+        {
+            this.Type = ItemType.Block;
+            this.Name = name;
+            this.StackSize = ((stack >= 1) ? stack : 1);
+            this.Level = 0;
+            this.Durability = 0;
+            this.Texture = texture;
+            this.BlockID = blockId;
+        }
+    }
+
+    class Item
+    {
+
+        public const int MAX_BLOCK_STACK = 200;
+
+        public const int MAX_AXE_STACK = 10;
+
+        public const int MAX_PICKAXE_STACK = 30;
+
+        public const int MAX_SHOVEL_STACK = 2000; // ?!
+
+        public const int MAX_CONSUMABLE_STACK = 25;
+
+        public const int MAX_BOMB_STACK = 25;
+
+        public const int TOOL_DURABILITY = 100;
+
+        public const int TOOL_BASE_POWER = 10;
+
+        public const int TOOL_MAX_POWER = 50;
+
+        private static IDictionary<ItemID, ItemData> types = new Dictionary<ItemID, ItemData>();
+
+        private static IDictionary<ItemType, ItemTypeData> typeData = new Dictionary<ItemType, ItemTypeData>();
+
+        private static IDictionary<BlockID, ItemID> blockMap = new Dictionary<BlockID, ItemID>();
+
+        #region data initialization
+
+        static Item()
+        {
+            Item.InitializeTypeData();
+            Item.InitializeItemData();
+            Item.InitializeBlockMap();
+        }
+
+        private static void InitializeItemData()
+        {
+            Item.types[ItemID.Hands] = new ItemData(ItemType.Hands, "Hands", 1, null, 1, 1);
+            Item.types[ItemID.BlockDirt] = new ItemData(BlockID.Dirt, "Dirt", MAX_BLOCK_STACK, @"Items\dirt");
+            Item.types[ItemID.BlockGrass] = new ItemData(BlockID.Grass, "Grass", MAX_BLOCK_STACK, @"Items\grass");
+            Item.types[ItemID.BlockStone] = new ItemData(BlockID.Stone, "Stone", MAX_BLOCK_STACK, @"Items\stone");
+            Item.types[ItemID.BlockWood] = new ItemData(BlockID.Wood, "Wood", MAX_BLOCK_STACK, @"Items\wood");
+            Item.types[ItemID.AxeNormal] = new ItemData(ItemType.Axe, "Basic Axe", MAX_AXE_STACK, null, 1, TOOL_DURABILITY);
+            Item.types[ItemID.PickaxeNormal] = new ItemData(ItemType.Pickaxe, "Basic Pickaxe", MAX_PICKAXE_STACK, null, 1, TOOL_DURABILITY);
+            Item.types[ItemID.ShovelNormal] = new ItemData(ItemType.Shovel, "Basic Shovel", MAX_PICKAXE_STACK, null, 1, TOOL_DURABILITY);
+        }
+
+        private static void InitializeTypeData()
+        {
+            Item.typeData[ItemType.Block] = new ItemTypeData(delegate(Item caller, Point pos, Point coords, World map, GameCharacter user)
+            {
+                if (map.AddBlock(caller.BlockID, coords))
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            });
+            ItemAction useTool = delegate(Item caller, Point pos, Point coords, World map, GameCharacter user)
+            {
+                Block b = map.BlockAt(coords);
+                if (b != null)
+                {
+                    b.Damage(TOOL_BASE_POWER, TOOL_MAX_POWER, caller.EffectiveAgainst);
+                }
+                return 0;
+            };
+            Item.typeData[ItemType.Hands] = new ItemTypeData(new BlockID[0], useTool);
+            Item.typeData[ItemType.Axe] = new ItemTypeData(BlockID.Wood, useTool);
+            Item.typeData[ItemType.Shovel] = new ItemTypeData(BlockID.Dirt, useTool);
+            Item.typeData[ItemType.Pickaxe] = new ItemTypeData(BlockID.Stone, useTool);
+            Item.typeData[ItemType.Consumable] = new ItemTypeData(delegate(Item caller, Point pos, Point coords, World map, GameCharacter user)
+            {
+                int currentHealth = user.Health;
+                if (currentHealth + 50 > 100)
+                {
+                    user.Health = 100;
+                }
+                return 1;
+            });
+            Item.typeData[ItemType.Bomb] = new ItemTypeData(delegate(Item caller, Point pos, Point coords, World map, GameCharacter user)
+            {
+                //explodes and destroys a radius of blocks around it.
+                return 1;
+            });
+        }
+
+        private static void InitializeBlockMap()
+        {
+            Item.blockMap[BlockID.Dirt] = ItemID.BlockDirt;
+            Item.blockMap[BlockID.Grass] = ItemID.BlockGrass;
+            Item.blockMap[BlockID.Stone] = ItemID.BlockStone;
+            Item.blockMap[BlockID.Wood] = ItemID.BlockWood;
+        }
+
+        #endregion
+
+        private static ItemAction DropItemAction = delegate(Item caller, Point pos, Point coords, World map, GameCharacter c)
+        {
+            map.AddItem(caller, pos);
+            return 1;
+        };
+
+        private readonly ItemAction UseItem;
+
+        public int StackSize { get; private set; }
+
+        public bool IsStackable { get; private set; }
+
+        public int Level { get; private set; }
+
+        public int Durability { get; set; }
+
+        public int MaxDurability { get; private set; }
+
+        public ItemID ID { get; private set; }
+
+        public string Name { get; set; }
+
+        public string Texture { get; private set; }
+
+        public BlockID BlockID { get; private set; }
+
+        public ItemType Type { get; private set; }
+
+        public bool IsTool
         {
             get
             {
-                return _updateOrder;
-            }
-            set
-            {
-                bool diff = _updateOrder != value;
-                _updateOrder = value;
-                if (diff && UpdateOrderChanged != null)
-                {
-                    UpdateOrderChanged(this, new EventArgs());
-                }
+                return (Type == ItemType.Axe || Type == ItemType.Pickaxe || Type == ItemType.Shovel || Type == ItemType.Hands);
             }
         }
 
-        private bool _enabled = true;
+        public ICollection<BlockID> EffectiveAgainst { get; private set; }
 
-        public bool Enabled
+        public Item(ItemID id)
         {
-            get
-            {
-                return _enabled;
-            }
-            set
-            {
-                bool diff = _enabled != value;
-                _enabled = value;
-                if (diff && EnabledChanged != null)
-                {
-                    EnabledChanged(this, new EventArgs());
-                }
-            }
+            Initialize(id, ref UseItem);
         }
 
-        public event EventHandler<EventArgs> UpdateOrderChanged = null;
+        public Item(int id)
+        {
+            ItemID itemid;
+            if (Enum.IsDefined(typeof(ItemID), id))
+            {
+                itemid = (ItemID)id;
+            }
+            else
+            {
+                itemid = Item.types.First(x => true).Key;
+            }
+            Initialize(itemid, ref UseItem);
+        }
 
-        public event EventHandler<EventArgs> EnabledChanged = null;
+        public Item(BlockID blockID)
+        {
+            ItemID id;
+            if (Item.blockMap.ContainsKey(blockID))
+            {
+                id = Item.blockMap[blockID];
+            }
+            else
+            {
+                id = Item.types.First(x => true).Key;
+            }
+            Initialize(id, ref UseItem);
+        }
 
-        public delegate void OnUse(Map m, Point p);
+        /// <summary>
+        /// Invokes the action associated with this Item.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="coordinates"></param>
+        /// <param name="map"></param>
+        /// <param name="user"></param>
+        /// <returns>Returns how many of the item was used up.</returns>
+        public int Use(Point position, Point coordinates, World map, GameCharacter user)
+        {
+            return UseItem(this, position, coordinates, map, user);
+        }
 
         public void Update(GameTime gameTime) {
 
         }
-        public int BlockDamage
-        {
-            get { return blockdamage; }
-            set { blockdamage = value; }
-        }
-        public int Count
-        {
-            get { return count; }
-            set { count = value; }
-        }
 
-        public bool Equipable
+        private void Initialize(ItemID id, ref ItemAction action)
         {
-            get { return equipable; }
-            set { equipable = value; }
-        }
-
-        public int MaxStack
-        {
-            get { return _maxstack; }
-            set { _maxstack = value; }
-        }
-        public bool Stackable
-        {
-            get { return stack; }
-            set { stack = value; }
+            if (!Item.types.ContainsKey(id))
+            {
+                id = Item.types.First(x => true).Key;
+            }
+            ItemData data = Item.types[id];
+            this.ID = id;
+            this.BlockID = data.BlockID;
+            this.Durability = this.MaxDurability = data.Durability;
+            this.IsStackable = (data.StackSize > 1);
+            this.Level = data.Level;
+            this.Name = data.Name;
+            this.StackSize = data.StackSize;
+            this.Texture = data.Texture;
+            ItemType type = data.Type;
+            if (!Item.typeData.ContainsKey(type))
+            {
+                type = Item.typeData.First(x => true).Key;
+            }
+            ItemTypeData typeData = Item.typeData[type];
+            this.Type = type;
+            action = typeData.Action;
+            this.EffectiveAgainst = typeData.Effectives;
         }
         
-        public int Level
-        {
-            get { return level; }
-            set { level = value; }
-        }
-        
-
-        public bool Stack
-        {
-            get { return stack; }
-            set { stack = value; }
-        }
-        
-        public int ID
-        {
-            get {return id;}
-            set
-            {
-                if (value > 0)
-                {
-                    id = value;
-                }
-                else
-                { 
-                    id = 1; 
-                }
-            }
-        }
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
-        public int Type
-        {
-            get { return type; }
-            set { type = value; }
-        }
-        
-
-        public Item(int number, string ItemName, int ToolLevel, bool isStacakable, bool isEquipable)
-        {
-            ID = number;
-            Name = ItemName;
-            Level = ToolLevel;
-            Stackable = isStacakable;
-            ItemAction ia = new ItemAction();
-            
-            
-            if (ID <= 8)
-            {
-                this.Type = (int)ItemType.Block;
-            }
-            
-            if (ID > 16 && ID < 24)
-            {
-                this.Type = (int)ItemType.Axe;
-                OnUse action = ia.AxeAction;
-            }
-
-            if (ID >= 24 && ID < 32)
-            {
-                this.Type = (int)ItemType.Shovel;
-                action = ia.ShovelAction;
-            }
-
-            if (ID >= 32) 
-            {
-                this.Type = (int)ItemType.PickAxe;
-                action = ia.PickAction;
-            }
-            
-            
-            if (Stackable){
-               switch(Type){
-                   case (int)ItemType.Block:
-                       MaxStack = 200;
-                       break;
-                   case (int)ItemType.Axe:
-                       MaxStack = 10;
-                       break;
-                   case (int)ItemType.PickAxe:
-                       MaxStack = 30;
-                       break;
-                   case (int)ItemType.Shovel:
-                       MaxStack = 2000;
-                       break;
-               }
-            }
-            else{ MaxStack = 0;}
-            Equipable = isEquipable;
-            
-        }
-
-
-        public void ChangeName(string DesiredName)
-        {
-            Name = DesiredName;
-        }
-        
-
     }
+
 }

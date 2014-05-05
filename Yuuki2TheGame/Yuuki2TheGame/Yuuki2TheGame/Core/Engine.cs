@@ -9,6 +9,15 @@ using Yuuki2TheGame.Physics;
 
 namespace Yuuki2TheGame.Core
 {
+    struct MineState
+    {
+        public bool Mining;
+
+        public Block Block;
+
+        public TimeSpan TimeLastMined;
+    }
+
     class Engine
     {
         public const float PHYS_WIND = 0f;
@@ -21,58 +30,73 @@ namespace Yuuki2TheGame.Core
 
         public const float PHYS_SURFACE_FRICTION = 0.3f;
 
-        private bool _recording = false;
+        /// <summary>
+        /// This is in ms.
+        /// </summary>
+        public const int MINE_TIME_DELAY = 100;
 
-        SoundEngine audioEngine;
+        public bool InInventoryScreen { get; set; }
+
+        public bool InDebugMode { get; set; }
+
+        private MineState mine = new MineState();
+
+        internal static SoundEngine AudioEngine;
 
         public bool RecordPhysStep
         {
             get
             {
-                return _recording;
+                return World.RecordPhysStep;
             }
             set
             {
-                if (value)
-                {
-                    physics.StartRecording();
-                }
-                else
-                {
-                    physics.StopRecording();
-                }
-                _recording = value;
+                World.RecordPhysStep = value;
             }
         }
 
-        public bool ManualPhysStepMode { get; set; }
+        public bool ManualPhysStepMode
+        {
+            get
+            {
+                return World.ManualPhysStepMode;
+            }
+            set
+            {
+                World.ManualPhysStepMode = value;
+            }
+        }
 
-        private static Map _map;
+        private World World { get; set; }
 
-        private List<GameCharacter> _characters = new List<GameCharacter>();
-
-        private List<Item> _items = new List<Item>();
-
-        private Point spawn;
-
-        private PhysicsController physics;
+        private Point Spawn { get; set; }
 
         public Camera Camera { get; set; }
 
+        public PlayerCharacter Player { get; private set; }
+
         public Engine(Point size)
         {
-            ManualPhysStepMode = false;
-            _map = new Map(size.X, size.Y);
-            spawn = new Point(0, (size.Y / 2) * Game1.METER_LENGTH - 30);
+            InInventoryScreen = false;
+            InDebugMode = false;
+            CreateWorld(size);
+            Spawn = new Point(0, (size.Y / 2) * Game1.METER_LENGTH - 30);
             // temp vars until we can meet with the team
-            Player = new PlayerCharacter("Becky", spawn, 100, 10, 10);
-            _characters.Add(Player);
+            Player = new PlayerCharacter("Becky", Spawn, 100, 10, 10);
+            World.AddEntity(Player);
             Rectangle camLimits = new Rectangle(0, 0, Game1.METER_LENGTH * Game1.WORLD_WIDTH, Game1.METER_LENGTH * Game1.WORLD_HEIGHT);
             Camera = new Camera(new Point(Game1.GAME_WIDTH, Game1.GAME_HEIGHT), Player, new Point(-100, -300), camLimits);
-            physics = new PhysicsController(PHYS_WIND, PHYS_GRAVITY, PHYS_MEDIUM_DENSITY, PHYS_SURFACE_FRICTION, PHYS_TIMESCALE);
-            physics.AddMap(_map);
-            physics.AddPhob(Player);
-            audioEngine = new SoundEngine(Game1.GameAudio);
+        }
+
+        private void CreateWorld(Point size)
+        {
+            World.PhysicalConstants phys = new World.PhysicalConstants();
+            phys.Wind = PHYS_WIND;
+            phys.Gravity = PHYS_GRAVITY;
+            phys.MediumDensity = PHYS_MEDIUM_DENSITY;
+            phys.SurfaceFriction = PHYS_SURFACE_FRICTION;
+            phys.Timescale = PHYS_TIMESCALE;
+            World = new World(size.X, size.Y, phys);
         }
 
         private int TESTcycle = 0;
@@ -86,114 +110,130 @@ namespace Yuuki2TheGame.Core
             }
         }
 
+        public IList<InventorySlot> GetQuickSlots()
+        {
+            return Player.Inventory.QuickSlots;
+        }
+
         public void Update(GameTime gameTime)
         {
-            if (RecordPhysStep)
+            World.Update(gameTime);
+            if (mine.Mining && (gameTime.TotalGameTime - mine.TimeLastMined).Milliseconds > MINE_TIME_DELAY)
             {
-                _recording = physics.RecordingQueryTime;
-            }
-            foreach (GameCharacter c in _characters)
-            {
-                c.Update(gameTime);
-            }
-            foreach (Item i in _items)
-            {
-                i.Update(gameTime);
-            }
-            _map.Update(gameTime);
-            if (!ManualPhysStepMode)
-            {
-                physics.Update(gameTime);
+                mine.TimeLastMined = gameTime.TotalGameTime;
+                MouseState mse = Mouse.GetState();
+                MineBlock(mse.X, mse.Y);
             }
         }
 
         public void Respawn()
         {
-            Player.Teleport(spawn);
+            Player.Teleport(Spawn);
         }
 
         public void StepPhysics()
         {
-            physics.Step(0.016f);
+            World.StepPhysics();
         }
 
-        public void Click(int x, int y)
+        public void Click(MouseButtonEventArgs e)
+        {
+            if (InInventoryScreen)
+            {
+
+            }
+        }
+
+        public void Press(MouseButtonEventArgs e)
+        {
+            if (!InInventoryScreen)
+            {
+                PressWorld(e.X, e.Y);
+            }
+        }
+
+        public void Release(MouseButtonEventArgs e)
+        {
+            if (mine.Block != null)
+            {
+                mine.Block.Restore();
+            }
+            mine.Block = null;
+            mine.Mining = false;
+        }
+
+        private void MineBlock(int x, int y)
         {
             int globalx = (x + this.Camera.Position.X) / Game1.METER_LENGTH;
             int globaly = (y + this.Camera.Position.Y) / Game1.METER_LENGTH;
-            Point p = new Point(globalx, globaly);
-
-            if (globalx <= Game1.WORLD_WIDTH && globalx >= 0 && globaly <= Game1.WORLD_HEIGHT && globaly >= 0)
+            Point coords = new Point(globalx, globaly);
+            Point pos = new Point(x + Camera.Position.X, y + Camera.Position.Y);
+            Block b = World.BlockAt(coords);
+            if (b != mine.Block && mine.Block != null && mine.Block.Health > 0)
             {
-                Block block = _map.BlockAt(p);
-                if (block != null)
+                mine.Block.Restore();
+            }
+            mine.Block = b;
+            InventorySlot activeSlot = Player.Inventory.ActiveSlot;
+            Item toUse = ((activeSlot.Item != null) ? activeSlot.Item : new Item(ItemID.Hands));
+            int used = toUse.Use(pos, coords, World, Player);
+            if (toUse == activeSlot.Item)
+            {
+                activeSlot.Count -= used;
+            }
+        }
+
+        private void PressWorld(int x, int y)
+        {
+            int globalx = (x + this.Camera.Position.X) / Game1.METER_LENGTH;
+            int globaly = (y + this.Camera.Position.Y) / Game1.METER_LENGTH;
+            Point coords = new Point(globalx, globaly);
+            Point pos = new Point(x + Camera.Position.X, y + Camera.Position.Y);
+            InventorySlot activeSlot = Player.Inventory.ActiveSlot;
+            Item toUse = ((activeSlot.Item != null) ? activeSlot.Item : new Item(ItemID.Hands));
+            if (toUse.IsTool)
+            {
+                mine.Mining = true;
+                mine.Block = World.BlockAt(coords);
+                mine.TimeLastMined = new TimeSpan(0, 0, 0);
+            }
+            else
+            {
+                int used = toUse.Use(pos, coords, World, Player);
+                if (toUse == activeSlot.Item)
                 {
-                    _map.DestroyBlock(p);
-                    audioEngine.PlaySound(Game1.GameAudio);
-                }
-                else
-                {
-                    _map.AddBlock(p);
-                    audioEngine.PlaySound(Game1.GameAudio);
+                    activeSlot.Count -= used;
                 }
             }
         }
 
-        public void RemovePhysical(IPhysical phob)
-        {
-            physics.RemovePhob(phob);
-        }
-
-        public void AddPhysical(IPhysical phob)
-        {
-            physics.AddPhob(phob);
-        }
-
         /// <summary>
-        /// Gets all tiles that need to be displayed.
+        /// Gets all tiles that need to be displayed. All Sprites returned have the original block that they
+        /// came from set as their Creator property.
         /// </summary>
-        /// <param name="numX">Number of tiles wide.</param>
-        /// <param name="numY">Number of tiles high.</param>
-        /// <param name="tileWidth">Width of a tile.</param>
-        /// <param name="tileHeight">Height of a tile.</param>
         /// <returns></returns>
-        public IList<Sprite> GetView(int numX, int numY, int tileWidth, int tileHeight)
+        public IList<Sprite> GetView()
         {
             Vector2 pos = Camera.BlockPosition;
             Point coords = new Point((int) pos.X, (int) pos.Y);
             Point offsets = Camera.BlockOffsets;
             IList<Sprite> view = new List<Sprite>();
-            for (int i = 0; i < numX && coords.X + i < _map.Width; i++)
+            IList<Block> blocks = World.QueryPixels(Camera.Bounds);
+            foreach (Block b in blocks)
             {
-                for (int j = 0; j < numY && coords.Y + j < _map.Height; j++)
-                {
-                    Point tilecoords = new Point(coords.X + i, coords.Y + j);
-                    if (tilecoords.X >= 0 && tilecoords.Y >= 0 && _map.BlockAt(tilecoords) != null)
-                    {
-                        Point position = new Point(i * tileWidth - offsets.X, j * tileHeight - offsets.Y);
-                        Sprite spr = new Sprite(position, new Point(tileWidth, tileHeight), _map.BlockAt(tilecoords).Texture);
-                        view.Add(spr);
-                    }
-                }
+                Sprite spr = b.Sprite;
+                spr.Position = new Point(spr.Position.X - Camera.X, spr.Position.Y - Camera.Y);
+                view.Add(spr);
             }
             return view;
         }
 
-        public PlayerCharacter Player { get; private set; }
-
-        public IList<GameCharacter> Characters
+        public void GiveItem(ItemID id, int count)
         {
-            get
+            Item item = new Item(id);
+            for (int i = 0; i < count; i++)
             {
-                return _characters.AsReadOnly();
-            }
-        }
-
-        public IList<Item> Items
-        {
-            get
-            {
-                return _items.AsReadOnly();
+                Player.Inventory.Add(item);
             }
         }
 
@@ -209,41 +249,11 @@ namespace Yuuki2TheGame.Core
             return spr;
         }
 
-        public IList<Sprite> GetCharacters(int screenWidth, int screenHeight)
+        public IList<Sprite> GetEntities()
         {
             // TODO: OPTIMIZE! We should be using quadtrees or something...
             Rectangle view = Camera.Bounds;
-            IList<Sprite> chars = new List<Sprite>();
-            foreach (GameCharacter c in _characters)
-            {
-                if (c.Bounds.Intersects(view))
-                {
-                    Point position = new Point(c.Bounds.X - Camera.Position.X, c.Bounds.Y - Camera.Position.Y);
-                    Point size = new Point(c.Width, c.Height);
-                    Sprite spr = new Sprite(position, size, c.Texture);
-                    chars.Add(spr);
-                }
-            }
-            return chars;
-        }
-
-        /// <summary>
-        /// Determines whether the provided bounding box is touching the ground.
-        /// </summary>
-        /// <param name="boundingBox">The bounding box to check.</param>
-        /// <returns>A Boolean value that indicates whether the specified bounding box is touching the ground.</returns>
-        public static bool ObjectIsOnGround(Rectangle boundingBox)
-         {
-            for (int x = boundingBox.Left; x <= boundingBox.Right; x++)
-            {
-                Block block = _map.BlockAtCoordinate(x, boundingBox.Bottom);
-                if (block != null)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return World.GetEntities(view);
         }
     }
 }

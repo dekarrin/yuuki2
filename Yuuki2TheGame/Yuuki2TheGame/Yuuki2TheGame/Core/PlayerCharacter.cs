@@ -21,6 +21,20 @@ namespace Yuuki2TheGame.Core
 
         public PlayerCharacter(string name, Point pixelLocation, int health, int baseAttack, int baseArmor) : base(name, pixelLocation, new Point(WIDTH, HEIGHT), health, baseAttack, baseArmor)
         {
+            this.Inventory = new Inventory(Game1.INVENTORY_ITEMS, Game1.QUICK_SLOTS);
+        }
+
+        protected override void OnPhobCollision(IPhysical phob2)
+        {
+            if (phob2 is ItemEntity)
+            {
+                ItemEntity itemEnt = (ItemEntity)phob2;
+                if (Inventory.Add(itemEnt.Item))
+                {
+                    itemEnt.PickUp();
+                }
+            }
+            base.OnPhobCollision(phob2);
         }
 
         protected override void ContactMaskChanged(int oldValue)

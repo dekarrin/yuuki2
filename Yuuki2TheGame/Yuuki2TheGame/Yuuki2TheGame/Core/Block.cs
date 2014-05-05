@@ -8,84 +8,134 @@ using Yuuki2TheGame;
 
 namespace Yuuki2TheGame.Core
 {
-    enum DirtType
+    delegate void DestroyHandler(Block source);
+
+    struct BlockData
     {
-        LevelRequired = 1,
-        Health = 100,
-        Type = 1
-        
+        public int LevelRequired;
+        public int Health;
+        public string Texture;
+        public string Name;
+        public BlockData(string name, int levelRequired, int health, string texture)
+        {
+            this.Name = name;
+            this.LevelRequired = levelRequired;
+            this.Health = health;
+            this.Texture = texture;
+        }
     }
-    enum GroundType
+
+    enum BlockID
     {
-       LevelRequired = 1,
-       Health = 200,
-       Type = 2
+        Dirt,
+        Stone,
+        Wood,
+        Grass
     }
-    enum WoodType
-    {
-        LevelRequired = 2,
-        Health = 250,
-        Type = 3
-    }
+
     class Block : ScreenEntity
     {
+        private static IDictionary<BlockID, BlockData> types = new Dictionary<BlockID, BlockData>();
 
-        private int levelrequired;
-        private int blockhealth;
-        private int id;
-        private int type;
-
-        public int Type
+        static Block()
         {
-            get { return type; }
-            set { type = value; }
-        }   
-        public int LevelRequired
-        {
-            get { return levelrequired; }
-            set { levelrequired = value; }
+            types[BlockID.Dirt] = new BlockData("Dirt", 1, 100, @"Tiles\dirt");
+            types[BlockID.Stone] = new BlockData("Stone", 1, 200, @"Tiles\stone");
+            types[BlockID.Wood] = new BlockData("Wood", 2, 250, @"Tiles\wood");
+            types[BlockID.Grass] = new BlockData("Grass", 3, 100, @"Tiles\grass");
         }
 
-        public void Update(GameTime gt)
+        public Item Item
         {
-        }
-
-        public int MiningHealth
-        {
-            get { return blockhealth; }
-            set { blockhealth = value; } 
-        }
-
-        public int ID
-        {
-            get { return id; }
-            set { id = value; }
-        }
-
-        public Block(int id, int mapx, int mapy) : base(new Point(Game1.METER_LENGTH, Game1.METER_LENGTH))
-        {
-            this.ID = id;
-
-
-            //TODO Have correct implementation 
-            if (ID <= 16){
-                this.LevelRequired = (int)DirtType.LevelRequired;
-                this.MiningHealth = (int)DirtType.Health;
-                this.Type = (int)DirtType.Type;
+            get
+            {
+                if (ID == BlockID.Grass)
+                {
+                    return new Item(BlockID.Dirt);
+                }
+                else
+                {
+                    return new Item(ID);
+                }
             }
-            
-            if (ID > 16 && ID < 32){
-                this.LevelRequired = (int)WoodType.LevelRequired;
-                this.MiningHealth = (int)WoodType.Health;
-                this.Type = (int)DirtType.Type;
-            }
+        }
 
-            if(ID >= 32){
-                this.LevelRequired = (int)GroundType.LevelRequired;
-                this.MiningHealth = (int)GroundType.Health;
-                this.Type = (int)DirtType.Type;
-			}
-            BlockPosition = new Vector2(mapx, mapy);
+        public int LevelRequired { get; private set; }
+
+        public int Health { get; set; }
+
+        public int MaxHealth { get; private set; }
+
+        public BlockID ID { get; private set; }
+
+        public event DestroyHandler OnDestroy;
+
+        public Block(BlockID id, int mapx, int mapy)
+            : base(new Point(Game1.METER_LENGTH, Game1.METER_LENGTH))
+        {
+            Initialize(id, mapx, mapy);
+        }
+
+        public Block(int id, int mapx, int mapy)
+            : base(new Point(Game1.METER_LENGTH, Game1.METER_LENGTH))
+        {
+            BlockID bid;
+            if (Enum.IsDefined(typeof(BlockID), id))
+            {
+                bid = (BlockID)id;
+            }
+            else
+            {
+                bid = Block.types.First(x => true).Key;
+            }
+            Initialize(bid, mapx, mapy);
 		}
+
+        /// <summary>
+        /// Does damage to this block.
+        /// </summary>
+        /// <param name="basePower">Amount of damage if this block is not weak to the attack.</param>
+        /// <param name="highPower">Amount of damage if this block is weak to the attack.</param>
+        /// <param name="weakBlocks">A collection if IDs that the attacker specializes in destroying.
+        /// If this Block's ID is included, the attack does additional damage.</param>
+        /// <returns>Whether this block was completely destroyed.</returns>
+        public void Damage(int basePower, int highPower, ICollection<BlockID> weakBlocks)
+        {
+            if (weakBlocks.Contains(this.ID))
+            {
+                Health -= highPower;
+            }
+            else
+            {
+                Health -= basePower;
+            }
+            if (Health <= 0 && OnDestroy != null)
+            {
+                OnDestroy(this);
+            }
+        }
+
+        public void Restore()
+        {
+            Health = MaxHealth;
+        }
+
+        public override void Update(GameTime gt)
+        {
+        }
+
+        private void Initialize(BlockID id, int mapx, int mapy)
+        {
+            if (!Block.types.ContainsKey(id))
+            {
+                id = Block.types.First(x => true).Key;
+            }
+            BlockData data = Block.types[id];
+            this.ID = id;
+            this.LevelRequired = data.LevelRequired;
+            this.Health = this.MaxHealth = data.Health;
+            this.Texture = data.Texture;
+            this.BlockPosition = new Vector2(mapx, mapy);
+        }
     }
 }

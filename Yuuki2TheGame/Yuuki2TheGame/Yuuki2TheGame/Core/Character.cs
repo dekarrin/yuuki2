@@ -43,7 +43,7 @@ namespace Yuuki2TheGame.Core
 
         public int BaseArmor { get; set; }
 
-        public object Inventory { get; set; }
+        public Inventory Inventory { get; protected set; }
 
         public delegate void DeathHandler(object source, EventArgs e);
 
@@ -79,7 +79,7 @@ namespace Yuuki2TheGame.Core
         /// Called by game engine; tells instance to update self.
         /// </summary>
         /// <param name="gameTime">Amount of time passed since last update.</param>
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
         }
 

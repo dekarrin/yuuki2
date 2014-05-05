@@ -328,17 +328,25 @@ namespace Yuuki2TheGame.Core
             SetPosition(secs);
         }
 
-        public PhysicsPrivateSetter<int> AddToEngine(Vector2 globalAcceleration, float mediumDensity, float friction)
+        public PhysicsPrivateMethods AddToEngine(Vector2 globalAcceleration, float mediumDensity, float friction)
         {
             FrictionCoefficient = friction;
             MediumDensity = mediumDensity;
             GlobalAcceleration = globalAcceleration;
-            return delegate(int value)
+            PhysicsPrivateMethods accessors = new PhysicsPrivateMethods();
+            accessors.setContactMask = delegate(int value)
             {
                 int val = ContactMask;
                 ContactMask = value;
                 ContactMaskChanged(val);
             };
+            accessors.notifyCollide = OnPhobCollision;
+            return accessors;
+        }
+
+        protected virtual void OnPhobCollision(IPhysical phob2)
+        {
+
         }
 
         public void RemoveFromEngine()

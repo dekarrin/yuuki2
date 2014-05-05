@@ -261,7 +261,7 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return new Graphics.Sprite(Position, Size, Texture);
+                return new Graphics.Sprite(this);
             }
         }
 
@@ -442,6 +442,11 @@ namespace Yuuki2TheGame.Core
         public virtual void Teleport(Point p)
         {
             Position = p;
+        }
+
+        public virtual void Update(GameTime gt)
+        {
+
         }
 
         #endregion
