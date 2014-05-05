@@ -15,6 +15,17 @@ namespace Yuuki2TheGame.Physics
     /// <param name="value">What to set the value to.</param>
     delegate void PhysicsPrivateSetter<T>(T value);
 
+    delegate void PhobCollisionHandler(IPhysical hit);
+
+    /// <summary>
+    /// Contains the setters that give the engine access to private physical properties.
+    /// </summary>
+    struct PhysicsPrivateMethods
+    {
+        public PhysicsPrivateSetter<int> setContactMask;
+        public PhobCollisionHandler notifyCollide;
+    }
+
     enum ContactType
     {
         DOWN = 0x01,
@@ -93,8 +104,8 @@ namespace Yuuki2TheGame.Physics
         /// Called when the IPhysical is added to the physics engine.
         /// </summary>
         /// <param name="globalAcceleration">The amount of global acceleration that this IPhysical should undergo.</param>
-        /// <returns>Returns a setter for the ContactMask property.</returns>
-        PhysicsPrivateSetter<int> AddToEngine(Vector2 globalAcceleration, float mediumDensity, float friction);
+        /// <returns>Returns mutator methods struct.</returns>
+        PhysicsPrivateMethods AddToEngine(Vector2 globalAcceleration, float mediumDensity, float friction);
 
         void RemoveFromEngine();
 

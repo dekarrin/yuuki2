@@ -79,7 +79,7 @@ namespace Yuuki2TheGame.Core
         /// Called by game engine; tells instance to update self.
         /// </summary>
         /// <param name="gameTime">Amount of time passed since last update.</param>
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
         }
 

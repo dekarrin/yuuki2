@@ -258,6 +258,7 @@ namespace Yuuki2TheGame.Core
         public void AddItem(Item item, Point position)
         {
             ItemEntity ent = new ItemEntity(item, position);
+            AddEntity(ent);
         }
 
         private void SetBlock(BlockID id, int x, int y)

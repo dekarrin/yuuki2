@@ -258,7 +258,7 @@ namespace Yuuki2TheGame.Core
         public Item(BlockID blockID)
         {
             ItemID id;
-            if (blockID != null && Item.blockMap.ContainsKey(blockID))
+            if (Item.blockMap.ContainsKey(blockID))
             {
                 id = Item.blockMap[blockID];
             }

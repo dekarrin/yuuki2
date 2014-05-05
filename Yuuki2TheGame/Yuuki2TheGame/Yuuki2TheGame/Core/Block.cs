@@ -113,7 +113,7 @@ namespace Yuuki2TheGame.Core
             Health = MaxHealth;
         }
 
-        public void Update(GameTime gt)
+        public override void Update(GameTime gt)
         {
         }
 
