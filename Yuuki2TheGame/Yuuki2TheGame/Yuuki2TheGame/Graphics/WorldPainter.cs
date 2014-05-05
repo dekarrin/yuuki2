@@ -52,7 +52,7 @@ namespace Yuuki2TheGame.Graphics
         protected override void Paint(GameTime gameTime, SpriteBatch batch)
         {
             IList<Sprite> tiles = engine.GetView();
-            IList<Sprite> chars = engine.GetCharacters();
+            IList<Sprite> chars = engine.GetEntities();
             ConvertIDs(tiles);
             ConvertIDs(chars);
             foreach (Sprite sp in tiles)

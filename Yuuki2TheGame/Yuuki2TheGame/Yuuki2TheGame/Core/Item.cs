@@ -41,7 +41,7 @@ namespace Yuuki2TheGame.Core
     /// <param name="map">The map with the current data.</param>
     /// <param name="user">The character that used the item.</param>
     /// <returns>How many of that inventory item was used up during the process of using it.</returns>
-    delegate int ItemAction(Item caller, Point position, Point coordinates, Map map, GameCharacter user);
+    delegate int ItemAction(Item caller, Point position, Point coordinates, World map, GameCharacter user);
 
     struct ItemTypeData
     {
@@ -123,12 +123,15 @@ namespace Yuuki2TheGame.Core
 
         private static IDictionary<ItemType, ItemTypeData> typeData = new Dictionary<ItemType, ItemTypeData>();
 
+        private static IDictionary<BlockID, ItemID> blockMap = new Dictionary<BlockID, ItemID>();
+
         #region data initialization
 
         static Item()
         {
             Item.InitializeTypeData();
             Item.InitializeItemData();
+            Item.InitializeBlockMap();
         }
 
         private static void InitializeItemData()
@@ -145,7 +148,7 @@ namespace Yuuki2TheGame.Core
 
         private static void InitializeTypeData()
         {
-            Item.typeData[ItemType.Block] = new ItemTypeData(delegate(Item caller, Point pos, Point coords, Map map, GameCharacter user)
+            Item.typeData[ItemType.Block] = new ItemTypeData(delegate(Item caller, Point pos, Point coords, World map, GameCharacter user)
             {
                 if (map.AddBlock(caller.BlockID, coords))
                 {
@@ -156,7 +159,7 @@ namespace Yuuki2TheGame.Core
                     return 0;
                 }
             });
-            ItemAction useTool = delegate(Item caller, Point pos, Point coords, Map map, GameCharacter user)
+            ItemAction useTool = delegate(Item caller, Point pos, Point coords, World map, GameCharacter user)
             {
                 Block b = map.BlockAt(coords);
                 if (b != null)
@@ -169,7 +172,7 @@ namespace Yuuki2TheGame.Core
             Item.typeData[ItemType.Axe] = new ItemTypeData(BlockID.Wood, useTool);
             Item.typeData[ItemType.Shovel] = new ItemTypeData(BlockID.Dirt, useTool);
             Item.typeData[ItemType.Pickaxe] = new ItemTypeData(BlockID.Stone, useTool);
-            Item.typeData[ItemType.Consumable] = new ItemTypeData(delegate(Item caller, Point pos, Point coords, Map map, GameCharacter user)
+            Item.typeData[ItemType.Consumable] = new ItemTypeData(delegate(Item caller, Point pos, Point coords, World map, GameCharacter user)
             {
                 int currentHealth = user.Health;
                 if (currentHealth + 50 > 100)
@@ -178,16 +181,24 @@ namespace Yuuki2TheGame.Core
                 }
                 return 1;
             });
-            Item.typeData[ItemType.Bomb] = new ItemTypeData(delegate(Item caller, Point pos, Point coords, Map map, GameCharacter user)
+            Item.typeData[ItemType.Bomb] = new ItemTypeData(delegate(Item caller, Point pos, Point coords, World map, GameCharacter user)
             {
                 //explodes and destroys a radius of blocks around it.
                 return 1;
             });
         }
 
+        private static void InitializeBlockMap()
+        {
+            Item.blockMap[BlockID.Dirt] = ItemID.BlockDirt;
+            Item.blockMap[BlockID.Grass] = ItemID.BlockGrass;
+            Item.blockMap[BlockID.Stone] = ItemID.BlockStone;
+            Item.blockMap[BlockID.Wood] = ItemID.BlockWood;
+        }
+
         #endregion
 
-        private static ItemAction DropItemAction = delegate(Item caller, Point pos, Point coords, Map map, GameCharacter c)
+        private static ItemAction DropItemAction = delegate(Item caller, Point pos, Point coords, World map, GameCharacter c)
         {
             map.AddItem(caller, pos);
             return 1;
@@ -244,6 +255,20 @@ namespace Yuuki2TheGame.Core
             Initialize(itemid, ref UseItem);
         }
 
+        public Item(BlockID blockID)
+        {
+            ItemID id;
+            if (blockID != null && Item.blockMap.ContainsKey(blockID))
+            {
+                id = Item.blockMap[blockID];
+            }
+            else
+            {
+                id = Item.types.First(x => true).Key;
+            }
+            Initialize(id, ref UseItem);
+        }
+
         /// <summary>
         /// Invokes the action associated with this Item.
         /// </summary>
@@ -252,7 +277,7 @@ namespace Yuuki2TheGame.Core
         /// <param name="map"></param>
         /// <param name="user"></param>
         /// <returns>Returns how many of the item was used up.</returns>
-        public int Use(Point position, Point coordinates, Map map, GameCharacter user)
+        public int Use(Point position, Point coordinates, World map, GameCharacter user)
         {
             return UseItem(this, position, coordinates, map, user);
         }

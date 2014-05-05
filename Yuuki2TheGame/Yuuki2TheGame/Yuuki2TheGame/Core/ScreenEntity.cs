@@ -444,6 +444,11 @@ namespace Yuuki2TheGame.Core
             Position = p;
         }
 
+        public virtual void Update(GameTime gt)
+        {
+
+        }
+
         #endregion
     }
 }

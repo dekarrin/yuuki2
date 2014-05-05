@@ -45,6 +45,14 @@ namespace Yuuki2TheGame.Core
             types[BlockID.Grass] = new BlockData("Grass", 3, 100, @"Tiles\grass");
         }
 
+        public Item Item
+        {
+            get
+            {
+                return new Item(this.ID);
+            }
+        }
+
         public int LevelRequired { get; private set; }
 
         public int Health { get; set; }

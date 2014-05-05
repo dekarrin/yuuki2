@@ -43,7 +43,7 @@ namespace Yuuki2TheGame.Physics
 
         private IList<long> queryTimes = new List<long>();
 
-        private Map map;
+        private World map;
         
         private float mediumDensity;
 
@@ -59,7 +59,7 @@ namespace Yuuki2TheGame.Physics
             this.globalAcceleration = new Vector2(wind, gravity);
         }
 
-        public void AddMap(Map map)
+        public void AddMap(World map)
         {
             this.map = map;
         }

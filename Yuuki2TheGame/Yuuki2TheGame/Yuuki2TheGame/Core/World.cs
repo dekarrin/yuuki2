@@ -3,30 +3,84 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Yuuki2TheGame.Physics;
 
 namespace Yuuki2TheGame.Core
 {
     /// <summary>
     /// Please note that block array coordinates are x, y, 0 is upper left.
     /// </summary>
-    class Map
+    class World
     {
+        public struct PhysicalConstants
+        {
+            public float Wind;
+            public float Gravity;
+            public float MediumDensity;
+            public float SurfaceFriction;
+            public float Timescale;
+        }
+
         public int Height { get; private set; }
 
         public int Width { get; private set; }
 
-        public IList<IList<Block>> World { get; private set; }
-
-        public Map(int width, int height)
+        public bool RecordPhysStep
         {
-            World = GenerateWorld(width, height);
+            get
+            {
+                return _recording;
+            }
+            set
+            {
+                if (value)
+                {
+                    physics.StartRecording();
+                }
+                else
+                {
+                    physics.StopRecording();
+                }
+                _recording = value;
+            }
         }
 
-        public IList<IList<Block>> GenerateWorld(int width, int height)
+        public bool ManualPhysStepMode { get; set; }
+
+        private IList<ActiveEntity> _entities = new List<ActiveEntity>();
+        public IList<ActiveEntity> Entities
+        {
+            get
+            {
+                return ((List<ActiveEntity>)_entities).AsReadOnly();
+            }
+        }
+
+        public IList<IList<Block>> Map { get; private set; }
+
+        private PhysicsController physics;
+
+        private bool _recording = false;
+
+        public World(int width, int height, PhysicalConstants phys)
+        {
+            ManualPhysStepMode = false;
+            Map = GenerateMap(width, height);
+            physics = new PhysicsController(phys.Wind, phys.Gravity, phys.MediumDensity, phys.SurfaceFriction, phys.Timescale);
+            physics.AddMap(this);
+        }
+
+        public void AddEntity(ActiveEntity ent)
+        {
+            _entities.Add(ent);
+            physics.AddPhob(ent);
+        }
+
+        public IList<IList<Block>> GenerateMap(int width, int height)
         {
             Width = width;
             Height = height;
-            IList<IList<Block>> world = new List<IList<Block>>();
+            IList<IList<Block>> map = new List<IList<Block>>();
             for(int x = 0; x < Width; x++){ //Temporary algorithm: Iterates through all blocks on the bottom half of the map.
                 IList<Block> slice = new List<Block>();
                 for (int y = 0; y < Height; y++)
@@ -41,10 +95,10 @@ namespace Yuuki2TheGame.Core
                         slice.Add(null);
                     }
                 }
-                world.Add(slice);
+                map.Add(slice);
             }
-            CheckAllDirtBlocks(world);
-            return world;
+            CheckAllDirtBlocks(map);
+            return map;
         }
 
         public IList<Block> QueryPixels(Rectangle rect)
@@ -88,9 +142,9 @@ namespace Yuuki2TheGame.Core
                 {
                     int x = rect.X + i;
                     int y = rect.Y + j;
-                    if (x >= 0 && y >= 0 && x < World.Count && y < World[x].Count)
+                    if (x >= 0 && y >= 0 && x < Map.Count && y < Map[x].Count)
                     {
-                        Block b = World[x][y];
+                        Block b = Map[x][y];
                         if (b != null)
                         {
                             results.Add(b);
@@ -103,8 +157,12 @@ namespace Yuuki2TheGame.Core
 
         public void Update(GameTime gameTime)
         {
-            // apply physics to blocks
-            foreach (List<Block> slice in World)
+            if (RecordPhysStep)
+            {
+                _recording = physics.RecordingQueryTime;
+            }
+            // update blocks
+            foreach (List<Block> slice in Map)
             {
                 foreach (Block b in slice)
                 {
@@ -114,6 +172,36 @@ namespace Yuuki2TheGame.Core
                     }
                 }
             }
+            // update phobs
+            foreach (ActiveEntity ent in _entities)
+            {
+                ent.Update(gameTime);
+            }
+            if (!ManualPhysStepMode)
+            {
+                physics.Update(gameTime);
+            }
+        }
+
+        public void StepPhysics()
+        {
+            physics.Step(0.016f);
+        }
+
+        public IList<Yuuki2TheGame.Graphics.Sprite> GetEntities(Rectangle view)
+        {
+            IList<Yuuki2TheGame.Graphics.Sprite> ents = new List<Yuuki2TheGame.Graphics.Sprite>();
+            foreach (ActiveEntity e in _entities)
+            {
+                if (e.Bounds.Intersects(view))
+                {
+                    Point position = new Point(e.Bounds.X - view.X, e.Bounds.Y - view.Y);
+                    Point size = new Point(e.Width, e.Height);
+                    Yuuki2TheGame.Graphics.Sprite spr = new Yuuki2TheGame.Graphics.Sprite(position, size, e.Texture);
+                    ents.Add(spr);
+                }
+            }
+            return ents;
         }
 
         /// <summary>
@@ -123,18 +211,18 @@ namespace Yuuki2TheGame.Core
         /// <returns></returns>
         public Block BlockAt(Point p)
         {
-            return World[p.X][p.Y];
+            return Map[p.X][p.Y];
         }
 
         public void RemoveBlock(Point p)
         {
-            Block b = World[p.X][p.Y];
-            World[p.X][p.Y] = null;
+            Block b = Map[p.X][p.Y];
+            Map[p.X][p.Y] = null;
             for (int i = p.Y + 1; i < Height; i++)
             {
-                if (CheckDirtGrassSwitch(World, p.X, i))
+                if (CheckDirtGrassSwitch(Map, p.X, i))
                 {
-                    World[p.X][i] = CreateBlock(BlockID.Grass, p.X, i);
+                    Map[p.X][i] = CreateBlock(BlockID.Grass, p.X, i);
                     break;
                 }
             }
@@ -142,15 +230,15 @@ namespace Yuuki2TheGame.Core
 
         public bool AddBlock(BlockID id, Point p)
         {
-            if (World[p.X][p.Y] == null)
+            if (Map[p.X][p.Y] == null)
             {
                 Block b = CreateBlock(id, p.X, p.Y);
-                World[p.X][p.Y] = b;
-                if (CheckDirtGrassSwitch(World, p.X, p.Y))
+                Map[p.X][p.Y] = b;
+                if (CheckDirtGrassSwitch(Map, p.X, p.Y))
                 {
                     SetBlock(BlockID.Grass, p.X, p.Y);
                 }
-                if (World[p.X][p.Y + 1] != null && World[p.X][p.Y + 1].ID == BlockID.Grass)
+                if (Map[p.X][p.Y + 1] != null && Map[p.X][p.Y + 1].ID == BlockID.Grass)
                 {
                     SetBlock(BlockID.Dirt, p.X, p.Y + 1);
                 }
@@ -169,38 +257,38 @@ namespace Yuuki2TheGame.Core
         /// <param name="position">The absolute pixel coordinates where the item should be dropped.</param>
         public void AddItem(Item item, Point position)
         {
-            // TODO: Implement item dropping
+            ItemEntity ent = new ItemEntity(item, position);
         }
 
         private void SetBlock(BlockID id, int x, int y)
         {
-            World[x][y] = CreateBlock(id, x, y);
+            Map[x][y] = CreateBlock(id, x, y);
         }
 
         //Sets dirts to grasses if they are the top
-        private void CheckAllDirtBlocks(IList<IList<Block>> world)
+        private void CheckAllDirtBlocks(IList<IList<Block>> map)
         {
             for (int x = 0; x < Width; x++)
             {
                 for (int y = 0; y < Height; y++)
                 {
-                    if (CheckDirtGrassSwitch(world, x, y))
+                    if (CheckDirtGrassSwitch(map, x, y))
                     {
-                        world[x][y] = CreateBlock(BlockID.Grass, x, y);
+                        map[x][y] = CreateBlock(BlockID.Grass, x, y);
                         break;
                     }
                 }
             }
         }
 
-        private bool CheckDirtGrassSwitch(IList<IList<Block>> world, int x, int y)
+        private bool CheckDirtGrassSwitch(IList<IList<Block>> map, int x, int y)
         {
             bool switchBlock = false;
-            if (world[x][y] != null && world[x][y].ID == BlockID.Dirt)
+            if (map[x][y] != null && map[x][y].ID == BlockID.Dirt)
             {
                 if (y > 0)
                 {
-                    switchBlock = (world[x][y - 1] == null);
+                    switchBlock = (map[x][y - 1] == null);
                 }
             }
             return switchBlock;
@@ -208,10 +296,12 @@ namespace Yuuki2TheGame.Core
 
         private void HandleBlockDestruction(Block b)
         {
+            Item drop = b.Item;
             Point p = new Point();
             p.X = (int)b.BlockPosition.X;
             p.Y = (int)b.BlockPosition.Y;
             RemoveBlock(p);
+            AddItem(drop, b.Position);
         }
 
         private Block CreateBlock(int id, int x, int y)
