@@ -80,9 +80,9 @@ namespace Yuuki2TheGame.Graphics
             Rectangle spriteSheet = TextureFromID(@"Tiles\damage").Bounds;
             int sections = spriteSheet.Width / TILE_LENGTH;
             int frame = (int) Math.Floor(sections * damage);
-            if (frame == sections)
+            if (frame >= sections)
             {
-                frame--;
+                frame = sections - 1;
             }
             Rectangle source = new Rectangle(frame * TILE_LENGTH, 0, TILE_LENGTH, TILE_LENGTH);
             return source;

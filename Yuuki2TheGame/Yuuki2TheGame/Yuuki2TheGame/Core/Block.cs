@@ -8,6 +8,7 @@ using Yuuki2TheGame;
 
 namespace Yuuki2TheGame.Core
 {
+    delegate void DestroyHandler(Block source);
 
     struct BlockData
     {
@@ -52,6 +53,8 @@ namespace Yuuki2TheGame.Core
 
         public BlockID ID { get; private set; }
 
+        public event DestroyHandler OnDestroy;
+
         public Block(BlockID id, int mapx, int mapy)
             : base(new Point(Game1.METER_LENGTH, Game1.METER_LENGTH))
         {
@@ -91,6 +94,15 @@ namespace Yuuki2TheGame.Core
             {
                 Health -= basePower;
             }
+            if (Health <= 0 && OnDestroy != null)
+            {
+                OnDestroy(this);
+            }
+        }
+
+        public void Restore()
+        {
+            Health = MaxHealth;
         }
 
         public void Update(GameTime gt)

@@ -157,24 +157,16 @@ namespace Yuuki2TheGame.Core
 
         private void ClickWorld(int x, int y)
         {
-            InventorySlot slot = Player.Inventory.ActiveSlot;
-            if (slot.Item != null)
+            int globalx = (x + this.Camera.Position.X) / Game1.METER_LENGTH;
+            int globaly = (y + this.Camera.Position.Y) / Game1.METER_LENGTH;
+            Point coords = new Point(globalx, globaly);
+            Point pos = new Point(x, y);
+            InventorySlot activeSlot = Player.Inventory.ActiveSlot;
+            Item toUse = ((activeSlot.Item != null) ? activeSlot.Item : new Item(ItemID.Hands));
+            int used = toUse.Use(pos, coords, _map, Player);
+            if (toUse == activeSlot.Item)
             {
-                int globalx = (x + this.Camera.Position.X) / Game1.METER_LENGTH;
-                int globaly = (y + this.Camera.Position.Y) / Game1.METER_LENGTH;
-                Point coords = new Point(globalx, globaly);
-
-                if (globalx <= Game1.WORLD_WIDTH && globalx >= 0 && globaly <= Game1.WORLD_HEIGHT && globaly >= 0)
-                {
-                    Block block = _map.BlockAt(coords);
-                    if (block != null)
-                    {
-                        _map.DestroyBlock(coords);
-                    }
-                }
-                Point pos = new Point(x, y);
-                int used = slot.Item.Use(pos, coords, _map, Player);
-                slot.Count -= used;
+                activeSlot.Count -= used;
             }
         }
 

@@ -9,6 +9,7 @@ namespace Yuuki2TheGame.Core
 
     enum ItemType
     {
+        Hands,
         Block,
         Axe,
         Pickaxe,
@@ -19,6 +20,7 @@ namespace Yuuki2TheGame.Core
 
     enum ItemID
     {
+        Hands,
         BlockStone,
         BlockWood,
         BlockDirt,
@@ -131,6 +133,7 @@ namespace Yuuki2TheGame.Core
 
         private static void InitializeItemData()
         {
+            Item.types[ItemID.Hands] = new ItemData(ItemType.Hands, "Hands", 1, null, 1, 1);
             Item.types[ItemID.BlockDirt] = new ItemData(BlockID.Dirt, "Dirt", MAX_BLOCK_STACK, @"Items\dirt");
             Item.types[ItemID.BlockGrass] = new ItemData(BlockID.Grass, "Grass", MAX_BLOCK_STACK, @"Items\grass");
             Item.types[ItemID.BlockStone] = new ItemData(BlockID.Stone, "Stone", MAX_BLOCK_STACK, @"Items\stone");
@@ -157,12 +160,9 @@ namespace Yuuki2TheGame.Core
             {
                 Block b = map.BlockAt(coords);
                 b.Damage(TOOL_BASE_POWER, TOOL_MAX_POWER, caller.EffectiveAgainst);
-                if (b.Health <= 0)
-                {
-                    map.DestroyBlock(coords);
-                }
                 return 0;
             };
+            Item.typeData[ItemType.Hands] = new ItemTypeData(new BlockID[0], useTool);
             Item.typeData[ItemType.Axe] = new ItemTypeData(BlockID.Wood, useTool);
             Item.typeData[ItemType.Shovel] = new ItemTypeData(BlockID.Dirt, useTool);
             Item.typeData[ItemType.Pickaxe] = new ItemTypeData(BlockID.Stone, useTool);
@@ -211,6 +211,14 @@ namespace Yuuki2TheGame.Core
         public BlockID BlockID { get; private set; }
 
         public ItemType Type { get; private set; }
+
+        public bool IsTool
+        {
+            get
+            {
+                return (Type == ItemType.Axe || Type == ItemType.Pickaxe || Type == ItemType.Shovel);
+            }
+        }
 
         public ICollection<BlockID> EffectiveAgainst { get; private set; }
 

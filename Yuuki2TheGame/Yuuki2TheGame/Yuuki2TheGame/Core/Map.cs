@@ -34,7 +34,7 @@ namespace Yuuki2TheGame.Core
                     if (y > Height / 2)
                     {
                         int type = Math.Min(x / (Width / 3), 2);
-                        slice.Add(new Block(type, x, y));
+                        slice.Add(CreateBlock(type, x, y));
                     }
                     else
                     {
@@ -126,7 +126,7 @@ namespace Yuuki2TheGame.Core
             return World[p.X][p.Y];
         }
 
-        public void DestroyBlock(Point p)
+        public void RemoveBlock(Point p)
         {
             Block b = World[p.X][p.Y];
             World[p.X][p.Y] = null;
@@ -134,7 +134,7 @@ namespace Yuuki2TheGame.Core
             {
                 if (CheckDirtGrassSwitch(World, p.X, i))
                 {
-                    World[p.X][i] = new Block(BlockID.Grass, p.X, i);
+                    World[p.X][i] = CreateBlock(BlockID.Grass, p.X, i);
                     break;
                 }
             }
@@ -144,7 +144,7 @@ namespace Yuuki2TheGame.Core
         {
             if (World[p.X][p.Y] == null)
             {
-                Block b = new Block(id, p.X, p.Y);
+                Block b = CreateBlock(id, p.X, p.Y);
                 World[p.X][p.Y] = b;
                 if (CheckDirtGrassSwitch(World, p.X, p.Y))
                 {
@@ -174,7 +174,7 @@ namespace Yuuki2TheGame.Core
 
         private void SetBlock(BlockID id, int x, int y)
         {
-            World[x][y] = new Block(id, x, y);
+            World[x][y] = CreateBlock(id, x, y);
         }
 
         //Sets dirts to grasses if they are the top
@@ -186,7 +186,7 @@ namespace Yuuki2TheGame.Core
                 {
                     if (CheckDirtGrassSwitch(world, x, y))
                     {
-                        world[x][y] = new Block(BlockID.Grass, x, y);
+                        world[x][y] = CreateBlock(BlockID.Grass, x, y);
                         break;
                     }
                 }
@@ -204,6 +204,28 @@ namespace Yuuki2TheGame.Core
                 }
             }
             return switchBlock;
+        }
+
+        private void HandleBlockDestruction(Block b)
+        {
+            Point p = new Point();
+            p.X = (int)b.BlockPosition.X;
+            p.Y = (int)b.BlockPosition.Y;
+            RemoveBlock(p);
+        }
+
+        private Block CreateBlock(int id, int x, int y)
+        {
+            Block b = new Block(id, x, y);
+            b.OnDestroy += this.HandleBlockDestruction;
+            return b;
+        }
+
+        private Block CreateBlock(BlockID id, int x, int y)
+        {
+            Block b = new Block(id, x, y);
+            b.OnDestroy += this.HandleBlockDestruction;
+            return b;
         }
     }
 }
