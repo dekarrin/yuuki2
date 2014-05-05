@@ -47,34 +47,39 @@ namespace Yuuki2TheGame
             LoadGame,
             Options,
             Exit
-           
+
         }
-        
+
         /// <summary>
         /// Contains the number of blocks that are on the screen.
         /// </summary>
         private Point blocksOnScreen;
         public GameState gamestate = GameState.Menu;
         List<MainMenu> menuButtons = new List<MainMenu>();
-        Texture2D mainmenuTexture;
+        //Texture2D mainmenuTexture;
         Texture2D newGameButton;
 
+        int screenwidth = 800, screenHeight = 600;
+        Button newgame;
+        Button loadgame;
+        Button options;
+        Button exit;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
 
 
-            menuButtons.Add(new MainMenu(new Rectangle(350, 199, 100, 14), "NewGame"));
-            menuButtons.Add(new MainMenu(new Rectangle(350, 229, 100, 14), "LoadGame"));
-            menuButtons.Add(new MainMenu(new Rectangle(350, 259, 100, 14), "Options"));
-            menuButtons.Add(new MainMenu(new Rectangle(350, 290, 100, 14), "Exit"));
+            //menuButtons.Add(new MainMenu(new Rectangle(350, 199, 100, 14), "NewGame"));
+            //menuButtons.Add(new MainMenu(new Rectangle(350, 229, 100, 14), "LoadGame"));
+            //menuButtons.Add(new MainMenu(new Rectangle(350, 259, 100, 14), "Options"));
+            //menuButtons.Add(new MainMenu(new Rectangle(350, 290, 100, 14), "Exit"));
 
 
             graphics.PreferredBackBufferWidth = GAME_WIDTH;
             graphics.PreferredBackBufferHeight = GAME_HEIGHT;
             graphics.ApplyChanges();
             Content.RootDirectory = "Content";
-            blocksOnScreen = new Point (GAME_WIDTH / BLOCK_WIDTH + 1, GAME_HEIGHT / BLOCK_HEIGHT + 1);
+            blocksOnScreen = new Point(GAME_WIDTH / BLOCK_WIDTH + 1, GAME_HEIGHT / BLOCK_HEIGHT + 1);
             gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
 
             IsMouseVisible = true;
@@ -105,10 +110,21 @@ namespace Yuuki2TheGame
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-           mainmenuTexture = Content.Load<Texture2D>(@"Menupics/YUKKI21");
+            //mainmenuTexture = Content.Load<Texture2D>(@"Menupics/YUKKI21");
             newGameButton = Content.Load<Texture2D>(@"Menupics/YUKKI2");
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
-
+            graphics.PreferredBackBufferWidth = screenwidth;
+            graphics.PreferredBackBufferHeight = screenHeight;
+            IsMouseVisible = true;
+            graphics.ApplyChanges();
+            newgame = new Button(Content.Load<Texture2D>(@"Menupics/newgame"), graphics.GraphicsDevice);
+            newgame.setPosition(new Vector2(320, 200));
+            loadgame = new Button(Content.Load<Texture2D>(@"Menupics/loadgame"), graphics.GraphicsDevice);
+            loadgame.setPosition(new Vector2(320, 250));
+            options = new Button(Content.Load<Texture2D>(@"Menupics/options"), graphics.GraphicsDevice);
+            options.setPosition(new Vector2(320, 300));
+            exit = new Button(Content.Load<Texture2D>(@"Menupics/exit"), graphics.GraphicsDevice);
+            exit.setPosition(new Vector2(320, 350));
         }
 
         /// <summary>
@@ -129,147 +145,175 @@ namespace Yuuki2TheGame
         {
             // Allows the game to exit
 
-           // if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-              //  this.Exit();
+            // if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            //  this.Exit();
             KeyboardState keyState = Keyboard.GetState();
             MouseState mouseState = Mouse.GetState();
-           switch (gamestate)
+            switch (gamestate)
             {
-               case GameState.NewGame:
-                   {
-                        Initialize();  //resets the sprites
-                        gamestate = GameState.InGame;
-                        IsMouseVisible = false;
-                        //spriteManager.Enabled = true;
-                        //spriteManager.Visible = true;
-                        menuButtons.RemoveRange(0, menuButtons.Count);
-                   }
-                   break;
-
-               case GameState.InGame:
-                       {
-
-                       }
-                       break;
-
-               case GameState.LoadGame:
-                       if (keyState.IsKeyDown(Keys.Back))
-                       {
-                           gamestate = GameState.Menu;
-                           //spriteManager.Enabled = false;
-                           //spriteManager.Visible = false;
-                       }
-                   break;
-
-               case GameState.Options:
-                   if (keyState.IsKeyDown(Keys.Back))
-                   {
-                       gamestate = GameState.Menu;
-                       //spriteManager.Enabled = false;
-                       //spriteManager.Visible = false;
-                   }
-                   break;
-
-               case GameState.Exit:
-                   {
-
-                   }
-                   break;
-
-             }
-
-           mbd = Mouse.GetState();
-
-           foreach (MainMenu m in menuButtons)
-           {
-               m.mouseOver(mbd);
-               if (m.text == "NewGame" && m.selected == true && mbd.LeftButton == ButtonState.Pressed && Prevmbd.LeftButton == ButtonState.Released)
-               {
-                   gamestate = GameState.NewGame;
-               }
-
-               else if (m.text == "LoadGame" && m.selected == true && mbd.LeftButton == ButtonState.Pressed && Prevmbd.LeftButton == ButtonState.Released)
-               {
-                   gamestate = GameState.LoadGame;
-               }
-
-               else if (m.text == "Options" && m.selected == true && mbd.LeftButton == ButtonState.Pressed && Prevmbd.LeftButton == ButtonState.Released)
-               {
-                   gamestate = GameState.Options;
-               }
-
-               else if (m.text == "Exit" && m.selected == true && mbd.LeftButton == ButtonState.Pressed && Prevmbd.LeftButton == ButtonState.Released)
-               {
-                   gamestate = GameState.Exit;
-               }
-
-           }
-
-           Prevmbd = mbd;
-
-
-
-
-                    if (keyState.IsKeyDown(Keys.A) || keyState.IsKeyDown(Keys.Left))
+                case GameState.Menu:
                     {
-                        gameEngine.Player.MoveLeft();
-                    }
-                    else if (keyState.IsKeyDown(Keys.D) || keyState.IsKeyDown(Keys.Right))
-                    {
-                        gameEngine.Player.MoveRight();
-                    }
-                    // TODO: Individual key resets
-                    if (!pressedJump && (keyState.IsKeyDown(Keys.W) || keyState.IsKeyDown(Keys.Space) || keyState.IsKeyDown(Keys.Up)))
-                    {
-                        gameEngine.Player.Jump();
-                        pressedJump = true;
-                    }
-                    else if (pressedJump && (keyState.IsKeyUp(Keys.W) && keyState.IsKeyUp(Keys.Space) && keyState.IsKeyUp(Keys.Up)))
-                    {
-                        pressedJump = false;
-                    }
+                        if (newgame.isclicked == true)
+                            gamestate = GameState.InGame;
+                        newgame.Update(mouseState);
+                        if (loadgame.isclicked == true)
 
-                    if (mouseState.LeftButton == ButtonState.Pressed && !mouseLeftLocked)
-                    {
-                        mouseLeftLocked = true;
-                        int globalx = (mouseState.X + gameEngine.Camera.Location.X) / BLOCK_WIDTH;
-                        int globaly = (mouseState.Y + gameEngine.Camera.Location.Y) / BLOCK_HEIGHT;
-                        Point p = new Point(globalx, globaly);
+                            gamestate = GameState.LoadGame;
+                        loadgame.Update(mouseState);
+                        //if(gamestate == GameState.LoadGame && keyState.IsKeyDown(Keys.Back))
+                        //{
+                        //    gamestate = GameState.Menu;
+                        //}
 
-                        if (globalx <= WORLD_WIDTH && globalx >= 0 && globaly <= WORLD_HEIGHT && globaly >= 0)
+
+                        if (options.isclicked == true)
+                            gamestate = GameState.Options;
+                        if (keyState.IsKeyDown(Keys.Back))
                         {
-                            Block block = gameEngine._map.BlockAt(p);
-                            //TODO: Make gameEngine responsible with a single method!
-                            if (block != null)
-                            {
-                                gameEngine._map.DestroyBlock(p);
-                                gameEngine.RemovePhysical(block);
-                            }
-                            else
-                            {
-                                gameEngine._map.AddBlock(p);
-                                block = gameEngine._map.BlockAt(p);
-                                gameEngine.AddPhysical(block);
-                            }
+                            gamestate = GameState.Menu;
                         }
+                        options.Update(mouseState);
+                        if (exit.isclicked == true)
+                            gamestate = GameState.Exit;
+                        exit.Update(mouseState);
                     }
-                    else if (mouseState.LeftButton == ButtonState.Released)
+
+                    break;
+                //case GameState.NewGame:
+                //    {
+                //        Initialize();  //resets the sprites
+
+                //        gamestate = GameState.InGame;
+                //        IsMouseVisible = false;
+                //        spriteManager.Enabled = true;
+                //        spriteManager.Visible = true;
+                //        menuButtons.RemoveRange(0, menuButtons.Count);
+                //    }
+                //    break;
+
+                //case GameState.InGame:
+                //        {
+
+                //        }
+                //        break;
+
+                case GameState.LoadGame:
+                    if (keyState.IsKeyDown(Keys.Back))
                     {
-                        mouseLeftLocked = false;
+                        gamestate = GameState.Menu;
+                        //  newgame.Update(mouseState); 
                     }
+                    break;
 
+                case GameState.Options:
+                    if (keyState.IsKeyDown(Keys.Back))
+                    {
+                        gamestate = GameState.Menu;
+                        //spriteManager.Enabled = false;
+                        //spriteManager.Visible = false;
+                    }
+                    break;
 
-                    // TODO: Add your update logic here
-                    gameEngine.Update(gameTime);
-                    base.Update(gameTime);
+                case GameState.Exit:
+                    {
+
+                    }
+                    break;
 
             }
-        
+
+            //mbd = Mouse.GetState();
+
+            //foreach (MainMenu m in menuButtons)
+            //{
+            //    m.mouseOver(mbd);
+            //    if (m.text == "NewGame" && m.selected == true && mbd.LeftButton == ButtonState.Pressed && Prevmbd.LeftButton == ButtonState.Released)
+            //    {
+            //        gamestate = GameState.NewGame;
+            //    }
+
+            //    else if (m.text == "LoadGame" && m.selected == true && mbd.LeftButton == ButtonState.Pressed && Prevmbd.LeftButton == ButtonState.Released)
+            //    {
+            //        gamestate = GameState.LoadGame;
+            //    }
+
+            //    else if (m.text == "Options" && m.selected == true && mbd.LeftButton == ButtonState.Pressed && Prevmbd.LeftButton == ButtonState.Released)
+            //    {
+            //        gamestate = GameState.Options;
+            //    }
+
+            //    else if (m.text == "Exit" && m.selected == true && mbd.LeftButton == ButtonState.Pressed && Prevmbd.LeftButton == ButtonState.Released)
+            //    {
+            //        gamestate = GameState.Exit;
+            //    }
+
+            //}
+
+            //Prevmbd = mbd;
+
+
+
+
+            if (keyState.IsKeyDown(Keys.A) || keyState.IsKeyDown(Keys.Left))
+            {
+                gameEngine.Player.MoveLeft();
+            }
+            else if (keyState.IsKeyDown(Keys.D) || keyState.IsKeyDown(Keys.Right))
+            {
+                gameEngine.Player.MoveRight();
+            }
+            // TODO: Individual key resets
+            if (!pressedJump && (keyState.IsKeyDown(Keys.W) || keyState.IsKeyDown(Keys.Space) || keyState.IsKeyDown(Keys.Up)))
+            {
+                gameEngine.Player.Jump();
+                pressedJump = true;
+            }
+            else if (pressedJump && (keyState.IsKeyUp(Keys.W) && keyState.IsKeyUp(Keys.Space) && keyState.IsKeyUp(Keys.Up)))
+            {
+                pressedJump = false;
+            }
+
+            if (mouseState.LeftButton == ButtonState.Pressed && !mouseLeftLocked)
+            {
+                mouseLeftLocked = true;
+                int globalx = (mouseState.X + gameEngine.Camera.Location.X) / BLOCK_WIDTH;
+                int globaly = (mouseState.Y + gameEngine.Camera.Location.Y) / BLOCK_HEIGHT;
+                Point p = new Point(globalx, globaly);
+
+                if (globalx <= WORLD_WIDTH && globalx >= 0 && globaly <= WORLD_HEIGHT && globaly >= 0)
+                {
+                    Block block = gameEngine._map.BlockAt(p);
+                    //TODO: Make gameEngine responsible with a single method!
+                    if (block != null)
+                    {
+                        gameEngine._map.DestroyBlock(p);
+                        gameEngine.RemovePhysical(block);
+                    }
+                    else
+                    {
+                        gameEngine._map.AddBlock(p);
+                        block = gameEngine._map.BlockAt(p);
+                        gameEngine.AddPhysical(block);
+                    }
+                }
+            }
+            else if (mouseState.LeftButton == ButtonState.Released)
+            {
+                mouseLeftLocked = false;
+            }
+
+
+            // TODO: Add your update logic here
+            gameEngine.Update(gameTime);
+            base.Update(gameTime);
+
+        }
+
 
         private bool mouseLeftLocked = false;
-      
+
         private bool pressedJump = false;
-       
+
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -283,38 +327,41 @@ namespace Yuuki2TheGame
             bg.Texture = NameToTexture(bg.TextureID);
             ProcessSpriteGraphics(tiles);
             ProcessSpriteGraphics(chars);
-           GraphicsDevice.Clear(Color.WhiteSmoke);
+            GraphicsDevice.Clear(Color.WhiteSmoke);
 
-            
-            
-           
-           
+
+
+
+
             switch (gamestate)
             {
                 case GameState.Menu:
                     {
 
-            spriteBatch.Begin();
-            IsMouseVisible = true;
-          
-         //   string Title = "Yuuki 2";
+                        spriteBatch.Begin();
+                        IsMouseVisible = true;
+                        spriteBatch.Draw(Content.Load<Texture2D>(@"Menupics/YUKKI21"), new Rectangle(0, 0, screenwidth, screenHeight), Color.White);
+                        newgame.Draw(spriteBatch);
+                        loadgame.Draw(spriteBatch);
+                        options.Draw(spriteBatch);
+                        exit.Draw(spriteBatch);
+                        //   string Title = "Yuuki 2";
 
-            spriteBatch.Draw(mainmenuTexture,
-                new Rectangle(0, 0, Window.ClientBounds.Width,
-                    Window.ClientBounds.Height), null,
+                        //    spriteBatch.Draw(mainmenuTexture,
+                        //        new Rectangle(0, 0, Window.ClientBounds.Width,
+                        //            Window.ClientBounds.Height), null,
+                        //            Color.White, 0, Vector2.Zero,
+                        //            SpriteEffects.None, 1);
+                        spriteBatch.Draw(newGameButton, new Rectangle(290, 80, 200, 100), null,
                     Color.White, 0, Vector2.Zero,
                     SpriteEffects.None, 1);
-            spriteBatch.Draw(newGameButton,
-    new Rectangle(290, 80, 200, 100), null,
-        Color.White, 0, Vector2.Zero,
-        SpriteEffects.None, 1);
-         //  spriteBatch.Draw(newGameButton, new Vector2(50, 30), Color.White);
-          //  spriteBatch.DrawString(spriteManager.font, Title, new Vector2(350, 100), Color.Black);
-            foreach (MainMenu m in menuButtons)
-            {
-                m.Draw(spriteBatch, spriteManager.font);
-            }
-                       spriteBatch.End();
+                        //  spriteBatch.Draw(newGameButton, new Vector2(50, 30), Color.White);
+                        //  spriteBatch.DrawString(spriteManager.font, Title, new Vector2(350, 100), Color.Black);
+                        //foreach (MainMenu m in menuButtons)
+                        //{
+                        //    m.Draw(spriteBatch, spriteManager.font);
+                        //}
+                        spriteBatch.End();
                     }
                     break;
                 case GameState.InGame:
@@ -347,7 +394,7 @@ namespace Yuuki2TheGame
                         IsMouseVisible = true;
                         string options = "Select your saved game";
                         spriteBatch.Begin();
-                        spriteBatch.DrawString(spriteManager.font, options, new Vector2(300,100), Color.Black);
+                        spriteBatch.DrawString(spriteManager.font, options, new Vector2(300, 100), Color.Black);
                         spriteBatch.End();
 
                     }
@@ -365,13 +412,13 @@ namespace Yuuki2TheGame
                     Exit();
                     break;
 
-            
 
-           
-        }
+
+
+            }
             base.Draw(gameTime);
-  
-            
+
+
         }
 
         private void ProcessSpriteGraphics(IList<Sprite> sprites)
