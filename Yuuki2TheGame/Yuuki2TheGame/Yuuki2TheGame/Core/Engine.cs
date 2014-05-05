@@ -14,6 +14,8 @@ namespace Yuuki2TheGame.Core
         public bool Mining;
 
         public Block Block;
+
+        public TimeSpan TimeLastMined;
     }
 
     class Engine
@@ -27,6 +29,11 @@ namespace Yuuki2TheGame.Core
         public const float PHYS_MEDIUM_DENSITY = 1.225f;
 
         public const float PHYS_SURFACE_FRICTION = 0.3f;
+
+        /// <summary>
+        /// This is in ms.
+        /// </summary>
+        public const int MINE_TIME_DELAY = 100;
 
         public bool InInventoryScreen { get; set; }
 
@@ -140,8 +147,9 @@ namespace Yuuki2TheGame.Core
             {
                 physics.Update(gameTime);
             }
-            if (mine.Mining)
+            if (mine.Mining && (gameTime.TotalGameTime - mine.TimeLastMined).Milliseconds > MINE_TIME_DELAY)
             {
+                mine.TimeLastMined = gameTime.TotalGameTime;
                 MouseState mse = Mouse.GetState();
                 MineBlock(mse.X, mse.Y);
             }
@@ -216,6 +224,7 @@ namespace Yuuki2TheGame.Core
             {
                 mine.Mining = true;
                 mine.Block = _map.BlockAt(coords);
+                mine.TimeLastMined = new TimeSpan(0, 0, 0);
             }
             else
             {
