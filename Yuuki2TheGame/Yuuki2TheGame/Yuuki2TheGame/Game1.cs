@@ -252,7 +252,7 @@ namespace Yuuki2TheGame
         {
             // First in this list means first to paint.
             painters.Add(BackgroundPainter.GetInstance(gameEngine, GAME_WIDTH, GAME_HEIGHT));
-            painters.Add(WorldPainter.GetInstance(gameEngine, blocksOnScreen.X, blocksOnScreen.Y));
+            painters.Add(WorldPainter.GetInstance(gameEngine));
             painters.Add(HudPainter.GetInstance(gameEngine, GAME_WIDTH, GAME_HEIGHT));
             painters.Add(DebugPainter.GetInstance(gameEngine));
             painters.Add(CursorPainter.GetInstance(gameEngine));

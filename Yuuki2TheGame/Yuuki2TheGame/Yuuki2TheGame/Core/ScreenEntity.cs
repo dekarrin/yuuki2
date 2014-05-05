@@ -261,7 +261,7 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return new Graphics.Sprite(Position, Size, Texture);
+                return new Graphics.Sprite(this);
             }
         }
 

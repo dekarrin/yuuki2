@@ -48,6 +48,8 @@ namespace Yuuki2TheGame.Core
 
         public int Health { get; set; }
 
+        public int MaxHealth { get; private set; }
+
         public BlockID ID { get; private set; }
 
         public Block(BlockID id, int mapx, int mapy)
@@ -104,7 +106,7 @@ namespace Yuuki2TheGame.Core
             BlockData data = Block.types[id];
             this.ID = id;
             this.LevelRequired = data.LevelRequired;
-            this.Health = data.Health;
+            this.Health = this.MaxHealth = data.Health;
             this.Texture = data.Texture;
             this.BlockPosition = new Vector2(mapx, mapy);
         }

@@ -16,24 +16,20 @@ namespace Yuuki2TheGame.Graphics
     {
         private static WorldPainter instance;
 
+        public const int TILE_LENGTH = 32;
+
         private Engine engine;
 
-        private int xBlocks;
-
-        private int yBlocks;
-
-        private WorldPainter(Engine game, int xBlocks, int yBlocks)
+        private WorldPainter(Engine game)
         {
             this.engine = game;
-            this.xBlocks = xBlocks;
-            this.yBlocks = yBlocks;
         }
 
-        public static WorldPainter GetInstance(Engine game, int xBlocks, int yBlocks)
+        public static WorldPainter GetInstance(Engine game)
         {
             if (WorldPainter.instance == null)
             {
-                WorldPainter.instance = new WorldPainter(game, xBlocks, yBlocks);
+                WorldPainter.instance = new WorldPainter(game);
             }
             return WorldPainter.instance;
         }
@@ -47,6 +43,7 @@ namespace Yuuki2TheGame.Graphics
             LoadTexture(@"Tiles\stone");
             LoadTexture(@"Tiles\dirt");
             LoadTexture(@"Tiles\grass");
+            LoadTexture(@"Tiles\damage");
         }
 
         protected override void Unload()
@@ -54,18 +51,41 @@ namespace Yuuki2TheGame.Graphics
 
         protected override void Paint(GameTime gameTime, SpriteBatch batch)
         {
-            IList<Sprite> tiles = engine.GetView(xBlocks, yBlocks);
+            IList<Sprite> tiles = engine.GetView();
             IList<Sprite> chars = engine.GetCharacters();
             ConvertIDs(tiles);
             ConvertIDs(chars);
             foreach (Sprite sp in tiles)
             {
-                batch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
+                DrawBlock(batch, sp);
             }
             foreach (Sprite sp in chars)
             {
                 batch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
             }
+        }
+
+        private void DrawBlock(SpriteBatch batch, Sprite sp)
+        {
+            batch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
+            Block b = (Block)sp.Creator;
+            float percentDamage = 1 - (b.Health / (float)b.MaxHealth);
+            Rectangle damageSourceRect = DamageToSourceRect(percentDamage);
+            Texture2D damageSprites = TextureFromID(@"Tiles\damage");
+            batch.Draw(damageSprites, sp.Destination, damageSourceRect, Color.White);
+        }
+
+        private Rectangle DamageToSourceRect(float damage)
+        {
+            Rectangle spriteSheet = TextureFromID(@"Tiles\damage").Bounds;
+            int sections = spriteSheet.Width / TILE_LENGTH;
+            int frame = (int) Math.Floor(sections * damage);
+            if (frame == sections)
+            {
+                frame--;
+            }
+            Rectangle source = new Rectangle(frame * TILE_LENGTH, 0, TILE_LENGTH, TILE_LENGTH);
+            return source;
         }
     }
 }

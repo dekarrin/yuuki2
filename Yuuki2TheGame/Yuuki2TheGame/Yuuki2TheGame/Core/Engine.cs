@@ -179,14 +179,11 @@ namespace Yuuki2TheGame.Core
         }
 
         /// <summary>
-        /// Gets all tiles that need to be displayed.
+        /// Gets all tiles that need to be displayed. All Sprites returned have the original block that they
+        /// came from set as their Creator property.
         /// </summary>
-        /// <param name="numX">Number of tiles wide.</param>
-        /// <param name="numY">Number of tiles high.</param>
-        /// <param name="tileWidth">Width of a tile.</param>
-        /// <param name="tileHeight">Height of a tile.</param>
         /// <returns></returns>
-        public IList<Sprite> GetView(int numX, int numY)
+        public IList<Sprite> GetView()
         {
             Vector2 pos = Camera.BlockPosition;
             Point coords = new Point((int) pos.X, (int) pos.Y);

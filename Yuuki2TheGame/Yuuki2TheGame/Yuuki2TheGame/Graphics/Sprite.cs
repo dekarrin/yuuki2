@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Yuuki2TheGame.Core;
 
 namespace Yuuki2TheGame.Graphics
 {
@@ -36,6 +37,8 @@ namespace Yuuki2TheGame.Graphics
         public Point Position { get; set; }
 
         public Point Size { get; set; }
+
+        public ScreenEntity Creator { get; private set; }
 
         public Point Align
         {
@@ -131,6 +134,17 @@ namespace Yuuki2TheGame.Graphics
             TextureID = textureid;
             Align = new Point(0, 0);
             Texture = null;
+            Creator = null;
+        }
+
+        public Sprite(ScreenEntity Creator)
+        {
+            Position = Creator.Position;
+            Size = Creator.Size;
+            TextureID = Creator.Texture;
+            Align = new Point(0, 0);
+            Texture = null;
+            this.Creator = Creator;
         }
     }
 }
