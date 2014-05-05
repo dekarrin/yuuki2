@@ -340,7 +340,7 @@ namespace Yuuki2TheGame
 
                         spriteBatch.Begin();
                         IsMouseVisible = true;
-                        spriteBatch.Draw(Content.Load<Texture2D>(@"Menupics/YUKKI21"), new Rectangle(0, 0, screenwidth, screenHeight), Color.White);
+                        spriteBatch.Draw(Content.Load<Texture2D>(@"Menupics/YUKKI2"), new Rectangle(0, 0, screenwidth, screenHeight), Color.White);
                         newgame.Draw(spriteBatch);
                         loadgame.Draw(spriteBatch);
                         options.Draw(spriteBatch);

@@ -58,13 +58,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Menupics\YUKKI21.png">
-      <Name>YUKKI21</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Menupics\YUKKI2.png">
       <Name>YUKKI2</Name>
       <Importer>TextureImporter</Importer>
