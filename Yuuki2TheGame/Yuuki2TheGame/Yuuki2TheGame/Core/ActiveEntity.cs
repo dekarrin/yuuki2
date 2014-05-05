@@ -344,7 +344,7 @@ namespace Yuuki2TheGame.Core
             return accessors;
         }
 
-        public virtual void OnPhobCollision(IPhysical phob2)
+        protected virtual void OnPhobCollision(IPhysical phob2)
         {
 
         }

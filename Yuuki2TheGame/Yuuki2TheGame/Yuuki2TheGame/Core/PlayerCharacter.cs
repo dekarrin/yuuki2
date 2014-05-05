@@ -24,6 +24,19 @@ namespace Yuuki2TheGame.Core
             this.Inventory = new Inventory(Game1.INVENTORY_ITEMS, Game1.QUICK_SLOTS);
         }
 
+        protected override void OnPhobCollision(IPhysical phob2)
+        {
+            if (phob2 is ItemEntity)
+            {
+                ItemEntity itemEnt = (ItemEntity)phob2;
+                if (Inventory.Add(itemEnt.Item))
+                {
+                    itemEnt.PickUp();
+                }
+            }
+            base.OnPhobCollision(phob2);
+        }
+
         protected override void ContactMaskChanged(int oldValue)
         {
             if (IsOnLeftWall())

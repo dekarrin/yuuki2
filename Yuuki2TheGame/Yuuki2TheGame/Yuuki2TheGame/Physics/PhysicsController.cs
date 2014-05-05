@@ -44,6 +44,10 @@ namespace Yuuki2TheGame.Physics
 
         private float friction;
 
+        private volatile bool inUpdate = false;
+
+        private IList<IPhysical> deferredRemovals = new List<IPhysical>();
+
         public PhysicsController(float wind, float gravity, float density, float friction, float timescale)
         {
             this.friction = friction;
@@ -68,6 +72,7 @@ namespace Yuuki2TheGame.Physics
 
         public void Step(float secs)
         {
+            inUpdate = true;
             foreach (IPhysical phob in phobs)
             {
                 phob.UpdatePhysics(secs * timescale);
@@ -77,6 +82,12 @@ namespace Yuuki2TheGame.Physics
                 CheckLandCollision(phob, ContactType.LEFT);
                 CheckPhobCollision(phob);
             }
+            inUpdate = false;
+            foreach (IPhysical phob in deferredRemovals)
+            {
+                RemovePhob(phob);
+            }
+            deferredRemovals.Clear();
         }
 
         public void AddPhob(IPhysical obj)
@@ -89,9 +100,16 @@ namespace Yuuki2TheGame.Physics
 
         public void RemovePhob(IPhysical obj)
         {
-            phobs.Remove(obj);
-            phobTree.Remove(obj);
-            obj.RemoveFromEngine();
+            if (!inUpdate)
+            {
+                phobs.Remove(obj);
+                phobTree.Remove(obj);
+                obj.RemoveFromEngine();
+            }
+            else
+            {
+                deferredRemovals.Add(obj);
+            }
         }
 
         public void StartRecording()

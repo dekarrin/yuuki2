@@ -15,6 +15,10 @@ namespace Yuuki2TheGame.Core
 
         public const int ITEM_SIZE = 10;
 
+        public delegate void PickedHandler(ItemEntity sender);
+
+        public event PickedHandler OnPicked;
+
         public Item Item { get; private set; }
 
         public ItemEntity(Item item, Point pos)
@@ -23,5 +27,15 @@ namespace Yuuki2TheGame.Core
             this.Item = item;
             this.Texture = item.Texture;
         }
+
+        public Item PickUp()
+        {
+            if (OnPicked != null)
+            {
+                OnPicked(this);
+            }
+            return Item;
+        }
+
     }
 }

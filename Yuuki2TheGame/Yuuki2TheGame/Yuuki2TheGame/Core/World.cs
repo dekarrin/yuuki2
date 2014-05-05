@@ -76,6 +76,12 @@ namespace Yuuki2TheGame.Core
             physics.AddPhob(ent);
         }
 
+        public void RemoveEntity(ActiveEntity ent)
+        {
+            physics.RemovePhob(ent);
+            _entities.Remove(ent);
+        }
+
         public IList<IList<Block>> GenerateMap(int width, int height)
         {
             Width = width;
@@ -258,6 +264,7 @@ namespace Yuuki2TheGame.Core
         public void AddItem(Item item, Point position)
         {
             ItemEntity ent = new ItemEntity(item, position);
+            ent.OnPicked += RemoveEntity;
             AddEntity(ent);
         }
 
