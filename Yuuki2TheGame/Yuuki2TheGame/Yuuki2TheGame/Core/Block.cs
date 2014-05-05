@@ -49,7 +49,14 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return new Item(this.ID);
+                if (ID == BlockID.Grass)
+                {
+                    return new Item(BlockID.Dirt);
+                }
+                else
+                {
+                    return new Item(ID);
+                }
             }
         }
 
