@@ -142,9 +142,9 @@ namespace Yuuki2TheGame
 
         private void BindControls()
         {
-            controls.BindMouseButtonClick(MouseButton.LEFT, delegate(MouseButtonEventArgs e) {
-                gameEngine.Click(e.X, e.Y);
-            });
+            controls.BindMouseButtonClick(MouseButton.LEFT, gameEngine.Click);
+            controls.BindMouseButtonDown(MouseButton.LEFT, gameEngine.Press, false);
+            controls.BindMouseButtonUp(MouseButton.LEFT, gameEngine.Release);
             KeyAction jump = delegate(KeyEventArgs e)
             {
                 gameEngine.Player.Jump();

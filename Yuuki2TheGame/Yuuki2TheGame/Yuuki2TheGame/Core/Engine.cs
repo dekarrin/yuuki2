@@ -9,6 +9,13 @@ using Yuuki2TheGame.Physics;
 
 namespace Yuuki2TheGame.Core
 {
+    struct MineState
+    {
+        public bool Mining;
+
+        public Block Block;
+    }
+
     class Engine
     {
         public const float PHYS_WIND = 0f;
@@ -26,6 +33,8 @@ namespace Yuuki2TheGame.Core
         public bool InDebugMode { get; set; }
 
         private bool _recording = false;
+
+        private MineState mine = new MineState();
 
         public bool RecordPhysStep
         {
@@ -131,6 +140,11 @@ namespace Yuuki2TheGame.Core
             {
                 physics.Update(gameTime);
             }
+            if (mine.Mining)
+            {
+                MouseState mse = Mouse.GetState();
+                MineBlock(mse.X, mse.Y);
+            }
         }
 
         public void Respawn()
@@ -143,30 +157,73 @@ namespace Yuuki2TheGame.Core
             physics.Step(0.016f);
         }
 
-        public void Click(int x, int y)
+        public void Click(MouseButtonEventArgs e)
         {
             if (InInventoryScreen)
             {
 
             }
-            else
+        }
+
+        public void Press(MouseButtonEventArgs e)
+        {
+            if (!InInventoryScreen)
             {
-                ClickWorld(x, y);
+                PressWorld(e.X, e.Y);
             }
         }
 
-        private void ClickWorld(int x, int y)
+        public void Release(MouseButtonEventArgs e)
+        {
+            if (mine.Block != null)
+            {
+                mine.Block.Restore();
+            }
+            mine.Block = null;
+            mine.Mining = false;
+        }
+
+        private void MineBlock(int x, int y)
         {
             int globalx = (x + this.Camera.Position.X) / Game1.METER_LENGTH;
             int globaly = (y + this.Camera.Position.Y) / Game1.METER_LENGTH;
             Point coords = new Point(globalx, globaly);
-            Point pos = new Point(x, y);
+            Point pos = new Point(x + Camera.Position.X, y + Camera.Position.Y);
+            Block b = _map.BlockAt(coords);
+            if (b != mine.Block && mine.Block != null && mine.Block.Health > 0)
+            {
+                mine.Block.Restore();
+            }
+            mine.Block = b;
             InventorySlot activeSlot = Player.Inventory.ActiveSlot;
             Item toUse = ((activeSlot.Item != null) ? activeSlot.Item : new Item(ItemID.Hands));
             int used = toUse.Use(pos, coords, _map, Player);
             if (toUse == activeSlot.Item)
             {
                 activeSlot.Count -= used;
+            }
+        }
+
+        private void PressWorld(int x, int y)
+        {
+            int globalx = (x + this.Camera.Position.X) / Game1.METER_LENGTH;
+            int globaly = (y + this.Camera.Position.Y) / Game1.METER_LENGTH;
+            Point coords = new Point(globalx, globaly);
+            Point pos = new Point(x + Camera.Position.X, y + Camera.Position.Y);
+            InventorySlot activeSlot = Player.Inventory.ActiveSlot;
+            Item toUse = ((activeSlot.Item != null) ? activeSlot.Item : new Item(ItemID.Hands));
+            if (toUse.IsTool)
+            {
+                mine.Mining = true;
+                mine.Block = _map.BlockAt(coords);
+            }
+            else
+            {
+                int used = toUse.Use(pos, coords, _map, Player);
+                if (toUse == activeSlot.Item)
+                {
+                    activeSlot.Count -= used;
+                }
             }
         }
 

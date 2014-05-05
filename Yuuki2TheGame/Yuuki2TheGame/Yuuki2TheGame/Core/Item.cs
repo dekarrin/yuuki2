@@ -159,7 +159,10 @@ namespace Yuuki2TheGame.Core
             ItemAction useTool = delegate(Item caller, Point pos, Point coords, Map map, GameCharacter user)
             {
                 Block b = map.BlockAt(coords);
-                b.Damage(TOOL_BASE_POWER, TOOL_MAX_POWER, caller.EffectiveAgainst);
+                if (b != null)
+                {
+                    b.Damage(TOOL_BASE_POWER, TOOL_MAX_POWER, caller.EffectiveAgainst);
+                }
                 return 0;
             };
             Item.typeData[ItemType.Hands] = new ItemTypeData(new BlockID[0], useTool);
@@ -216,7 +219,7 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                return (Type == ItemType.Axe || Type == ItemType.Pickaxe || Type == ItemType.Shovel);
+                return (Type == ItemType.Axe || Type == ItemType.Pickaxe || Type == ItemType.Shovel || Type == ItemType.Hands);
             }
         }
 
