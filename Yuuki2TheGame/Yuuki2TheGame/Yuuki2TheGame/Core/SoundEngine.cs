@@ -9,6 +9,7 @@ namespace Yuuki2TheGame.Core
     class SoundEngine
     {
         SoundEffectInstance bgm;
+        SoundEffectInstance itemaction;
         public SoundEngine(List<SoundEffect> GameAudio)
         {
             bgm = GameAudio[0].CreateInstance();
@@ -17,7 +18,7 @@ namespace Yuuki2TheGame.Core
             
         }
 
-        public void PlaySound(List<SoundEffect> GameAudio)
+        public static void PlaySound(List<SoundEffect> GameAudio)
         {
             GameAudio[1].Play();
         }

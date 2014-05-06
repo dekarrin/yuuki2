@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Yuuki2TheGame.Physics;
 using Yuuki2TheGame;
+using Yuuki2TheGame.Data;
 
 namespace Yuuki2TheGame.Core
 {
@@ -36,13 +37,19 @@ namespace Yuuki2TheGame.Core
     class Block : ScreenEntity
     {
         private static IDictionary<BlockID, BlockData> types = new Dictionary<BlockID, BlockData>();
-
+        
         static Block()
         {
-            types[BlockID.Dirt] = new BlockData("Dirt", 1, 100, @"Tiles\dirt");
-            types[BlockID.Stone] = new BlockData("Stone", 1, 200, @"Tiles\stone");
-            types[BlockID.Wood] = new BlockData("Wood", 2, 250, @"Tiles\wood");
-            types[BlockID.Grass] = new BlockData("Grass", 3, 100, @"Tiles\grass");
+            List<GameDataObject> temp = new List<GameDataObject>();
+            foreach (GameDataObject ob in Game1.ObjectData)
+            {
+                temp.Add(ob);
+            }
+
+            types[BlockID.Dirt] = new BlockData(temp[0].Name, temp[0].LevelRequired, temp[0].Health, temp[0].FilePath);
+            types[BlockID.Stone] = new BlockData(temp[1].Name, temp[1].LevelRequired, temp[1].Health, temp[1].FilePath);
+            types[BlockID.Wood] = new BlockData(temp[2].Name, temp[2].LevelRequired, temp[2].Health, temp[2].FilePath);
+            types[BlockID.Grass] = new BlockData(temp[3].Name, temp[3].LevelRequired, temp[3].Health, temp[3].FilePath);
         }
 
         public Item Item
