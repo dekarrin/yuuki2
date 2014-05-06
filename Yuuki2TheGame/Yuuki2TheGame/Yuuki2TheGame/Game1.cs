@@ -10,6 +10,8 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Yuuki2TheGame.Core;
 using Yuuki2TheGame.Graphics;
+using Yuuki2TheGame.Data;
+using FileHelpers;
 
 namespace Yuuki2TheGame
 {
@@ -19,6 +21,7 @@ namespace Yuuki2TheGame
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         public static List<SoundEffect> GameAudio = new List<SoundEffect>();
+        public static List<GameDataObject> ObjectData = new List<GameDataObject>();
 
         public const int WORLD_WIDTH = 100;
         public const int WORLD_HEIGHT = 100;
@@ -61,6 +64,17 @@ namespace Yuuki2TheGame
             SoundEffect swing01 = Content.Load<SoundEffect>("swing01");
             GameAudio.Add(bgm);
             GameAudio.Add(swing01);
+
+
+
+            FileHelperEngine engine = new FileHelperEngine(typeof(GameDataObject));
+
+            GameDataObject[] res = (GameDataObject[])engine.ReadFile("Data\\BlockData.csv");
+
+            foreach (GameDataObject record in res)
+            {
+                ObjectData.Add(record);
+            }
 
             blocksOnScreen = new Point (GAME_WIDTH / METER_LENGTH + 1, GAME_HEIGHT / METER_LENGTH + 1);
             painters = new List<Painter>();

@@ -86,6 +86,7 @@ namespace Yuuki2TheGame.Core
             World.AddEntity(Player);
             Rectangle camLimits = new Rectangle(0, 0, Game1.METER_LENGTH * Game1.WORLD_WIDTH, Game1.METER_LENGTH * Game1.WORLD_HEIGHT);
             Camera = new Camera(new Point(Game1.GAME_WIDTH, Game1.GAME_HEIGHT), Player, new Point(-100, -300), camLimits);
+            AudioEngine = new SoundEngine(Game1.GameAudio);
         }
 
         private void CreateWorld(Point size)

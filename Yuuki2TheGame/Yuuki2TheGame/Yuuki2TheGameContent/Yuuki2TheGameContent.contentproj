@@ -53,7 +53,7 @@
       <Name>swing01</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
-	</Compile>
+    </Compile>
     <Compile Include="Tiles\stone.png">
       <Name>stone</Name>
       <Importer>TextureImporter</Importer>

@@ -1,0 +1,5 @@
+﻿ID,Name,LevelRequired,Health,FilePath
+1,Dirt,1,100,Tiles\dirt
+2,Stone,1,200,Tiles\stone
+3,Wood,2,250,Tiles\wood
+4,Grass,3,100,Tiles\grass
