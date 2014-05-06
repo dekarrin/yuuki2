@@ -124,6 +124,7 @@ namespace Yuuki2TheGame.Core
                 mine.TimeLastMined = gameTime.TotalGameTime;
                 MouseState mse = Mouse.GetState();
                 MineBlock(mse.X, mse.Y);
+                Point p = new Point(mse.X, mse.Y);
             }
         }
 
@@ -182,6 +183,8 @@ namespace Yuuki2TheGame.Core
             {
                 activeSlot.Count -= used;
             }
+
+
         }
 
         private void PressWorld(int x, int y)

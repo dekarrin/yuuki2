@@ -9,18 +9,23 @@ namespace Yuuki2TheGame.Core
     class SoundEngine
     {
         SoundEffectInstance bgm;
-        SoundEffectInstance itemaction;
+        SoundEffectInstance action;
         public SoundEngine(List<SoundEffect> GameAudio)
         {
             bgm = GameAudio[0].CreateInstance();
             bgm.IsLooped = true;
             bgm.Play();
+
+            action = GameAudio[1].CreateInstance();
             
         }
 
-        public static void PlaySound(List<SoundEffect> GameAudio)
+        public void PlaySound()
         {
-            GameAudio[1].Play();
+            if (action.State != SoundState.Playing)
+            {
+                action.Play();
+            }
         }
     }
 }

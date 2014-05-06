@@ -165,7 +165,10 @@ namespace Yuuki2TheGame.Core
                 if (b != null)
                 {
                     b.Damage(TOOL_BASE_POWER, TOOL_MAX_POWER, caller.EffectiveAgainst);
+                    Engine.AudioEngine.PlaySound();
+
                 }
+
                 return 0;
             };
             Item.typeData[ItemType.Hands] = new ItemTypeData(new BlockID[0], useTool);
