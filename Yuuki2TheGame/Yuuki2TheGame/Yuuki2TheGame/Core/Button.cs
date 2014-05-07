@@ -21,7 +21,6 @@ namespace Yuuki2TheGame.Core
             size = new Vector2(graphics.Viewport.Width / 3, graphics.Viewport.Height / 10);
         }
 
-        bool down;
         public bool isclicked;
         public void Update(MouseState mouse)
         {
@@ -29,15 +28,12 @@ namespace Yuuki2TheGame.Core
             Rectangle mouseRectangle = new Rectangle(mouse.X, mouse.Y, 1, 1);
             if (mouseRectangle.Intersects(rectangle))
             {
-                if (color.A == 255) down = false;
-                if (color.A ==0) down = true;
-                if (down) color.A += 3; else color.A = 3;
+                color.B = 130;
                 if (mouse.LeftButton == ButtonState.Pressed) isclicked = true;
-
             }
-            else if(color.A < 255)
+            else if(color.B < 255)
             {
-                color.A += 3;
+                color.B = 255;
                 isclicked = false;
             }
         }

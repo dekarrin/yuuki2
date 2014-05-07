@@ -56,7 +56,7 @@ namespace Yuuki2TheGame
         private Point blocksOnScreen;
         public GameState gamestate = GameState.Menu;
         List<MainMenu> menuButtons = new List<MainMenu>();
-        //Texture2D mainmenuTexture;
+        Texture2D mainMenuTexture;
         Texture2D newGameButton;
 
         Button newgame;
@@ -102,6 +102,7 @@ namespace Yuuki2TheGame
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             newGameButton = Content.Load<Texture2D>(@"Menupics/YUKKI2");
+            mainMenuTexture = Content.Load<Texture2D>(@"Menupics/background");
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
             IsMouseVisible = true;
             newgame = new Button(Content.Load<Texture2D>(@"Menupics/newGame"), graphics.GraphicsDevice);
@@ -259,7 +260,7 @@ namespace Yuuki2TheGame
                     {
                         spriteBatch.Begin();
                         IsMouseVisible = true;
-                        spriteBatch.Draw(Content.Load<Texture2D>(@"Menupics/YUKKI2"), new Rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT), Color.White);
+                        spriteBatch.Draw(mainMenuTexture, new Rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT), Color.White);
                         newgame.Draw(spriteBatch);
                         loadgame.Draw(spriteBatch);
                         options.Draw(spriteBatch);
@@ -308,7 +309,7 @@ namespace Yuuki2TheGame
                 case GameState.Options:
                     {
                         IsMouseVisible = true;
-                        string options = "Select From the Follwing Options!!";
+                        string options = "Under construction. :(";
                         spriteBatch.Begin();
                         spriteBatch.DrawString(spriteManager.font, options, new Vector2(200, 100), Color.Black);
                         spriteBatch.End();
