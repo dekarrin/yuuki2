@@ -139,7 +139,7 @@ namespace Yuuki2TheGame.Core
         {
             get
             {
-                Vector2 accel = (Force - Drag - Friction) / Mass;
+                Vector2 accel = (Force + Drag + Friction) / Mass;
                 if (IsOnGround())
                 {
                     accel.Y = Math.Min(accel.Y, 0);
@@ -176,12 +176,12 @@ namespace Yuuki2TheGame.Core
                 if ((IsOnGround() || IsOnCeiling()) && Velocity.X != 0)
                 {
                     fricx = FrictionCoefficient * Math.Abs(_global_force.Y) * FrictionEffect.X;
-                    fricx *= (Velocity.X > 0) ? 1 : -1;
+                    fricx *= (Velocity.X > 0) ? -1 : 1;
                 }
                 if ((IsOnLeftWall() || IsOnRightWall()) && Velocity.Y != 0)
                 {
                     fricy = FrictionCoefficient * Math.Abs(_global_force.X) * FrictionEffect.Y;
-                    fricy *= (Velocity.Y > 0) ? 1 : -1;
+                    fricy *= (Velocity.Y > 0) ? -1 : 1;
                 }
                 return new Vector2(fricx, fricy);
             }
@@ -206,6 +206,8 @@ namespace Yuuki2TheGame.Core
                 float r = MediumDensity;
                 float c = DragModel.Coefficient;
                 Vector2 d = 0.5f * r * Velocity * Velocity * c * a * DragEffect;
+                d.X *= (Velocity.X > 0) ? -1 : 1;
+                d.Y *= (Velocity.Y > 0) ? -1 : 1;
                 return d;
             }
         }
@@ -462,6 +464,7 @@ namespace Yuuki2TheGame.Core
                 {
                     fl.force.Y = fl.originalForce.Y;
                 }
+                Game1.Debug("X: " + xIsAffected);
             }
         }
     }
