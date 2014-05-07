@@ -59,7 +59,6 @@ namespace Yuuki2TheGame
         //Texture2D mainmenuTexture;
         Texture2D newGameButton;
 
-        int screenwidth = 800, screenHeight = 600;
         Button newgame;
         Button loadgame;
         Button options;
@@ -67,13 +66,6 @@ namespace Yuuki2TheGame
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-
-
-            //menuButtons.Add(new MainMenu(new Rectangle(350, 199, 100, 14), "NewGame"));
-            //menuButtons.Add(new MainMenu(new Rectangle(350, 229, 100, 14), "LoadGame"));
-            //menuButtons.Add(new MainMenu(new Rectangle(350, 259, 100, 14), "Options"));
-            //menuButtons.Add(new MainMenu(new Rectangle(350, 290, 100, 14), "Exit"));
-
 
             graphics.PreferredBackBufferWidth = GAME_WIDTH;
             graphics.PreferredBackBufferHeight = GAME_HEIGHT;
@@ -109,22 +101,17 @@ namespace Yuuki2TheGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            //mainmenuTexture = Content.Load<Texture2D>(@"Menupics/YUKKI21");
             newGameButton = Content.Load<Texture2D>(@"Menupics/YUKKI2");
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
-            graphics.PreferredBackBufferWidth = screenwidth;
-            graphics.PreferredBackBufferHeight = screenHeight;
             IsMouseVisible = true;
-            graphics.ApplyChanges();
-            newgame = new Button(Content.Load<Texture2D>(@"Menupics/newgame"), graphics.GraphicsDevice);
-            newgame.setPosition(new Vector2(320, 200));
-            loadgame = new Button(Content.Load<Texture2D>(@"Menupics/loadgame"), graphics.GraphicsDevice);
-            loadgame.setPosition(new Vector2(320, 250));
+            newgame = new Button(Content.Load<Texture2D>(@"Menupics/newGame"), graphics.GraphicsDevice);
+            newgame.setPosition(new Vector2(260, 215));
+            loadgame = new Button(Content.Load<Texture2D>(@"Menupics/loadGame"), graphics.GraphicsDevice);
+            loadgame.setPosition(new Vector2(260, 280));
             options = new Button(Content.Load<Texture2D>(@"Menupics/options"), graphics.GraphicsDevice);
-            options.setPosition(new Vector2(320, 300));
-            exit = new Button(Content.Load<Texture2D>(@"Menupics/exit"), graphics.GraphicsDevice);
-            exit.setPosition(new Vector2(320, 350));
+            options.setPosition(new Vector2(259, 345));
+            exit = new Button(Content.Load<Texture2D>(@"Menupics/exitGame"), graphics.GraphicsDevice);
+            exit.setPosition(new Vector2(260, 411));
         }
 
         /// <summary>
@@ -145,8 +132,6 @@ namespace Yuuki2TheGame
         {
             // Allows the game to exit
 
-            // if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-            //  this.Exit();
             KeyboardState keyState = Keyboard.GetState();
             MouseState mouseState = Mouse.GetState();
             switch (gamestate)
@@ -160,11 +145,6 @@ namespace Yuuki2TheGame
 
                             gamestate = GameState.LoadGame;
                         loadgame.Update(mouseState);
-                        //if(gamestate == GameState.LoadGame && keyState.IsKeyDown(Keys.Back))
-                        //{
-                        //    gamestate = GameState.Menu;
-                        //}
-
 
                         if (options.isclicked == true)
                             gamestate = GameState.Options;
@@ -179,29 +159,11 @@ namespace Yuuki2TheGame
                     }
 
                     break;
-                //case GameState.NewGame:
-                //    {
-                //        Initialize();  //resets the sprites
-
-                //        gamestate = GameState.InGame;
-                //        IsMouseVisible = false;
-                //        spriteManager.Enabled = true;
-                //        spriteManager.Visible = true;
-                //        menuButtons.RemoveRange(0, menuButtons.Count);
-                //    }
-                //    break;
-
-                //case GameState.InGame:
-                //        {
-
-                //        }
-                //        break;
 
                 case GameState.LoadGame:
                     if (keyState.IsKeyDown(Keys.Back))
                     {
                         gamestate = GameState.Menu;
-                        //  newgame.Update(mouseState); 
                     }
                     break;
 
@@ -209,8 +171,6 @@ namespace Yuuki2TheGame
                     if (keyState.IsKeyDown(Keys.Back))
                     {
                         gamestate = GameState.Menu;
-                        //spriteManager.Enabled = false;
-                        //spriteManager.Visible = false;
                     }
                     break;
 
@@ -219,40 +179,7 @@ namespace Yuuki2TheGame
 
                     }
                     break;
-
             }
-
-            //mbd = Mouse.GetState();
-
-            //foreach (MainMenu m in menuButtons)
-            //{
-            //    m.mouseOver(mbd);
-            //    if (m.text == "NewGame" && m.selected == true && mbd.LeftButton == ButtonState.Pressed && Prevmbd.LeftButton == ButtonState.Released)
-            //    {
-            //        gamestate = GameState.NewGame;
-            //    }
-
-            //    else if (m.text == "LoadGame" && m.selected == true && mbd.LeftButton == ButtonState.Pressed && Prevmbd.LeftButton == ButtonState.Released)
-            //    {
-            //        gamestate = GameState.LoadGame;
-            //    }
-
-            //    else if (m.text == "Options" && m.selected == true && mbd.LeftButton == ButtonState.Pressed && Prevmbd.LeftButton == ButtonState.Released)
-            //    {
-            //        gamestate = GameState.Options;
-            //    }
-
-            //    else if (m.text == "Exit" && m.selected == true && mbd.LeftButton == ButtonState.Pressed && Prevmbd.LeftButton == ButtonState.Released)
-            //    {
-            //        gamestate = GameState.Exit;
-            //    }
-
-            //}
-
-            //Prevmbd = mbd;
-
-
-
 
             if (keyState.IsKeyDown(Keys.A) || keyState.IsKeyDown(Keys.Left))
             {
@@ -302,18 +229,15 @@ namespace Yuuki2TheGame
                 mouseLeftLocked = false;
             }
 
-
             // TODO: Add your update logic here
             gameEngine.Update(gameTime);
             base.Update(gameTime);
 
         }
 
-
         private bool mouseLeftLocked = false;
 
         private bool pressedJump = false;
-
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -329,42 +253,25 @@ namespace Yuuki2TheGame
             ProcessSpriteGraphics(chars);
             GraphicsDevice.Clear(Color.WhiteSmoke);
 
-
-
-
-
             switch (gamestate)
             {
                 case GameState.Menu:
                     {
-
                         spriteBatch.Begin();
                         IsMouseVisible = true;
-                        spriteBatch.Draw(Content.Load<Texture2D>(@"Menupics/YUKKI2"), new Rectangle(0, 0, screenwidth, screenHeight), Color.White);
+                        spriteBatch.Draw(Content.Load<Texture2D>(@"Menupics/YUKKI2"), new Rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT), Color.White);
                         newgame.Draw(spriteBatch);
                         loadgame.Draw(spriteBatch);
                         options.Draw(spriteBatch);
                         exit.Draw(spriteBatch);
-                        //   string Title = "Yuuki 2";
 
-                        //    spriteBatch.Draw(mainmenuTexture,
-                        //        new Rectangle(0, 0, Window.ClientBounds.Width,
-                        //            Window.ClientBounds.Height), null,
-                        //            Color.White, 0, Vector2.Zero,
-                        //            SpriteEffects.None, 1);
                         spriteBatch.Draw(newGameButton, new Rectangle(290, 80, 200, 100), null,
                     Color.White, 0, Vector2.Zero,
                     SpriteEffects.None, 1);
-                        //  spriteBatch.Draw(newGameButton, new Vector2(50, 30), Color.White);
-                        //  spriteBatch.DrawString(spriteManager.font, Title, new Vector2(350, 100), Color.Black);
-                        //foreach (MainMenu m in menuButtons)
-                        //{
-                        //    m.Draw(spriteBatch, spriteManager.font);
-                        //}
                         spriteBatch.End();
                     }
                     break;
-                case GameState.InGame:
+                    case GameState.InGame:
                     {
                         spriteBatch.Begin();
                         // draw bg first ALWAYS!
@@ -377,7 +284,6 @@ namespace Yuuki2TheGame
                         {
                             spriteBatch.Draw(sp.Texture, sp.Destination, sp.Source, Color.White);
                         }
-
 
                         graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 

@@ -65,15 +65,22 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Menupics\newgame.png">
-      <Name>newgame</Name>
+    <Compile Include="Menupics\exitGame.png">
+      <Name>exitGame</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Menupics\loadgame.png">
-      <Name>loadgame</Name>
+    <Compile Include="Menupics\loadGame.png">
+      <Name>loadGame</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Menupics\newGame.png">
+      <Name>newGame</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -81,13 +88,6 @@
   <ItemGroup>
     <Compile Include="Menupics\options.png">
       <Name>options</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Menupics\exit.png">
-      <Name>exit</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

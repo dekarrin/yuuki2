@@ -18,7 +18,7 @@ namespace Yuuki2TheGame.Core
         public Button(Texture2D newTexture, GraphicsDevice graphics)
         {
             texture = newTexture;
-            size = new Vector2(graphics.Viewport.Width/6, graphics.Viewport.Height / 30);
+            size = new Vector2(graphics.Viewport.Width / 3, graphics.Viewport.Height / 10);
         }
 
         bool down;
