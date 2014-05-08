@@ -83,7 +83,7 @@ namespace Yuuki2TheGame.Core
             Spawn = new Point(0, (size.Y / 2) * Game1.METER_LENGTH - 30);
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", Spawn, 100, 10, 10);
-            World.AddEntity(Player);
+            World.AddCharacter(Player);
             Rectangle camLimits = new Rectangle(0, 0, Game1.METER_LENGTH * Game1.WORLD_WIDTH, Game1.METER_LENGTH * Game1.WORLD_HEIGHT);
             Camera = new Camera(new Point(Game1.GAME_WIDTH, Game1.GAME_HEIGHT), Player, new Point(-100, -300), camLimits);
             AudioEngine = new SoundEngine(Game1.GameAudio);
@@ -258,6 +258,12 @@ namespace Yuuki2TheGame.Core
             // TODO: OPTIMIZE! We should be using quadtrees or something...
             Rectangle view = Camera.Bounds;
             return World.GetEntities(view);
+        }
+
+        public IList<Sprite> GetCharacters()
+        {
+            Rectangle view = Camera.Bounds;
+            return World.GetCharacters(view);
         }
     }
 }

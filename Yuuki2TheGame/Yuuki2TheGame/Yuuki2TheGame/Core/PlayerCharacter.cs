@@ -10,7 +10,8 @@ namespace Yuuki2TheGame.Core
     class PlayerCharacter : GameCharacter
     {
         public const int WIDTH = Game1.METER_LENGTH * 1;
-        public const int HEIGHT = Game1.METER_LENGTH * 2;
+        public const int HEIGHT = Game1.METER_LENGTH * 3;
+        public const int MASS = 75;
         public const float WALK_FORCE = 500.0f;
         public const float JUMP_FORCE = 45000.0f;
         public const float MAX_SPEED = 5.0f;
@@ -22,6 +23,7 @@ namespace Yuuki2TheGame.Core
         public PlayerCharacter(string name, Point pixelLocation, int health, int baseAttack, int baseArmor) : base(name, pixelLocation, new Point(WIDTH, HEIGHT), health, baseAttack, baseArmor)
         {
             this.Inventory = new Inventory(Game1.INVENTORY_ITEMS, Game1.QUICK_SLOTS);
+            this.Mass = MASS;
         }
 
         protected override void OnPhobCollision(IPhysical phob2)

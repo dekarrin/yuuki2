@@ -48,6 +48,9 @@ namespace Yuuki2TheGame.Core
         public bool ManualPhysStepMode { get; set; }
 
         private IList<ActiveEntity> _entities = new List<ActiveEntity>();
+
+        private IList<ActiveEntity> _characters = new List<ActiveEntity>();
+
         public IList<ActiveEntity> Entities
         {
             get
@@ -80,6 +83,18 @@ namespace Yuuki2TheGame.Core
         {
             physics.RemovePhob(ent);
             _entities.Remove(ent);
+        }
+
+        public void AddCharacter(ActiveEntity ch)
+        {
+            _characters.Add(ch);
+            physics.AddPhob(ch);
+        }
+
+        public void RemoveCharacter(ActiveEntity ch)
+        {
+            physics.RemovePhob(ch);
+            _characters.Remove(ch);
         }
 
         public IList<IList<Block>> GenerateMap(int width, int height)
@@ -201,13 +216,28 @@ namespace Yuuki2TheGame.Core
             {
                 if (e.Bounds.Intersects(view))
                 {
-                    Point position = new Point(e.Bounds.X - view.X, e.Bounds.Y - view.Y);
-                    Point size = new Point(e.Width, e.Height);
-                    Yuuki2TheGame.Graphics.Sprite spr = new Yuuki2TheGame.Graphics.Sprite(position, size, e.Texture);
+                    Yuuki2TheGame.Graphics.Sprite spr = e.Sprite;
+                    spr.Position = new Point(spr.Position.X - view.X, spr.Position.Y - view.Y);
                     ents.Add(spr);
                 }
             }
             return ents;
+        }
+
+        public IList<Yuuki2TheGame.Graphics.Sprite> GetCharacters(Rectangle view)
+        {
+            IList<Yuuki2TheGame.Graphics.Sprite> chs = new List<Yuuki2TheGame.Graphics.Sprite>();
+            foreach (ActiveEntity c in _characters)
+            {
+                if (c.Bounds.Intersects(view))
+                {
+
+                    Yuuki2TheGame.Graphics.Sprite spr = c.Sprite;
+                    spr.Position = new Point(spr.Position.X - view.X, spr.Position.Y - view.Y); 
+                    chs.Add(spr);
+                }
+            }
+            return chs;
         }
 
         /// <summary>

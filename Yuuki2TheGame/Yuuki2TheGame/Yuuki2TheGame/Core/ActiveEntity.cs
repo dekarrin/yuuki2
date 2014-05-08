@@ -358,6 +358,25 @@ namespace Yuuki2TheGame.Core
             FrictionCoefficient = 0f;
         }
 
+        public bool IsMovingHorizontally()
+        {
+            return (Math.Abs(Velocity.X) <= 0.00000001);
+        }
+
+        public bool IsMovingVertically()
+        {
+            return (Math.Abs(Velocity.Y) <= 0.00000001);
+        }
+
+        public override void Teleport(Point p)
+        {
+            Vector2 ga = GlobalAcceleration;
+            RemoveAllForce();
+            Velocity = Vector2.Zero;
+            GlobalAcceleration = ga;
+            base.Teleport(p);
+        }
+
         #endregion
 
         public ActiveEntity(Point size)
@@ -375,15 +394,6 @@ namespace Yuuki2TheGame.Core
             DragModel = new DragModel(DragShape.CUBE);
             _position = BlockPosition;
             FrictionEffect = new Vector2(1.0f, 1.0f);
-        }
-
-        public override void Teleport(Point p)
-        {
-            Vector2 ga = GlobalAcceleration;
-            RemoveAllForce();
-            Velocity = Vector2.Zero;
-            GlobalAcceleration = ga;
-            base.Teleport(p);
         }
 
         protected virtual void ContactMaskChanged(int oldValue)
@@ -464,7 +474,6 @@ namespace Yuuki2TheGame.Core
                 {
                     fl.force.Y = fl.originalForce.Y;
                 }
-                Game1.Debug("X: " + xIsAffected);
             }
         }
     }

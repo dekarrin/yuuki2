@@ -37,6 +37,14 @@ namespace Yuuki2TheGame.Core
             }
         }
 
+        public int ArmAnimationFrame { get; protected set; }
+
+        public int LegAnimationFrame { get; protected set; }
+
+        public int SpriteBase { get; protected set; }
+
+        public int CostumeBase { get; protected set; }
+
         public string Name { get; set; }
 
         public int BaseAttack { get; set; }
@@ -76,11 +84,22 @@ namespace Yuuki2TheGame.Core
         }
 
         /// <summary>
+        /// In ms
+        /// </summary>
+        protected long AnimationDelay { get; set; }
+
+        private long TimeSinceAnimChange { get; set; }
+
+        /// <summary>
         /// Called by game engine; tells instance to update self.
         /// </summary>
         /// <param name="gameTime">Amount of time passed since last update.</param>
         public override void Update(GameTime gameTime)
         {
+            if (IsMovingHorizontally())
+            {
+
+            }
         }
 
         public virtual void StartMovingLeft()
