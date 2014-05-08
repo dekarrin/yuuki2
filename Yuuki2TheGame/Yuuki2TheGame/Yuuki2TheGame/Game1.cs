@@ -49,10 +49,33 @@ namespace Yuuki2TheGame
 
         private IList<Painter> painters;
 
+        SpriteManager spriteManager;
+        MouseState mbd;
+        MouseState Prevmbd;
+        public enum GameState
+        {
+            Menu,
+            NewGame,
+            InGame,
+            LoadGame,
+            Options,
+            Exit
+
+        }
+
         /// <summary>
         /// Contains the number of blocks that are on the screen.
         /// </summary>
         private Point blocksOnScreen;
+        public GameState gamestate = GameState.Menu;
+        List<MainMenu> menuButtons = new List<MainMenu>();
+        Texture2D mainMenuTexture;
+        Texture2D logo;
+
+        Button newgame;
+        Button loadgame;
+        Button options;
+        Button exit;
 
         public Game1()
         {
@@ -79,6 +102,7 @@ namespace Yuuki2TheGame
             blocksOnScreen = new Point(GAME_WIDTH / METER_LENGTH + 1, GAME_HEIGHT / METER_LENGTH + 1);
             painters = new List<Painter>();
             gameEngine = new Engine(new Point(WORLD_WIDTH, WORLD_HEIGHT));
+            IsMouseVisible = true;
             CreatePainters();
         }
 
@@ -94,6 +118,8 @@ namespace Yuuki2TheGame
             InitializePainters();
             BindControls();
             SetWindowSize();
+            spriteManager = new SpriteManager(this);
+            Components.Add(spriteManager);
             int butts = 0;
             butts++;
             base.Initialize();
@@ -109,6 +135,18 @@ namespace Yuuki2TheGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
             defaultTexture = Content.Load<Texture2D>(@"Tiles\default_tile");
             font = Content.Load<SpriteFont>(@"Fonts\Default");
+            logo = Content.Load<Texture2D>(@"MainMenu/logo");
+            mainMenuTexture = Content.Load<Texture2D>(@"MainMenu/background");
+            defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
+            IsMouseVisible = true;
+            newgame = new Button(Content.Load<Texture2D>(@"MainMenu/newGame"), graphics.GraphicsDevice);
+            newgame.setPosition(new Vector2(260, 215));
+            loadgame = new Button(Content.Load<Texture2D>(@"MainMenu/loadGame"), graphics.GraphicsDevice);
+            loadgame.setPosition(new Vector2(260, 280));
+            options = new Button(Content.Load<Texture2D>(@"MainMenu/options"), graphics.GraphicsDevice);
+            options.setPosition(new Vector2(259, 345));
+            exit = new Button(Content.Load<Texture2D>(@"MainMenu/exitGame"), graphics.GraphicsDevice);
+            exit.setPosition(new Vector2(260, 411));
             SetPainterDefaults(defaultTexture, font);
             LoadPainterContent();
         }
@@ -130,6 +168,53 @@ namespace Yuuki2TheGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            KeyboardState keyState = Keyboard.GetState();
+            MouseState mouseState = Mouse.GetState();
+            switch (gamestate)
+            {
+                case GameState.Menu:
+                    {
+                        if (newgame.isclicked == true)
+                            gamestate = GameState.InGame;
+                        newgame.Update(mouseState);
+                        if (loadgame.isclicked == true)
+
+                            gamestate = GameState.LoadGame;
+                        loadgame.Update(mouseState);
+
+                        if (options.isclicked == true)
+                            gamestate = GameState.Options;
+                        if (keyState.IsKeyDown(Keys.Back))
+                        {
+                            gamestate = GameState.Menu;
+                        }
+                        options.Update(mouseState);
+                        if (exit.isclicked == true)
+                            gamestate = GameState.Exit;
+                        exit.Update(mouseState);
+                    }
+                    break;
+
+                case GameState.LoadGame:
+                    if (keyState.IsKeyDown(Keys.Back))
+                    {
+                        gamestate = GameState.Menu;
+                    }
+                    break;
+
+                case GameState.Options:
+                    if (keyState.IsKeyDown(Keys.Back))
+                    {
+                        gamestate = GameState.Menu;
+                    }
+                    break;
+
+                case GameState.Exit:
+                    {
+
+                    }
+                    break;
+            }
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -147,19 +232,85 @@ namespace Yuuki2TheGame
             System.Diagnostics.Debug.WriteLine(str);
         }
 
+        private bool mouseLeftLocked = false;
+
+        private bool pressedJump = false;
+
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
-            spriteBatch.Begin();
-            foreach (Painter p in painters)
+
+
+            Sprite bg = gameEngine.GetBackground(GAME_WIDTH, GAME_HEIGHT);
+            GraphicsDevice.Clear(Color.WhiteSmoke);
+
+            switch (gamestate)
             {
-                p.Draw(gameTime, spriteBatch);
+                case GameState.Menu:
+                    {
+                        spriteBatch.Begin();
+                        IsMouseVisible = true;
+                        spriteBatch.Draw(mainMenuTexture, new Rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT), Color.White);
+                        newgame.Draw(spriteBatch);
+                        loadgame.Draw(spriteBatch);
+                        options.Draw(spriteBatch);
+                        exit.Draw(spriteBatch);
+                        spriteBatch.Draw(logo, new Rectangle(290, 80, 200, 100), null,
+                                    Color.White, 0, Vector2.Zero,
+                                    SpriteEffects.None, 1);
+                        spriteBatch.End();
+                    }
+                    break;
+                case GameState.InGame:
+                    {
+                        // draw bg first ALWAYS!
+
+                        GraphicsDevice.Clear(Color.Black);
+                        spriteBatch.Begin();
+                        foreach (Painter p in painters)
+                        {
+                            p.Draw(gameTime, spriteBatch);
+                        }
+                            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+
+                        MouseState currentMouse = Mouse.GetState();
+                        Vector2 pos = new Vector2(currentMouse.X, currentMouse.Y);
+
+                        //spriteBatch.Draw(bg.Texture, pos, Color.White);
+
+                        spriteBatch.End();
+                    }
+                    break;
+
+                case GameState.LoadGame:
+                    {
+                        IsMouseVisible = true;
+                        string loadGame = "Select your saved game";
+                        spriteBatch.Begin();
+                        spriteBatch.Draw(mainMenuTexture, new Rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT), Color.White);
+                        newgame.Draw(spriteBatch);
+                        spriteBatch.DrawString(spriteManager.font, loadGame, new Vector2(300, 100), Color.Red);
+                        spriteBatch.End();
+                    }
+                    break;
+
+                case GameState.Options:
+                    {
+                        IsMouseVisible = true;
+                        string options = "Under construction. :(";
+                        spriteBatch.Begin();
+                        spriteBatch.DrawString(spriteManager.font, options, new Vector2(200, 100), Color.Black);
+                        spriteBatch.End();
+                    }
+                    break;
+
+                case GameState.Exit:
+                    Exit();
+                    break;
             }
-            spriteBatch.End();
             base.Draw(gameTime);
         }
 
