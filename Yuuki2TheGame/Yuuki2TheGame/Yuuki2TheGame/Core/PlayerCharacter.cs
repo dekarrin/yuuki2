@@ -14,7 +14,7 @@ namespace Yuuki2TheGame.Core
         public const int MASS = 75;
         public const float WALK_FORCE = 500.0f;
         public const float JUMP_FORCE = 45000.0f;
-        public const float MAX_SPEED = 5.0f;
+        public const float MAX_SPEED = 10.0f;
 
 
         private bool movingLeft = false;

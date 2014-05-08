@@ -14,7 +14,7 @@ namespace Yuuki2TheGame.Graphics
     /// </summary>
     class DebugPainter : Painter
     {
-        public static int START_Y = 525;
+        public static int START_Y = 510;
 
         private static DebugPainter instance;
 
@@ -68,12 +68,13 @@ namespace Yuuki2TheGame.Graphics
             Vector2 fric = pc.Friction;
             Vector2 drag = pc.Drag;
             Vector2 f = pc.Force;
-            string[] debug = new string[5];
+            string[] debug = new string[6];
             debug[0] = string.Format("P:({0:N7}, {1:N7})", s.X, s.Y);
             debug[1] = string.Format("V:({0:N7}, {1:N7})", v.X, v.Y);
             debug[2] = string.Format("A:({0:N7}, {1:N7})", a.X, a.Y);
             debug[3] = string.Format("F:({0:N7}, {1:N7}), Fric:({2:N7}, {3:N7}), Drag:({4:N7}, {5:N7})", f.X, f.Y, fric.X, fric.Y, drag.X, drag.Y);
             debug[4] = string.Format("M:{0:N2}  C:{1}  G:{2}", pc.Mass, Convert.ToString(pc.ContactMask, 2).PadLeft(4, '0'), pc.IsOnGround());
+            debug[5] = string.Format("Arm:{0}  Leg:{1}  Flipped:{2}", pc.ArmAnimationFrame, pc.LegAnimationFrame, pc.Flipped);
             for (int i = 0; i < debug.Length; i++)
             {
                 batch.DrawString(DefaultFont, debug[i], new Vector2(5, START_Y + (i * 15)), Color.Red);

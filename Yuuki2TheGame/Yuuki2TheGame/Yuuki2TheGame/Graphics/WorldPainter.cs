@@ -196,7 +196,7 @@ namespace Yuuki2TheGame.Graphics
 
         private void DrawForeLeg(SpriteBatch batch, Sprite sp)
         {
-            DrawAnimBodyPart(batch, sp, ((GameCharacter)sp.Creator).ArmAnimationFrame, CHAR_FRAME_PELVIS, CHAR_ROW_LEG_FRONT_START, CHAR_ROW_LEG_FRONT_END);
+            DrawAnimBodyPart(batch, sp, ((GameCharacter)sp.Creator).LegAnimationFrame, CHAR_FRAME_PELVIS, CHAR_ROW_LEG_FRONT_START, CHAR_ROW_LEG_FRONT_END);
         }
 
         private void DrawPelvis(SpriteBatch batch, Sprite sp)

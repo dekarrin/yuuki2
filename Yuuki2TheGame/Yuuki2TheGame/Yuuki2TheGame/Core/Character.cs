@@ -96,7 +96,7 @@ namespace Yuuki2TheGame.Core
 
         public bool Flipped { get; private set; }
 
-        private bool noMoveLastUpdate = true;
+        private bool noAnimLastUpdate = true;
 
         /// <summary>
         /// Called by game engine; tells instance to update self.
@@ -104,29 +104,43 @@ namespace Yuuki2TheGame.Core
         /// <param name="gameTime">Amount of time passed since last update.</param>
         public override void Update(GameTime gameTime)
         {
-            if (IsMovingHorizontally())
+            if (IsOnGround())
             {
-                if (noMoveLastUpdate)
+                if (IsMovingHorizontally())
                 {
-                    LastAnimChange = gameTime.TotalGameTime.TotalMilliseconds;
-                    noMoveLastUpdate = false;
+                    if (noAnimLastUpdate)
+                    {
+                        LastAnimChange = gameTime.TotalGameTime.TotalMilliseconds;
+                        noAnimLastUpdate = false;
+                    }
+                    else
+                    {
+                        double timeSinceChange = gameTime.TotalGameTime.TotalMilliseconds - LastAnimChange;
+                        if (timeSinceChange >= AnimationDelay)
+                        {
+                            ArmAnimationFrame++;
+                            LegAnimationFrame++;
+                            ArmAnimationFrame %= 2;
+                            LegAnimationFrame %= 4;
+                            LastAnimChange = gameTime.TotalGameTime.TotalMilliseconds;
+                        }
+                        float ratio = Math.Abs(Velocity.X) / (float)PlayerCharacter.MAX_SPEED;
+                        int subtraction = (int)(ratio * 350);
+                        AnimationDelay = 500 - subtraction;
+                    }
                 }
                 else
                 {
-                    double timeSinceChange = gameTime.TotalGameTime.TotalMilliseconds - LastAnimChange;
-                    if (timeSinceChange >= AnimationDelay)
-                    {
-                        ArmAnimationFrame++;
-                        LegAnimationFrame++;
-                        ArmAnimationFrame %= 2;
-                        LegAnimationFrame %= 4;
-                        LastAnimChange = gameTime.TotalGameTime.TotalMilliseconds;
-                    }
+                    noAnimLastUpdate = true;
+                    ArmAnimationFrame = 0;
+                    LegAnimationFrame = 0;
                 }
             }
             else
             {
-                noMoveLastUpdate = true;
+                noAnimLastUpdate = true;
+                ArmAnimationFrame = 1;
+                LegAnimationFrame = 1;
             }
         }
 
