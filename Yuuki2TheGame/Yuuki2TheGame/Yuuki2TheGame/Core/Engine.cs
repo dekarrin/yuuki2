@@ -241,24 +241,26 @@ namespace Yuuki2TheGame.Core
 
         private void MineBlock(int x, int y)
         {
-            int globalx = (x + this.Camera.Position.X) / Game1.METER_LENGTH;
-            int globaly = (y + this.Camera.Position.Y) / Game1.METER_LENGTH;
-            Point coords = new Point(globalx, globaly);
-            Point pos = new Point(x + Camera.Position.X, y + Camera.Position.Y);
-            Block b = World.BlockAt(coords);
-            if (b != mine.Block && mine.Block != null && mine.Block.Health > 0)
+            if (Player.Active)
             {
-                mine.Block.Restore();
+                int globalx = (x + this.Camera.Position.X) / Game1.METER_LENGTH;
+                int globaly = (y + this.Camera.Position.Y) / Game1.METER_LENGTH;
+                Point coords = new Point(globalx, globaly);
+                Point pos = new Point(x + Camera.Position.X, y + Camera.Position.Y);
+                Block b = World.BlockAt(coords);
+                if (b != mine.Block && mine.Block != null && mine.Block.Health > 0)
+                {
+                    mine.Block.Restore();
+                }
+                mine.Block = b;
+                InventorySlot activeSlot = Player.Inventory.ActiveSlot;
+                Item toUse = ((activeSlot.Item != null) ? activeSlot.Item : new Item(ItemID.Hands));
+                int used = toUse.Use(pos, coords, World, Player);
+                if (toUse == activeSlot.Item)
+                {
+                    activeSlot.Count -= used;
+                }
             }
-            mine.Block = b;
-            InventorySlot activeSlot = Player.Inventory.ActiveSlot;
-            Item toUse = ((activeSlot.Item != null) ? activeSlot.Item : new Item(ItemID.Hands));
-            int used = toUse.Use(pos, coords, World, Player);
-            if (toUse == activeSlot.Item)
-            {
-                activeSlot.Count -= used;
-            }
-
 
         }
 
