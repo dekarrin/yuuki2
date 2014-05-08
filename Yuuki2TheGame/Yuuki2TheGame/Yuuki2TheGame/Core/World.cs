@@ -71,6 +71,8 @@ namespace Yuuki2TheGame.Core
             Map = GenerateMap(width, height);
             physics = new PhysicsController(phys.Wind, phys.Gravity, phys.MediumDensity, phys.SurfaceFriction, phys.Timescale);
             physics.AddMap(this);
+            physics.SetBoundaryUse(true);
+            physics.SetWorldBoundaries(0, 0, PhysicsController.MetersToPixels(width), PhysicsController.MetersToPixels(height));
         }
 
         public void AddEntity(ActiveEntity ent)
