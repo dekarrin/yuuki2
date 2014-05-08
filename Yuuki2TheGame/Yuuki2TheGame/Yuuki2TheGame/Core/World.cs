@@ -49,7 +49,7 @@ namespace Yuuki2TheGame.Core
 
         private IList<ActiveEntity> _entities = new List<ActiveEntity>();
 
-        private IList<ActiveEntity> _characters = new List<ActiveEntity>();
+        private IList<GameCharacter> _characters = new List<GameCharacter>();
 
         public IList<ActiveEntity> Entities
         {
@@ -85,13 +85,13 @@ namespace Yuuki2TheGame.Core
             _entities.Remove(ent);
         }
 
-        public void AddCharacter(ActiveEntity ch)
+        public void AddCharacter(GameCharacter ch)
         {
             _characters.Add(ch);
             physics.AddPhob(ch);
         }
 
-        public void RemoveCharacter(ActiveEntity ch)
+        public void RemoveCharacter(GameCharacter ch)
         {
             physics.RemovePhob(ch);
             _characters.Remove(ch);
@@ -197,6 +197,10 @@ namespace Yuuki2TheGame.Core
             foreach (ActiveEntity ent in _entities)
             {
                 ent.Update(gameTime);
+            }
+            foreach (GameCharacter gc in _characters)
+            {
+                gc.Update(gameTime);
             }
             if (!ManualPhysStepMode)
             {

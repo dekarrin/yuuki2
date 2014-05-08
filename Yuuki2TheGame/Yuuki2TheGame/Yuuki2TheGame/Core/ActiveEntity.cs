@@ -360,12 +360,22 @@ namespace Yuuki2TheGame.Core
 
         public bool IsMovingHorizontally()
         {
-            return (Math.Abs(Velocity.X) <= 0.00000001);
+            return !(Math.Abs(Velocity.X) <= 0.0000001);
         }
 
         public bool IsMovingVertically()
         {
-            return (Math.Abs(Velocity.Y) <= 0.00000001);
+            return !(Math.Abs(Velocity.Y) <= 0.0000001);
+        }
+
+        public bool IsAcceleratingHorizontally()
+        {
+            return !(Math.Abs(Acceleration.X) <= 0.0000001);
+        }
+
+        public bool IsAcceleratingVertically()
+        {
+            return !(Math.Abs(Acceleration.Y) <= 0.0000001);
         }
 
         public override void Teleport(Point p)

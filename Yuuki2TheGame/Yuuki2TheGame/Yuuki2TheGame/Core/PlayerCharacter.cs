@@ -66,6 +66,7 @@ namespace Yuuki2TheGame.Core
             {
                 ApplyImpulse(new Vector2(0, -JUMP_FORCE));
             }
+            base.Jump();
         }
 
         public override void StartMovingLeft()
@@ -75,6 +76,7 @@ namespace Yuuki2TheGame.Core
                 movingLeft = true;
                 ApplyLeftForce();
             }
+            base.StartMovingLeft();
         }
 
         public override void StartMovingRight()
@@ -84,6 +86,7 @@ namespace Yuuki2TheGame.Core
                 movingRight = true;
                 ApplyRightForce();
             }
+            base.StartMovingRight();
         }
 
         public override void StopMovingLeft()
@@ -93,6 +96,7 @@ namespace Yuuki2TheGame.Core
                 movingLeft = false;
                 RemoveForce("move_left");
             }
+            base.StopMovingLeft();
         }
 
         public override void StopMovingRight()
@@ -102,6 +106,7 @@ namespace Yuuki2TheGame.Core
                 movingRight = false;
                 RemoveForce("move_right");
             }
+            base.StopMovingRight();
         }
 
         private void ApplyLeftForce()

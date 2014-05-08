@@ -227,40 +227,42 @@ namespace Yuuki2TheGame.Graphics
         private void DrawAnimBodyPart(SpriteBatch batch, Sprite sp, int frame, int destFrame, int frameRowStart, int frameRowEnd)
         {
 
-            DrawAnimFrame(batch, frame, ((GameCharacter)sp.Creator).SpriteBase, destFrame, sp.Destination, frameRowStart, frameRowEnd);
+            DrawAnimFrame(batch, frame, ((GameCharacter)sp.Creator).SpriteBase, destFrame, sp.Destination, frameRowStart, frameRowEnd, ((GameCharacter)sp.Creator).Flipped);
             if (((GameCharacter)sp.Creator).CostumeBase != -1)
             {
                 int col = CHAR_COL_BASE_END + 1 + ((GameCharacter)sp.Creator).CostumeBase;
-                DrawAnimFrame(batch, frame, col, destFrame, sp.Destination, frameRowStart, frameRowEnd);
+                DrawAnimFrame(batch, frame, col, destFrame, sp.Destination, frameRowStart, frameRowEnd, ((GameCharacter)sp.Creator).Flipped);
             }
         }
 
         private void DrawStaticBodyPart(SpriteBatch batch, Sprite sp, int destFrame, int row)
         {
-            DrawFrame(batch, row, ((GameCharacter)sp.Creator).SpriteBase, destFrame, sp.Destination);
+            DrawFrame(batch, row, ((GameCharacter)sp.Creator).SpriteBase, destFrame, sp.Destination, ((GameCharacter)sp.Creator).Flipped);
             if (((GameCharacter)sp.Creator).CostumeBase != -1)
             {
                 int col = CHAR_COL_BASE_END + 1 + ((GameCharacter)sp.Creator).CostumeBase;
-                DrawFrame(batch, row, col, destFrame, sp.Destination);
+                DrawFrame(batch, row, col, destFrame, sp.Destination, ((GameCharacter)sp.Creator).Flipped);
             }
         }
 
-        private void DrawAnimFrame(SpriteBatch batch, int frame, int col, int destFrame, Rectangle dest, int frameStartRow, int frameEndRow)
+        private void DrawAnimFrame(SpriteBatch batch, int frame, int col, int destFrame, Rectangle dest, int frameStartRow, int frameEndRow, bool flip)
         {
             int displayedHeight = dest.Height / 3;
             Texture2D tex = TextureFromID(@"Sprites\sprites");
             Rectangle source = AnimSourceRect(frame, frameStartRow, frameEndRow, col);
             Rectangle destRect = new Rectangle(dest.X, dest.Y + (destFrame * displayedHeight), dest.Width, displayedHeight);
-            batch.Draw(tex, destRect, source, Color.White);
+            SpriteEffects effects = (flip) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            batch.Draw(tex, destRect, source, Color.White, 0.0f, Vector2.Zero, effects, 0.0f);
         }
 
-        private void DrawFrame(SpriteBatch batch, int row, int col, int destFrame, Rectangle dest)
+        private void DrawFrame(SpriteBatch batch, int row, int col, int destFrame, Rectangle dest, bool flip)
         {
             int displayedHeight = dest.Height / 3;
             Texture2D tex = TextureFromID(@"Sprites\sprites");
             Rectangle source = CharSourceRect(row, col);
             Rectangle destRect = new Rectangle(dest.X, dest.Y + (destFrame * displayedHeight), dest.Width, displayedHeight);
-            batch.Draw(tex, destRect, source, Color.White);
+            SpriteEffects effects = (flip) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            batch.Draw(tex, destRect, source, Color.White, 0.0f, Vector2.Zero, effects, 0.0f);
         }
 
         private Rectangle AnimSourceRect(int frame, int frameStartRow, int frameEndRow, int col)

@@ -67,6 +67,9 @@ namespace Yuuki2TheGame.Core
             this.Health = health;
             this.BaseArmor = baseArmor;
             this.BaseAttack = baseAttack;
+            Flipped = false;
+            ArmAnimationFrame = 0;
+            LegAnimationFrame = 0;
         }
 
         /// <summary>
@@ -90,24 +93,24 @@ namespace Yuuki2TheGame.Core
 
         private long TimeSinceAnimChange { get; set; }
 
+        public bool Flipped { get; private set; }
+
         /// <summary>
         /// Called by game engine; tells instance to update self.
         /// </summary>
         /// <param name="gameTime">Amount of time passed since last update.</param>
         public override void Update(GameTime gameTime)
         {
-            if (IsMovingHorizontally())
-            {
-
-            }
         }
 
         public virtual void StartMovingLeft()
         {
+            Flipped = true;
         }
 
         public virtual void StartMovingRight()
         {
+            Flipped = false;
         }
 
         public virtual void StopMovingLeft()
