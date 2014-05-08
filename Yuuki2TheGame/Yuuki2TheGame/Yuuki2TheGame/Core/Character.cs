@@ -125,6 +125,10 @@ namespace Yuuki2TheGame.Core
                             LegAnimationFrame++;
                             ArmAnimationFrame %= 2;
                             LegAnimationFrame %= 4;
+                            if ((LegAnimationFrame + 1) % 2 == 0)
+                            {
+                                Engine.AudioEngine.PlayStep();
+                            }
                             LastAnimChange = gameTime.TotalGameTime.TotalMilliseconds;
                         }
                         float ratio = Math.Abs(Velocity.X) / (float)PlayerCharacter.MAX_SPEED;

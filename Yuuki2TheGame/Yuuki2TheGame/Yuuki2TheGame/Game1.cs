@@ -62,9 +62,19 @@ namespace Yuuki2TheGame
 
             SoundEffect bgm = Content.Load<SoundEffect>("Backround");
             SoundEffect swing01 = Content.Load<SoundEffect>("swing01");
+            SoundEffect squish = Content.Load<SoundEffect>("squish");
+            SoundEffect step = Content.Load<SoundEffect>("step");
             GameAudio.Add(bgm);
             GameAudio.Add(swing01);
-
+            GameAudio.Add(squish);
+            GameAudio.Add(step);
+            GameAudio.Add(Content.Load<SoundEffect>("teleport"));
+            GameAudio.Add(Content.Load<SoundEffect>("block_break"));
+            GameAudio.Add(Content.Load<SoundEffect>("block_place"));
+            GameAudio.Add(Content.Load<SoundEffect>("item_contact"));
+            GameAudio.Add(Content.Load<SoundEffect>("item_pickup"));
+            GameAudio.Add(Content.Load<SoundEffect>("jump"));
+            GameAudio.Add(Content.Load<SoundEffect>("land"));
 
 
             FileHelperEngine engine = new FileHelperEngine(typeof(GameDataObject));

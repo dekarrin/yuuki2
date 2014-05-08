@@ -124,6 +124,7 @@ namespace Yuuki2TheGame.Core
         {
             if (Player.Active)
             {
+                AudioEngine.PlaySquish();
                 foreach (BodyPart part in parts)
                 {
                     World.RemoveEntity(part);
@@ -201,6 +202,7 @@ namespace Yuuki2TheGame.Core
 
         public void Respawn()
         {
+            AudioEngine.PlayTele();
             Player.Teleport(Spawn);
             Player.Active = true;
         }

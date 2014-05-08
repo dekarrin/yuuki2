@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Yuuki2TheGame.Physics;
 
 namespace Yuuki2TheGame.Core
 {
@@ -28,10 +29,20 @@ namespace Yuuki2TheGame.Core
             this.Texture = item.Texture;
         }
 
+        protected override void ContactMaskChanged(int oldValue)
+        {
+            if (IsOnGround() && ((oldValue & (int)ContactType.DOWN) == 0))
+            {
+                Engine.AudioEngine.PlayItemContact();
+            }
+            base.ContactMaskChanged(oldValue);
+        }
+
         public Item PickUp()
         {
             if (OnPicked != null)
             {
+                Engine.AudioEngine.PlayItemPickup();
                 OnPicked(this);
             }
             return Item;

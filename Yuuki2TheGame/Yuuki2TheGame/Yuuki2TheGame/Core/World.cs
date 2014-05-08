@@ -342,6 +342,7 @@ namespace Yuuki2TheGame.Core
 
         private void HandleBlockDestruction(Block b)
         {
+            Engine.AudioEngine.PlayBlockBreak();
             Item drop = b.Item;
             Point p = new Point();
             p.X = (int)b.BlockPosition.X;

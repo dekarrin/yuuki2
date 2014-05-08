@@ -69,6 +69,10 @@ namespace Yuuki2TheGame.Core
             {
                 ApplyRightForce();
             }
+            if (IsOnGround() && ((oldValue & (int)ContactType.DOWN) == 0))
+            {
+                Engine.AudioEngine.PlayLand();
+            }
             base.ContactMaskChanged(oldValue);
         }
 
@@ -76,6 +80,7 @@ namespace Yuuki2TheGame.Core
         {
             if (IsOnGround() && !jumping && Active)
             {
+                Engine.AudioEngine.PlayJump();
                 jumping = true;
                 ApplyImpulse(new Vector2(0, -JUMP_FORCE));
             }

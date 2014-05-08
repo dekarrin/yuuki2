@@ -10,6 +10,15 @@ namespace Yuuki2TheGame.Core
     {
         SoundEffectInstance bgm;
         SoundEffectInstance action;
+        SoundEffectInstance squish;
+        SoundEffectInstance step;
+        SoundEffectInstance tele;
+        SoundEffectInstance blockBreak;
+        SoundEffectInstance blockPlace;
+        SoundEffectInstance itemContact;
+        SoundEffectInstance itemPickup;
+        SoundEffectInstance jump;
+        SoundEffectInstance land;
         public SoundEngine(List<SoundEffect> GameAudio)
         {
             bgm = GameAudio[0].CreateInstance();
@@ -17,7 +26,15 @@ namespace Yuuki2TheGame.Core
             bgm.Play();
 
             action = GameAudio[1].CreateInstance();
-            
+            squish = GameAudio[2].CreateInstance();
+            step = GameAudio[3].CreateInstance();
+            tele = GameAudio[4].CreateInstance();
+            blockBreak = GameAudio[5].CreateInstance();
+            blockPlace = GameAudio[6].CreateInstance();
+            itemContact = GameAudio[7].CreateInstance();
+            itemPickup = GameAudio[8].CreateInstance();
+            jump = GameAudio[9].CreateInstance();
+            land = GameAudio[10].CreateInstance();
         }
 
         public void PlaySound()
@@ -25,6 +42,75 @@ namespace Yuuki2TheGame.Core
             if (action.State != SoundState.Playing)
             {
                 action.Play();
+            }
+        }
+
+        public void PlaySquish()
+        {
+            if (squish.State != SoundState.Playing)
+            {
+                squish.Play();
+            }
+        }
+
+
+        public void PlayStep()
+        {
+            if (step.State != SoundState.Playing)
+            {
+                step.Play();
+            }
+        }
+
+        public void PlayTele()
+        {
+            if (tele.State != SoundState.Playing)
+            {
+                tele.Play();
+            }
+        }
+
+        public void PlayBlockPlace()
+        {
+            if (blockPlace.State != SoundState.Playing)
+            {
+                blockPlace.Play();
+            }
+        }
+
+        public void PlayBlockBreak()
+        {
+            if (blockBreak.State != SoundState.Playing)
+            {
+                blockBreak.Play();
+            }
+        }
+        public void PlayItemContact()
+        {
+            if (itemContact.State != SoundState.Playing)
+            {
+                itemContact.Play();
+            }
+        }
+        public void PlayItemPickup()
+        {
+            if (itemPickup.State != SoundState.Playing)
+            {
+                itemPickup.Play();
+            }
+        }
+        public void PlayJump()
+        {
+            if (jump.State != SoundState.Playing)
+            {
+                jump.Play();
+            }
+        }
+        public void PlayLand()
+        {
+            if (land.State != SoundState.Playing)
+            {
+                land.Play();
             }
         }
     }
