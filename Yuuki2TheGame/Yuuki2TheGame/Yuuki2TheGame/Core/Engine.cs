@@ -85,7 +85,8 @@ namespace Yuuki2TheGame.Core
             Player = new PlayerCharacter("Becky", Spawn, 100, 10, 10);
             World.AddCharacter(Player);
             Rectangle camLimits = new Rectangle(0, 0, Game1.METER_LENGTH * Game1.WORLD_WIDTH, Game1.METER_LENGTH * Game1.WORLD_HEIGHT);
-            Camera = new Camera(new Point(Game1.GAME_WIDTH, Game1.GAME_HEIGHT), Player, new Point(-100, -300), camLimits);
+            Rectangle camBox = new Rectangle(Game1.GAME_WIDTH / 4, Game1.GAME_HEIGHT / 4, Game1.GAME_WIDTH / 2, Game1.GAME_HEIGHT / 2);
+            Camera = new Camera(new Point(Game1.GAME_WIDTH, Game1.GAME_HEIGHT), Player, camBox, camLimits);
             AudioEngine = new SoundEngine(Game1.GameAudio);
         }
 
@@ -98,17 +99,6 @@ namespace Yuuki2TheGame.Core
             phys.SurfaceFriction = PHYS_SURFACE_FRICTION;
             phys.Timescale = PHYS_TIMESCALE;
             World = new World(size.X, size.Y, phys);
-        }
-
-        private int TESTcycle = 0;
-
-        private void TESTCamMove()
-        {
-            TESTcycle = (TESTcycle + 1) % 60;
-            if (TESTcycle == 0)
-            {
-                Camera.TargetOffsetX += 1;
-            }
         }
 
         public IList<InventorySlot> GetQuickSlots()

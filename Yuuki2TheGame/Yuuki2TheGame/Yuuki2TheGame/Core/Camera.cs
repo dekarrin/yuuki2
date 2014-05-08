@@ -17,37 +17,7 @@ namespace Yuuki2TheGame.Core
 
         public Rectangle Range { get; set; }
 
-        public int TargetOffsetX
-        {
-            get
-            {
-                return _offsetx;
-            }
-            set
-            {
-                _offsetx = value;
-                if (_follow != null)
-                {
-                    X = Math.Min(Math.Max(_follow.Position.X + _offsetx, Range.X), (Range.X + Range.Width - 1) - (Width - 1));
-                }
-            }
-        }
-
-        public int TargetOffsetY
-        {
-            get
-            {
-                return _offsety;
-            }
-            set
-            {
-                _offsety = value;
-                if (_follow != null)
-                {
-                    Y = Math.Min(Math.Max(_follow.Position.Y + _offsety, Range.Y), (Range.Y + Range.Height - 1) - (Height - 1));
-                }
-            }
-        }
+        public Rectangle TargetBox { get; private set; }
 
         public ScreenEntity Target {
             get
@@ -64,8 +34,7 @@ namespace Yuuki2TheGame.Core
                 if (_follow != null)
                 {
                     _follow.OnPositionChanged += HandleMovement;
-                    X = Math.Min(Math.Max(_follow.Position.X + TargetOffsetX, Range.X), (Range.X + Range.Width - 1) - (Width - 1));
-                    Y = Math.Min(Math.Max(_follow.Position.Y + TargetOffsetY, Range.Y), (Range.Y + Range.Height - 1) - (Height - 1));
+                    Focus(_follow.Position);
                 }
             }
         }
@@ -81,18 +50,43 @@ namespace Yuuki2TheGame.Core
             }
         }
 
-        public Camera(Point size, ScreenEntity gc, Point offset, Rectangle range) : base(size)
+        public Camera(Point size, ScreenEntity gc, Rectangle targetBox, Rectangle range)
+            : base(size)
         {
-            TargetOffsetX = offset.X; // must set targetoffset before target!
-            TargetOffsetY = offset.Y;
-            Target = gc;
+            TargetBox = targetBox;
             Range = range;
+            Target = gc;
         }
 
         public void HandleMovement(object sender, PositionChangedEventArgs e)
         {
-            X = Math.Min(Math.Max(e.NewPosition.X + TargetOffsetX, Range.X), (Range.X + Range.Width - 1) - (Width - 1));
-            Y = Math.Min(Math.Max(e.NewPosition.Y + TargetOffsetY, Range.Y), (Range.Y + Range.Height - 1) - (Height - 1));
+            Point p = e.NewPosition;
+            Focus(p);
+        }
+
+        private void Focus(Point p)
+        {
+            if (p.X > X + TargetBox.X + TargetBox.Width - 1)
+            {
+                X = Math.Min(p.X - (TargetBox.Width - 1) - TargetBox.X, (Range.X + Range.Width - 1) - (Width - 1));
+            }
+            else if (p.X < X + TargetBox.X)
+            {
+                X = Math.Max(p.X - TargetBox.X, Range.X);
+            }
+            if (p.Y > Y + TargetBox.Y + TargetBox.Height - 1)
+            {
+                Y = Math.Min(p.Y - (TargetBox.Height - 1) - TargetBox.Y, (Range.Y + Range.Height - 1) - (Height - 1));
+            }
+            else if (p.Y < Y + TargetBox.Y)
+            {
+                Y = Math.Max(p.Y - TargetBox.Y, Range.Y);
+            }
+        }
+
+        private void IsInTargetBox(Point p)
+        {
+            bool inHorz = (p.X >= X + TargetBox.X);
         }
 
     }
