@@ -83,13 +83,14 @@ namespace Yuuki2TheGame.Core
             InInventoryScreen = false;
             InDebugMode = false;
             CreateWorld(size);
-            Spawn = new Point(50, (size.Y / 2) * Game1.METER_LENGTH - 50);
+            Spawn = new Point((size.X / 2) * Game1.METER_LENGTH, (size.Y / 2) * Game1.METER_LENGTH - 80);
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", Spawn, 100, 10, 10);
             World.AddCharacter(Player);
             Rectangle camLimits = new Rectangle(0, 0, Game1.METER_LENGTH * Game1.WORLD_WIDTH, Game1.METER_LENGTH * Game1.WORLD_HEIGHT);
             Rectangle camBox = new Rectangle(Game1.GAME_WIDTH / 4, Game1.GAME_HEIGHT / 4, Game1.GAME_WIDTH / 2, Game1.GAME_HEIGHT / 2);
             Camera = new Camera(new Point(Game1.GAME_WIDTH, Game1.GAME_HEIGHT), Player, camBox, camLimits);
+            Camera.Center();
             AudioEngine = new SoundEngine(Game1.GameAudio);
         }
 

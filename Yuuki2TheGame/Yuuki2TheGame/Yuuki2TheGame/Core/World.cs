@@ -101,17 +101,29 @@ namespace Yuuki2TheGame.Core
 
         public IList<IList<Block>> GenerateMap(int width, int height)
         {
+            Random rand = new Random();
             Width = width;
             Height = height;
+            int seed = ((rand.Next(3)) - 1) + Height / 2;
             IList<IList<Block>> map = new List<IList<Block>>();
             for(int x = 0; x < Width; x++){ //Temporary algorithm: Iterates through all blocks on the bottom half of the map.
                 IList<Block> slice = new List<Block>();
+                seed += (rand.Next(3) - 1);
+                int wSeed = seed;
                 for (int y = 0; y < Height; y++)
                 {
-                    if (y > Height / 2)
+                    if (y > seed)
                     {
-                        int type = Math.Min(x / (Width / 3), 2);
-                        slice.Add(CreateBlock(type, x, y));
+                        int type;
+                        wSeed += (rand.Next(3) - 1);
+                        if(x > (2 * (2* wSeed / 3)))
+                        {
+                            type = 2;
+                        }
+                        else {
+                            type = Math.Min((y - (Height / 2)) / (seed / 3), 1);
+                        }
+                            slice.Add(CreateBlock(type, x, y));
                     }
                     else
                     {

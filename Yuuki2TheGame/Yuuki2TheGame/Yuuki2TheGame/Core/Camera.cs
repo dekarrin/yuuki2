@@ -11,10 +11,6 @@ namespace Yuuki2TheGame.Core
 
         private ScreenEntity _follow;
 
-        private int _offsetx;
-
-        private int _offsety;
-
         public Rectangle Range { get; set; }
 
         public Rectangle TargetBox { get; private set; }
@@ -56,6 +52,16 @@ namespace Yuuki2TheGame.Core
             TargetBox = targetBox;
             Range = range;
             Target = gc;
+        }
+
+        public void Center()
+        {
+            int x = Target.X - ((Width / 2) - (Target.Width / 2));
+            int y = Target.Y - ((Height / 2) - (Target.Height / 2));
+            x = Math.Min(x, (Range.X + Range.Width - 1) - (Width - 1));
+            X = Math.Max(x, Range.X);
+            y = Math.Min(y, (Range.Y + Range.Height - 1) - (Height - 1));
+            Y = Math.Max(y, Range.Y);
         }
 
         public void HandleMovement(object sender, PositionChangedEventArgs e)

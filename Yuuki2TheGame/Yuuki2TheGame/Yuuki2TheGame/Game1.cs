@@ -363,7 +363,7 @@ namespace Yuuki2TheGame
             }, false);
             controls.BindKeyDown(Keys.F3, delegate(KeyEventArgs e)
             {
-                gameEngine.GiveItem(ItemID.BlockDirt, 1);
+                gameEngine.GiveItem(ItemID.BlockWood, 1);
             }, true);
             controls.BindKeyDown(Keys.F4, delegate(KeyEventArgs e)
             {
