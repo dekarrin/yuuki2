@@ -69,7 +69,7 @@ namespace Yuuki2TheGame.Core
             {
                 ApplyRightForce();
             }
-            if (IsOnGround() && ((oldValue & (int)ContactType.DOWN) == 0))
+            if (Active && IsOnGround() && ((oldValue & (int)ContactType.DOWN) == 0))
             {
                 Engine.AudioEngine.PlayLand();
             }
