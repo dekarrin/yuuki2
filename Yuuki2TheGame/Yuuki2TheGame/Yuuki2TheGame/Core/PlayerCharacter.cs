@@ -10,11 +10,13 @@ namespace Yuuki2TheGame.Core
     class PlayerCharacter : GameCharacter
     {
         public const int WIDTH = Game1.METER_LENGTH * 1;
-        public const int HEIGHT = Game1.METER_LENGTH * 2;
+        public const int HEIGHT = Game1.METER_LENGTH * 3;
+        public const int MASS = 75;
         public const float WALK_FORCE = 500.0f;
         public const float JUMP_FORCE = 45000.0f;
-        public const float MAX_SPEED = 5.0f;
+        public const float MAX_SPEED = 10.0f;
 
+        private bool jumping = false;
 
         private bool movingLeft = false;
         private bool movingRight = false;
@@ -22,6 +24,18 @@ namespace Yuuki2TheGame.Core
         public PlayerCharacter(string name, Point pixelLocation, int health, int baseAttack, int baseArmor) : base(name, pixelLocation, new Point(WIDTH, HEIGHT), health, baseAttack, baseArmor)
         {
             this.Inventory = new Inventory(Game1.INVENTORY_ITEMS, Game1.QUICK_SLOTS);
+            this.Mass = MASS;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            jumping = false;
+            if (!Active)
+            {
+                StopMovingLeft();
+                StopMovingRight();
+            }
+            base.Update(gameTime);
         }
 
         protected override void OnPhobCollision(IPhysical phob2)
@@ -55,33 +69,42 @@ namespace Yuuki2TheGame.Core
             {
                 ApplyRightForce();
             }
+            if (IsOnGround() && ((oldValue & (int)ContactType.DOWN) == 0))
+            {
+                Engine.AudioEngine.PlayLand();
+            }
             base.ContactMaskChanged(oldValue);
         }
 
         public override void Jump()
         {
-            if (IsOnGround())
+            if (IsOnGround() && !jumping && Active)
             {
+                Engine.AudioEngine.PlayJump();
+                jumping = true;
                 ApplyImpulse(new Vector2(0, -JUMP_FORCE));
             }
+            base.Jump();
         }
 
         public override void StartMovingLeft()
         {
-            if (!movingLeft)
+            if (!movingLeft && Active)
             {
                 movingLeft = true;
                 ApplyLeftForce();
             }
+            base.StartMovingLeft();
         }
 
         public override void StartMovingRight()
         {
-            if (!movingRight)
+            if (!movingRight && Active)
             {
                 movingRight = true;
                 ApplyRightForce();
             }
+            base.StartMovingRight();
         }
 
         public override void StopMovingLeft()
@@ -91,6 +114,7 @@ namespace Yuuki2TheGame.Core
                 movingLeft = false;
                 RemoveForce("move_left");
             }
+            base.StopMovingLeft();
         }
 
         public override void StopMovingRight()
@@ -100,6 +124,7 @@ namespace Yuuki2TheGame.Core
                 movingRight = false;
                 RemoveForce("move_right");
             }
+            base.StopMovingRight();
         }
 
         private void ApplyLeftForce()

@@ -81,16 +81,20 @@ namespace Yuuki2TheGame
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-
-
-            SoundEffect bgm = Content.Load<SoundEffect>("Sound/Backround");
-            SoundEffect swing01 = Content.Load<SoundEffect>("Sound/swing01");
-            SoundEffect onHover = Content.Load<SoundEffect>("Sound/onHover");
-            SoundEffect onSelect = Content.Load<SoundEffect>("Sound/onHover");
-            GameAudio.Add(bgm);
-            GameAudio.Add(swing01);
-            GameAudio.Add(onHover);
-            GameAudio.Add(onSelect);
+            
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/Backround"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/swing01"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/squish"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/step"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/teleport"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/block_break"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/block_place"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/item_contact"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/item_pickup"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/jump"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/land"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/onHover"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/onSelect"));
 
 
             FileHelperEngine engine = new FileHelperEngine(typeof(GameDataObject));
@@ -142,7 +146,6 @@ namespace Yuuki2TheGame
             logo = Content.Load<Texture2D>(@"MainMenu/logo");
             mainMenuTexture = Content.Load<Texture2D>(@"MainMenu/background");
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
-            IsMouseVisible = true;
             newgame = new Button(Content.Load<Texture2D>(@"MainMenu/newGame"), graphics.GraphicsDevice);
             newgame.setPosition(new Vector2(260, 215));
             loadgame = new Button(Content.Load<Texture2D>(@"MainMenu/loadGame"), graphics.GraphicsDevice);
@@ -172,6 +175,7 @@ namespace Yuuki2TheGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            IsMouseVisible = true;
             KeyboardState keyState = Keyboard.GetState();
             MouseState mouseState = Mouse.GetState();
             switch (gamestate)
@@ -218,15 +222,19 @@ namespace Yuuki2TheGame
 
                     }
                     break;
+
+                case GameState.InGame:
+                    IsMouseVisible = false;
+                    // Allows the game to exit
+                    if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+                        this.Exit();
+                    if (IsActive)
+                    {
+                        controls.Update(gameTime);
+                    }
+                    gameEngine.Update(gameTime);
+                    break;
             }
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
-            if (IsActive)
-            {
-                controls.Update(gameTime);
-            }
-            gameEngine.Update(gameTime);
             base.Update(gameTime);
 
         }
@@ -246,11 +254,6 @@ namespace Yuuki2TheGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-
-
-            Sprite bg = gameEngine.GetBackground(GAME_WIDTH, GAME_HEIGHT);
-            GraphicsDevice.Clear(Color.WhiteSmoke);
-
             switch (gamestate)
             {
                 case GameState.Menu:
@@ -272,17 +275,12 @@ namespace Yuuki2TheGame
                     {
                         // draw bg first ALWAYS!
 
-                        GraphicsDevice.Clear(Color.Black);
+                        GraphicsDevice.Clear(Color.SkyBlue);
                         spriteBatch.Begin();
                         foreach (Painter p in painters)
                         {
                             p.Draw(gameTime, spriteBatch);
                         }
-                            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
-
-                        MouseState currentMouse = Mouse.GetState();
-                        Vector2 pos = new Vector2(currentMouse.X, currentMouse.Y);
-
                         spriteBatch.End();
                     }
                     break;
@@ -356,6 +354,13 @@ namespace Yuuki2TheGame
             controls.BindKeyDown(Keys.W, jump, true);
             controls.BindKeyDown(Keys.Space, jump, true);
             controls.BindKeyDown(Keys.Up, jump, true);
+            controls.BindKeyDown(Keys.F1, delegate(KeyEventArgs e) {
+                gameEngine.InHelpScreen = !gameEngine.InHelpScreen;
+            }, false);
+            controls.BindKeyDown(Keys.F2, delegate(KeyEventArgs e)
+            {
+                gameEngine.Dismember();
+            }, false);
             controls.BindKeyDown(Keys.F3, delegate(KeyEventArgs e)
             {
                 gameEngine.GiveItem(ItemID.BlockDirt, 1);
@@ -382,6 +387,22 @@ namespace Yuuki2TheGame
                 {
                     gameEngine.StepPhysics();
                 }
+            }, false);
+            controls.BindKeyDown(Keys.F9, delegate(KeyEventArgs e)
+            {
+                gameEngine.ChangeClothes(-1);
+            }, false);
+            controls.BindKeyDown(Keys.F10, delegate(KeyEventArgs e)
+            {
+                gameEngine.ChangeClothes(1);
+            }, false);
+            controls.BindKeyDown(Keys.F11, delegate(KeyEventArgs e)
+            {
+                gameEngine.ChangeSkin(-1);
+            }, false);
+            controls.BindKeyDown(Keys.F12, delegate(KeyEventArgs e)
+            {
+                gameEngine.ChangeSkin(1);
             }, false);
             controls.BindMouseScrollUp(delegate(MouseScrollEventArgs e)
             {

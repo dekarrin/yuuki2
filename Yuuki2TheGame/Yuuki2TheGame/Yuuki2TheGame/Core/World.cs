@@ -48,6 +48,9 @@ namespace Yuuki2TheGame.Core
         public bool ManualPhysStepMode { get; set; }
 
         private IList<ActiveEntity> _entities = new List<ActiveEntity>();
+
+        private IList<GameCharacter> _characters = new List<GameCharacter>();
+
         public IList<ActiveEntity> Entities
         {
             get
@@ -68,6 +71,8 @@ namespace Yuuki2TheGame.Core
             Map = GenerateMap(width, height);
             physics = new PhysicsController(phys.Wind, phys.Gravity, phys.MediumDensity, phys.SurfaceFriction, phys.Timescale);
             physics.AddMap(this);
+            physics.SetBoundaryUse(true);
+            physics.SetWorldBoundaries(0, 0, PhysicsController.MetersToPixels(width), PhysicsController.MetersToPixels(height));
         }
 
         public void AddEntity(ActiveEntity ent)
@@ -80,6 +85,18 @@ namespace Yuuki2TheGame.Core
         {
             physics.RemovePhob(ent);
             _entities.Remove(ent);
+        }
+
+        public void AddCharacter(GameCharacter ch)
+        {
+            _characters.Add(ch);
+            physics.AddPhob(ch);
+        }
+
+        public void RemoveCharacter(GameCharacter ch)
+        {
+            physics.RemovePhob(ch);
+            _characters.Remove(ch);
         }
 
         public IList<IList<Block>> GenerateMap(int width, int height)
@@ -183,6 +200,10 @@ namespace Yuuki2TheGame.Core
             {
                 ent.Update(gameTime);
             }
+            foreach (GameCharacter gc in _characters)
+            {
+                gc.Update(gameTime);
+            }
             if (!ManualPhysStepMode)
             {
                 physics.Update(gameTime);
@@ -201,13 +222,28 @@ namespace Yuuki2TheGame.Core
             {
                 if (e.Bounds.Intersects(view))
                 {
-                    Point position = new Point(e.Bounds.X - view.X, e.Bounds.Y - view.Y);
-                    Point size = new Point(e.Width, e.Height);
-                    Yuuki2TheGame.Graphics.Sprite spr = new Yuuki2TheGame.Graphics.Sprite(position, size, e.Texture);
+                    Yuuki2TheGame.Graphics.Sprite spr = e.Sprite;
+                    spr.Position = new Point(spr.Position.X - view.X, spr.Position.Y - view.Y);
                     ents.Add(spr);
                 }
             }
             return ents;
+        }
+
+        public IList<Yuuki2TheGame.Graphics.Sprite> GetCharacters(Rectangle view)
+        {
+            IList<Yuuki2TheGame.Graphics.Sprite> chs = new List<Yuuki2TheGame.Graphics.Sprite>();
+            foreach (ActiveEntity c in _characters)
+            {
+                if (c.Bounds.Intersects(view))
+                {
+
+                    Yuuki2TheGame.Graphics.Sprite spr = c.Sprite;
+                    spr.Position = new Point(spr.Position.X - view.X, spr.Position.Y - view.Y); 
+                    chs.Add(spr);
+                }
+            }
+            return chs;
         }
 
         /// <summary>
@@ -306,6 +342,7 @@ namespace Yuuki2TheGame.Core
 
         private void HandleBlockDestruction(Block b)
         {
+            Engine.AudioEngine.PlayBlockBreak();
             Item drop = b.Item;
             Point p = new Point();
             p.X = (int)b.BlockPosition.X;

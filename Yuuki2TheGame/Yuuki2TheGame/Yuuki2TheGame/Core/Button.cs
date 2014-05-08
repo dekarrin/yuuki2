@@ -20,7 +20,7 @@ namespace Yuuki2TheGame.Core
             texture = newTexture;
             size = new Vector2(graphics.Viewport.Width / 3, graphics.Viewport.Height / 10);
         }
-
+        private bool firstHoverUpdate = false;
         public bool isclicked;
         public void Update(MouseState mouse)
         {
@@ -28,11 +28,21 @@ namespace Yuuki2TheGame.Core
             Rectangle mouseRectangle = new Rectangle(mouse.X, mouse.Y, 1, 1);
             if (mouseRectangle.Intersects(rectangle))
             {
-                color.B = 130;
-                if (mouse.LeftButton == ButtonState.Pressed) isclicked = true;
+                if (!firstHoverUpdate)
+                {
+                    firstHoverUpdate = true;
+                    Engine.AudioEngine.PlayOnHover();
+                    color.B = 130;
+                }
+                if (mouse.LeftButton == ButtonState.Pressed)
+                {
+                    isclicked = true;
+                    Engine.AudioEngine.PlayOnSelect();
+                }
             }
             else if(color.B < 255)
             {
+                firstHoverUpdate = false;
                 color.B = 255;
                 isclicked = false;
             }

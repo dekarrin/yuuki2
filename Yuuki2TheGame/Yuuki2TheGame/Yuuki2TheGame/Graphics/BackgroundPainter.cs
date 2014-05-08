@@ -20,11 +20,11 @@ namespace Yuuki2TheGame.Graphics
 
         public static int SPRITE_WIDTH = 512;
 
-        public static double LAYER_OFFSET_TOP = 1.3;
+        public static double LAYER_OFFSET_TOP = 1.2;
 
-        public static double LAYER_OFFSET_MID = 1.2;
+        public static double LAYER_OFFSET_MID = 1.1;
 
-        public static double LAYER_OFFSET_BOT = 1.1;
+        public static double LAYER_OFFSET_BOT = 1.05;
 
         public static int Y_START = 100;
 
@@ -62,6 +62,8 @@ namespace Yuuki2TheGame.Graphics
         protected override void Load()
         {
             LoadTexture(@"Backgrounds\plains");
+            LoadTexture(@"Backgrounds\plains_fade");
+            CreateRect("$backdrop", Game1.GAME_WIDTH, Game1.GAME_HEIGHT);
         }
 
         protected override void Unload()
@@ -72,6 +74,24 @@ namespace Yuuki2TheGame.Graphics
             DrawLayer(batch, 0, LAYER_OFFSET_TOP, LAYER_Y_OFFSET_TOP);
             DrawLayer(batch, 1, LAYER_OFFSET_MID, LAYER_Y_OFFSET_MID);
             DrawLayer(batch, 2, LAYER_OFFSET_BOT, LAYER_Y_OFFSET_BOT);
+            DrawFade(batch);
+        }
+
+        private void DrawFade(SpriteBatch batch)
+        {
+            Texture2D drop = TextureFromID("$backdrop");
+            Rectangle dropDest = drop.Bounds;
+            dropDest.Y = Y_START + LAYER_Y_OFFSET_BOT + SPRITE_HEIGHT + 28;
+            batch.Draw(drop, dropDest, new Color(169, 121, 62));
+            Texture2D fade = TextureFromID(@"Backgrounds\plains_fade");
+            int offX = ((int)(engine.Camera.X * LAYER_OFFSET_BOT)) % SPRITE_WIDTH;
+            int y = Y_START + LAYER_Y_OFFSET_BOT + SPRITE_HEIGHT - 2;
+            Rectangle dest = new Rectangle(-offX, y, fade.Width, fade.Height);
+            while (dest.X < engine.Camera.Width)
+            {
+                batch.Draw(fade, dest, Color.White);
+                dest.X += SPRITE_WIDTH;
+            }
         }
 
         private void DrawLayer(SpriteBatch batch, int sectionNum, double layerOffset, int layerYOffset)

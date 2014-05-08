@@ -152,6 +152,7 @@ namespace Yuuki2TheGame.Core
             {
                 if (map.AddBlock(caller.BlockID, coords))
                 {
+                    Engine.AudioEngine.PlayBlockPlace();
                     return 1;
                 }
                 else

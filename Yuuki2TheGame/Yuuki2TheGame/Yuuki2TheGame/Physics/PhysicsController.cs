@@ -48,12 +48,35 @@ namespace Yuuki2TheGame.Physics
 
         private IList<IPhysical> deferredRemovals = new List<IPhysical>();
 
+        private int minX = 0;
+
+        private int minY = 0;
+
+        private int maxX = 10000;
+
+        private int maxY = 10000;
+
+        private bool useBounds = false;
+
         public PhysicsController(float wind, float gravity, float density, float friction, float timescale)
         {
             this.friction = friction;
             this.timescale = timescale;
             this.mediumDensity = density;
             this.globalAcceleration = new Vector2(wind, gravity);
+        }
+
+        public void SetBoundaryUse(bool useBounds)
+        {
+            this.useBounds = useBounds;
+        }
+
+        public void SetWorldBoundaries(int minX, int minY, int maxX, int maxY)
+        {
+            this.minX = minX;
+            this.minY = minY;
+            this.maxX = maxX;
+            this.maxY = maxY;
         }
 
         public void AddMap(World map)
@@ -76,10 +99,10 @@ namespace Yuuki2TheGame.Physics
             foreach (IPhysical phob in phobs)
             {
                 phob.UpdatePhysics(secs * timescale);
-                CheckLandCollision(phob, ContactType.DOWN);
-                CheckLandCollision(phob, ContactType.UP);
-                CheckLandCollision(phob, ContactType.RIGHT);
-                CheckLandCollision(phob, ContactType.LEFT);
+                CheckWorldCollision(phob, ContactType.DOWN);
+                CheckWorldCollision(phob, ContactType.UP);
+                CheckWorldCollision(phob, ContactType.RIGHT);
+                CheckWorldCollision(phob, ContactType.LEFT);
                 CheckPhobCollision(phob);
             }
             inUpdate = false;
@@ -182,9 +205,13 @@ namespace Yuuki2TheGame.Physics
             }
         }
 
-        private void CheckLandCollision(IPhysical phob, ContactType type)
+        private void CheckWorldCollision(IPhysical phob, ContactType type)
         {
             Block contact = CheckLandContact(phob, type);
+            if (useBounds && contact == null)
+            {
+                contact = CheckBoundsContact(phob, type);
+            }
             if (contact != null && !phob.IsInContact(type))
             {
                 Point correction;
@@ -214,6 +241,44 @@ namespace Yuuki2TheGame.Physics
             {
                 accessors[phob].setContactMask(phob.ContactMask & ~(int)type);
             }
+        }
+
+        private Block CheckBoundsContact(IPhysical toCheck, ContactType type)
+        {
+            Block contact = null;
+            Rectangle box = toCheck.Bounds;
+            switch (type)
+            {
+                default:
+                case ContactType.DOWN:
+                    if (box.Y >= maxY - box.Height)
+                    {
+                        contact = new Block(BlockID.Dirt, (int)PixelsToMeters(box.X), (int)PixelsToMeters(maxY));
+                    }
+                    break;
+
+                case ContactType.UP:
+                    if (box.Y <= minY)
+                    {
+                        contact = new Block(BlockID.Dirt, (int)PixelsToMeters(box.X), (int)PixelsToMeters(minY) - 1);
+                    }
+                    break;
+
+                case ContactType.RIGHT:
+                    if (box.X >= maxX - box.Width)
+                    {
+                        contact = new Block(BlockID.Dirt, (int)PixelsToMeters(maxX), (int)PixelsToMeters(box.Y));
+                    }
+                    break;
+
+                case ContactType.LEFT:
+                    if (box.X <= minX)
+                    {
+                        contact = new Block(BlockID.Dirt, (int)PixelsToMeters(minX) - 1, (int)PixelsToMeters(box.Y));
+                    }
+                    break;
+            }
+            return contact;
         }
 
         private Block CheckLandContact(IPhysical toCheck, ContactType type)

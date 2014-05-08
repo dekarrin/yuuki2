@@ -37,6 +37,16 @@ namespace Yuuki2TheGame.Core
             }
         }
 
+        public bool Active { get; set; }
+
+        public int ArmAnimationFrame { get; protected set; }
+
+        public int LegAnimationFrame { get; protected set; }
+
+        public int SpriteBase { get; set; }
+
+        public int CostumeBase { get; set; }
+
         public string Name { get; set; }
 
         public int BaseAttack { get; set; }
@@ -59,7 +69,11 @@ namespace Yuuki2TheGame.Core
             this.Health = health;
             this.BaseArmor = baseArmor;
             this.BaseAttack = baseAttack;
-            this.Texture = @"Characters/character";
+            Flipped = false;
+            ArmAnimationFrame = 0;
+            LegAnimationFrame = 0;
+            AnimationDelay = 500;
+            Active = true;
         }
 
         /// <summary>
@@ -77,19 +91,74 @@ namespace Yuuki2TheGame.Core
         }
 
         /// <summary>
+        /// In ms
+        /// </summary>
+        protected double AnimationDelay { get; set; }
+
+        private double LastAnimChange { get; set; }
+
+        public bool Flipped { get; private set; }
+
+        private bool noAnimLastUpdate = true;
+
+        /// <summary>
         /// Called by game engine; tells instance to update self.
         /// </summary>
         /// <param name="gameTime">Amount of time passed since last update.</param>
         public override void Update(GameTime gameTime)
         {
+            if (IsOnGround())
+            {
+                if (IsMovingHorizontally())
+                {
+                    if (noAnimLastUpdate)
+                    {
+                        LastAnimChange = gameTime.TotalGameTime.TotalMilliseconds;
+                        noAnimLastUpdate = false;
+                    }
+                    else
+                    {
+                        double timeSinceChange = gameTime.TotalGameTime.TotalMilliseconds - LastAnimChange;
+                        if (timeSinceChange >= AnimationDelay)
+                        {
+                            ArmAnimationFrame++;
+                            LegAnimationFrame++;
+                            ArmAnimationFrame %= 2;
+                            LegAnimationFrame %= 4;
+                            if ((LegAnimationFrame + 1) % 2 == 0)
+                            {
+                                Engine.AudioEngine.PlayStep();
+                            }
+                            LastAnimChange = gameTime.TotalGameTime.TotalMilliseconds;
+                        }
+                        float ratio = Math.Abs(Velocity.X) / (float)PlayerCharacter.MAX_SPEED;
+                        int subtraction = (int)(ratio * 350);
+                        AnimationDelay = 500 - subtraction;
+                    }
+                }
+                else
+                {
+                    noAnimLastUpdate = true;
+                    ArmAnimationFrame = 0;
+                    LegAnimationFrame = 0;
+                }
+            }
+            else
+            {
+                noAnimLastUpdate = true;
+                ArmAnimationFrame = 1;
+                LegAnimationFrame = 1;
+            }
         }
 
         public virtual void StartMovingLeft()
         {
+            Flipped = true;
         }
 
         public virtual void StartMovingRight()
         {
+            Flipped = false;
         }
 
         public virtual void StopMovingLeft()

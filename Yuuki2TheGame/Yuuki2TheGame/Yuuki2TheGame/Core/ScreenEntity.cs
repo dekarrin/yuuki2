@@ -257,7 +257,7 @@ namespace Yuuki2TheGame.Core
         /// passed to drawing functions. The Sprite simply takes the position, size and
         /// texture ID and combines them into one class.
         /// </summary>
-        public Yuuki2TheGame.Graphics.Sprite Sprite
+        public virtual Yuuki2TheGame.Graphics.Sprite Sprite
         {
             get
             {
