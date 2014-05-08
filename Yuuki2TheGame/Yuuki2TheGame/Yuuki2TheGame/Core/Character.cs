@@ -59,6 +59,7 @@ namespace Yuuki2TheGame.Core
             this.Health = health;
             this.BaseArmor = baseArmor;
             this.BaseAttack = baseAttack;
+            this.Texture = @"Characters/character";
         }
 
         /// <summary>
