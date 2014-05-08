@@ -64,6 +64,7 @@ namespace Yuuki2TheGame.Graphics
             CreateRect("$overlay", width, height);
             CreateRect("$slot", SLOT_LENGTH - (SLOT_BORDER_WIDTH * 2), SLOT_LENGTH - (SLOT_BORDER_WIDTH * 2));
             CreateRect("$slot_border", SLOT_LENGTH, SLOT_LENGTH);
+            CreateRect("$help_screen", 5 * (Game1.GAME_WIDTH / 6), 5 * (Game1.GAME_HEIGHT / 6));
             LoadTexture(@"Items\dirt");
             LoadTexture(@"Items\grass");
             LoadTexture(@"Items\stone");
@@ -81,6 +82,10 @@ namespace Yuuki2TheGame.Graphics
                 DrawOverlay(batch);
             }
             DrawQuickSlots(batch);
+            if (engine.InHelpScreen)
+            {
+                DrawHelp(batch);
+            }
         }
 
         private void DrawOverlay(SpriteBatch batch)
@@ -96,6 +101,50 @@ namespace Yuuki2TheGame.Graphics
                 int y = SLOT_SPACING + ((i / quicks.Count) * (SLOT_LENGTH + SLOT_SPACING));
                 DrawSlot(batch, slots[i], x, y, OVERLAY_SLOT_COLOR);
             }
+        }
+
+        private void DrawHelp(SpriteBatch batch)
+        {
+            Texture2D screen = TextureFromID("$help_screen");
+            Rectangle dest = screen.Bounds;
+            dest.X = Game1.GAME_WIDTH / 12;
+            dest.Y = Game1.GAME_HEIGHT / 12;
+            batch.Draw(screen, dest, Color.White);
+            IList<string> helps = new List<string>();
+            helps.Add("Yuuki 2: The Game - Help");
+            helps.Add("");
+            helps.Add("Click a block with no item selected to mine it!");
+            helps.Add("Click empty space with a block selected to place it!");
+            helps.Add("");
+            helps.Add("");
+            helps.Add("Key Bindings");
+            helps.Add("");
+            helps.Add("D, Left       - Move left");
+            helps.Add("A, Right      - Move right");
+            helps.Add("W, Up, Space  - Jump");
+            helps.Add("Esc           - Open inventory");
+            helps.Add("Scroll        - Change selected item");
+            helps.Add("0-7           - Select quick slots");
+            helps.Add("F1            - Toggle this help");
+            helps.Add("F2            - Dismember player");
+            helps.Add("F3            - Give items");
+            helps.Add("F4            - Toggle Debug information");
+            helps.Add("F5            - Toggle manual physics stepping");
+            helps.Add("F6            - Record physics timing info");
+            helps.Add("F7            - Respawn");
+            helps.Add("F8            - Step physics (when manual stepping is on)");
+            helps.Add("F9            - Change skin down");
+            helps.Add("F10           - Change skin up");
+            helps.Add("F11           - Change outfit down");
+            helps.Add("F12           - Change outfit up");
+            int x = Game1.GAME_WIDTH / 12 + 5;
+            int y = Game1.GAME_HEIGHT / 12 + 5;
+            foreach (string h in helps)
+            {
+                batch.DrawString(DefaultFont, h, new Vector2(x, y), Color.Black);
+                y += 15;
+            }
+
         }
 
         private void DrawQuickSlots(SpriteBatch batch)
