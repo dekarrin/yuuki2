@@ -70,6 +70,7 @@ namespace Yuuki2TheGame.Core
             Flipped = false;
             ArmAnimationFrame = 0;
             LegAnimationFrame = 0;
+            AnimationDelay = 500;
         }
 
         /// <summary>
@@ -89,11 +90,13 @@ namespace Yuuki2TheGame.Core
         /// <summary>
         /// In ms
         /// </summary>
-        protected long AnimationDelay { get; set; }
+        protected double AnimationDelay { get; set; }
 
-        private long TimeSinceAnimChange { get; set; }
+        private double LastAnimChange { get; set; }
 
         public bool Flipped { get; private set; }
+
+        private bool noMoveLastUpdate = true;
 
         /// <summary>
         /// Called by game engine; tells instance to update self.
@@ -101,6 +104,30 @@ namespace Yuuki2TheGame.Core
         /// <param name="gameTime">Amount of time passed since last update.</param>
         public override void Update(GameTime gameTime)
         {
+            if (IsMovingHorizontally())
+            {
+                if (noMoveLastUpdate)
+                {
+                    LastAnimChange = gameTime.TotalGameTime.TotalMilliseconds;
+                    noMoveLastUpdate = false;
+                }
+                else
+                {
+                    double timeSinceChange = gameTime.TotalGameTime.TotalMilliseconds - LastAnimChange;
+                    if (timeSinceChange >= AnimationDelay)
+                    {
+                        ArmAnimationFrame++;
+                        LegAnimationFrame++;
+                        ArmAnimationFrame %= 2;
+                        LegAnimationFrame %= 4;
+                        LastAnimChange = gameTime.TotalGameTime.TotalMilliseconds;
+                    }
+                }
+            }
+            else
+            {
+                noMoveLastUpdate = true;
+            }
         }
 
         public virtual void StartMovingLeft()

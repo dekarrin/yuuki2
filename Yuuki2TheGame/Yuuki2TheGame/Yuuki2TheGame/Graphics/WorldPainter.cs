@@ -76,7 +76,7 @@ namespace Yuuki2TheGame.Graphics
 
         public const int CHAR_ANIM_OFFSET_ARM = 1;
 
-        public const int CHAR_ANIM_OFFSET_LEG = 1;
+        public const int CHAR_ANIM_OFFSET_LEG = 2;
 
         private Engine engine;
 
