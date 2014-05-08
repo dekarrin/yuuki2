@@ -125,6 +125,7 @@ namespace Yuuki2TheGame
             Components.Add(spriteManager);
             int butts = 0;
             butts++;
+            butts++;
             base.Initialize();
         }
 
@@ -281,8 +282,6 @@ namespace Yuuki2TheGame
 
                         MouseState currentMouse = Mouse.GetState();
                         Vector2 pos = new Vector2(currentMouse.X, currentMouse.Y);
-
-                        //spriteBatch.Draw(bg.Texture, pos, Color.White);
 
                         spriteBatch.End();
                     }
