@@ -167,6 +167,12 @@ namespace Yuuki2TheGame.Graphics
             DrawForeArm(batch, sp);
             DrawForeHand(batch, sp);
             DrawHead(batch, sp);
+            DrawEyes(batch, sp);
+        }
+
+        private void DrawEyes(SpriteBatch batch, Sprite sp)
+        {
+            DrawStaticBodyPart(batch, sp, CHAR_FRAME_HEAD, CHAR_ROW_EYES);
         }
 
         private void DrawHead(SpriteBatch batch, Sprite sp)

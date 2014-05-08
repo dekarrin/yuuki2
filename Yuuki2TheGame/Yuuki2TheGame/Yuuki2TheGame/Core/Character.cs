@@ -41,9 +41,9 @@ namespace Yuuki2TheGame.Core
 
         public int LegAnimationFrame { get; protected set; }
 
-        public int SpriteBase { get; protected set; }
+        public int SpriteBase { get; set; }
 
-        public int CostumeBase { get; protected set; }
+        public int CostumeBase { get; set; }
 
         public string Name { get; set; }
 

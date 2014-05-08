@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Yuuki2TheGame.Graphics;
@@ -22,7 +23,7 @@ namespace Yuuki2TheGame.Core
     {
         public const float PHYS_WIND = 0f;
 
-        public const float PHYS_GRAVITY = 4.806f;
+        public const float PHYS_GRAVITY = 9.806f;
 
         public const float PHYS_TIMESCALE = 1.0f;
 
@@ -38,6 +39,8 @@ namespace Yuuki2TheGame.Core
         public bool InInventoryScreen { get; set; }
 
         public bool InDebugMode { get; set; }
+
+        public bool InHelpScreen { get; set; }
 
         private MineState mine = new MineState();
 
@@ -88,6 +91,31 @@ namespace Yuuki2TheGame.Core
             Rectangle camBox = new Rectangle(Game1.GAME_WIDTH / 4, Game1.GAME_HEIGHT / 4, Game1.GAME_WIDTH / 2, Game1.GAME_HEIGHT / 2);
             Camera = new Camera(new Point(Game1.GAME_WIDTH, Game1.GAME_HEIGHT), Player, camBox, camLimits);
             AudioEngine = new SoundEngine(Game1.GameAudio);
+        }
+
+        public void ChangeClothes(int amount)
+        {
+            Player.CostumeBase += amount;
+            if (Player.CostumeBase > 2)
+            {
+                Player.CostumeBase = -1;
+            }
+            else if (Player.CostumeBase < -1)
+            {
+                Player.CostumeBase = 2;
+            }
+        }
+        public void ChangeSkin(int amount)
+        {
+            Player.SpriteBase += amount;
+            if (Player.SpriteBase > 3)
+            {
+                Player.SpriteBase = 0;
+            }
+            else if (Player.SpriteBase < 0)
+            {
+                Player.SpriteBase = 3;
+            }
         }
 
         private void CreateWorld(Point size)

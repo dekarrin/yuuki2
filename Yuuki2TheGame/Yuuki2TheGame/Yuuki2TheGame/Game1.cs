@@ -203,6 +203,9 @@ namespace Yuuki2TheGame
             controls.BindKeyDown(Keys.W, jump, true);
             controls.BindKeyDown(Keys.Space, jump, true);
             controls.BindKeyDown(Keys.Up, jump, true);
+            controls.BindKeyDown(Keys.F1, delegate(KeyEventArgs e) {
+                gameEngine.InHelpScreen = !gameEngine.InHelpScreen;
+            }, false);
             controls.BindKeyDown(Keys.F3, delegate(KeyEventArgs e)
             {
                 gameEngine.GiveItem(ItemID.BlockDirt, 1);
@@ -228,6 +231,22 @@ namespace Yuuki2TheGame
                 if (gameEngine.ManualPhysStepMode) {
                     gameEngine.StepPhysics();
                 }
+            }, false);
+            controls.BindKeyDown(Keys.F9, delegate(KeyEventArgs e)
+            {
+                gameEngine.ChangeClothes(-1);
+            }, false);
+            controls.BindKeyDown(Keys.F10, delegate(KeyEventArgs e)
+            {
+                gameEngine.ChangeClothes(1);
+            }, false);
+            controls.BindKeyDown(Keys.F11, delegate(KeyEventArgs e)
+            {
+                gameEngine.ChangeSkin(-1);
+            }, false);
+            controls.BindKeyDown(Keys.F12, delegate(KeyEventArgs e)
+            {
+                gameEngine.ChangeSkin(1);
             }, false);
             controls.BindMouseScrollUp(delegate(MouseScrollEventArgs e)
             {
