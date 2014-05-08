@@ -81,29 +81,20 @@ namespace Yuuki2TheGame
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-
-
-            SoundEffect bgm = Content.Load<SoundEffect>("Sound/Backround");
-            SoundEffect swing01 = Content.Load<SoundEffect>("Sound/swing01");
-            SoundEffect onHover = Content.Load<SoundEffect>("Sound/onHover");
-            SoundEffect onSelect = Content.Load<SoundEffect>("Sound/onHover");
-            GameAudio.Add(bgm);
-            GameAudio.Add(swing01);
-            SoundEffect squish = Content.Load<SoundEffect>("squish");
-            SoundEffect step = Content.Load<SoundEffect>("step");
-            GameAudio.Add(bgm);
-            GameAudio.Add(swing01);
-            GameAudio.Add(squish);
-            GameAudio.Add(step);
-            GameAudio.Add(Content.Load<SoundEffect>("teleport"));
-            GameAudio.Add(Content.Load<SoundEffect>("block_break"));
-            GameAudio.Add(Content.Load<SoundEffect>("block_place"));
-            GameAudio.Add(Content.Load<SoundEffect>("item_contact"));
-            GameAudio.Add(Content.Load<SoundEffect>("item_pickup"));
-            GameAudio.Add(Content.Load<SoundEffect>("jump"));
-            GameAudio.Add(Content.Load<SoundEffect>("land"));
-            GameAudio.Add(onHover);
-            GameAudio.Add(onSelect);
+            
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/Backround"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/swing01"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/squish"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/step"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/teleport"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/block_break"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/block_place"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/item_contact"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/item_pickup"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/jump"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/land"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/onHover"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/onHover"));
 
 
             FileHelperEngine engine = new FileHelperEngine(typeof(GameDataObject));

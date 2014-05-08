@@ -144,14 +144,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="squish.wav">
+    <Compile Include="Sound\squish.wav">
       <Name>squish</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="step.wav">
+    <Compile Include="Sound\step.wav">
       <Name>step</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
@@ -172,7 +172,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="teleport.wav">
+    <Compile Include="Sound\teleport.wav">
       <Name>teleport</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
@@ -186,32 +186,32 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="block_break.wav">
+    <Compile Include="Sound\block_break.wav">
       <Name>block_break</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
-    <Compile Include="block_place.wav">
+    <Compile Include="Sound\block_place.wav">
       <Name>block_place</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
-    <Compile Include="item_contact.wav">
+    <Compile Include="Sound\item_contact.wav">
       <Name>item_contact</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
-    <Compile Include="item_pickup.wav">
+    <Compile Include="Sound\item_pickup.wav">
       <Name>item_pickup</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
-    <Compile Include="jump.wav">
+    <Compile Include="Sound\jump.wav">
       <Name>jump</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
-    <Compile Include="land.wav">
+    <Compile Include="Sound\land.wav">
       <Name>land</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
