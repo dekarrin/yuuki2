@@ -101,7 +101,7 @@ namespace Yuuki2TheGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            logo = Content.Load<Texture2D>(@"Menupics/YUKKI2");
+            logo = Content.Load<Texture2D>(@"Menupics/logo");
             mainMenuTexture = Content.Load<Texture2D>(@"Menupics/background");
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
             IsMouseVisible = true;
