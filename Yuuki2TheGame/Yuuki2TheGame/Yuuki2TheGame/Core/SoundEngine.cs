@@ -19,6 +19,8 @@ namespace Yuuki2TheGame.Core
         SoundEffectInstance itemPickup;
         SoundEffectInstance jump;
         SoundEffectInstance land;
+        SoundEffectInstance onHover;
+        SoundEffectInstance onSelect;
         public SoundEngine(List<SoundEffect> GameAudio)
         {
             bgm = GameAudio[0].CreateInstance();
@@ -35,6 +37,8 @@ namespace Yuuki2TheGame.Core
             itemPickup = GameAudio[8].CreateInstance();
             jump = GameAudio[9].CreateInstance();
             land = GameAudio[10].CreateInstance();
+            onHover = GameAudio[11].CreateInstance();
+            onSelect = GameAudio[12].CreateInstance();
         }
 
         public void PlaySound()
@@ -111,6 +115,22 @@ namespace Yuuki2TheGame.Core
             if (land.State != SoundState.Playing)
             {
                 land.Play();
+            }
+        }
+
+        public void PlayOnHover()
+        {
+            if (onHover.State != SoundState.Playing)
+            {
+                onHover.Play();
+            }
+        }
+
+        public void PlayOnSelect()
+        {
+            if (onSelect.State != SoundState.Playing)
+            {
+                onSelect.Play();
             }
         }
     }

@@ -94,7 +94,7 @@ namespace Yuuki2TheGame
             GameAudio.Add(Content.Load<SoundEffect>("Sound/jump"));
             GameAudio.Add(Content.Load<SoundEffect>("Sound/land"));
             GameAudio.Add(Content.Load<SoundEffect>("Sound/onHover"));
-            GameAudio.Add(Content.Load<SoundEffect>("Sound/onHover"));
+            GameAudio.Add(Content.Load<SoundEffect>("Sound/onSelect"));
 
 
             FileHelperEngine engine = new FileHelperEngine(typeof(GameDataObject));
@@ -146,7 +146,6 @@ namespace Yuuki2TheGame
             logo = Content.Load<Texture2D>(@"MainMenu/logo");
             mainMenuTexture = Content.Load<Texture2D>(@"MainMenu/background");
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
-            IsMouseVisible = true;
             newgame = new Button(Content.Load<Texture2D>(@"MainMenu/newGame"), graphics.GraphicsDevice);
             newgame.setPosition(new Vector2(260, 215));
             loadgame = new Button(Content.Load<Texture2D>(@"MainMenu/loadGame"), graphics.GraphicsDevice);
@@ -176,6 +175,7 @@ namespace Yuuki2TheGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            IsMouseVisible = true;
             KeyboardState keyState = Keyboard.GetState();
             MouseState mouseState = Mouse.GetState();
             switch (gamestate)
@@ -222,15 +222,19 @@ namespace Yuuki2TheGame
 
                     }
                     break;
+
+                case GameState.InGame:
+                    IsMouseVisible = false;
+                    // Allows the game to exit
+                    if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+                        this.Exit();
+                    if (IsActive)
+                    {
+                        controls.Update(gameTime);
+                    }
+                    gameEngine.Update(gameTime);
+                    break;
             }
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
-            if (IsActive)
-            {
-                controls.Update(gameTime);
-            }
-            gameEngine.Update(gameTime);
             base.Update(gameTime);
 
         }
