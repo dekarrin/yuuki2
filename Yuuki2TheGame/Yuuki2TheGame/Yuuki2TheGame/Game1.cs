@@ -153,7 +153,7 @@ namespace Yuuki2TheGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.SkyBlue);
             spriteBatch.Begin();
             foreach (Painter p in painters)
             {
@@ -274,7 +274,7 @@ namespace Yuuki2TheGame
         private void CreatePainters()
         {
             // First in this list means first to paint.
-            //painters.Add(BackgroundPainter.GetInstance(gameEngine, GAME_WIDTH, GAME_HEIGHT));
+            painters.Add(BackgroundPainter.GetInstance(gameEngine, GAME_WIDTH, GAME_HEIGHT));
             painters.Add(WorldPainter.GetInstance(gameEngine));
             painters.Add(HudPainter.GetInstance(gameEngine, GAME_WIDTH, GAME_HEIGHT));
             painters.Add(DebugPainter.GetInstance(gameEngine));
