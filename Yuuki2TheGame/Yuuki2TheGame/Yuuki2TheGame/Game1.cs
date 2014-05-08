@@ -57,7 +57,7 @@ namespace Yuuki2TheGame
         public GameState gamestate = GameState.Menu;
         List<MainMenu> menuButtons = new List<MainMenu>();
         Texture2D mainMenuTexture;
-        Texture2D newGameButton;
+        Texture2D logo;
 
         Button newgame;
         Button loadgame;
@@ -101,7 +101,7 @@ namespace Yuuki2TheGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            newGameButton = Content.Load<Texture2D>(@"Menupics/YUKKI2");
+            logo = Content.Load<Texture2D>(@"Menupics/YUKKI2");
             mainMenuTexture = Content.Load<Texture2D>(@"Menupics/background");
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
             IsMouseVisible = true;
@@ -131,8 +131,6 @@ namespace Yuuki2TheGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
-
             KeyboardState keyState = Keyboard.GetState();
             MouseState mouseState = Mouse.GetState();
             switch (gamestate)
@@ -158,7 +156,6 @@ namespace Yuuki2TheGame
                             gamestate = GameState.Exit;
                         exit.Update(mouseState);
                     }
-
                     break;
 
                 case GameState.LoadGame:
@@ -233,7 +230,6 @@ namespace Yuuki2TheGame
             // TODO: Add your update logic here
             gameEngine.Update(gameTime);
             base.Update(gameTime);
-
         }
 
         private bool mouseLeftLocked = false;
@@ -266,7 +262,7 @@ namespace Yuuki2TheGame
                         options.Draw(spriteBatch);
                         exit.Draw(spriteBatch);
 
-                        spriteBatch.Draw(newGameButton, new Rectangle(290, 80, 200, 100), null,
+                        spriteBatch.Draw(logo, new Rectangle(290, 80, 200, 100), null,
                     Color.White, 0, Vector2.Zero,
                     SpriteEffects.None, 1);
                         spriteBatch.End();
@@ -296,16 +292,19 @@ namespace Yuuki2TheGame
                         spriteBatch.End();
                     }
                     break;
+
                 case GameState.LoadGame:
                     {
                         IsMouseVisible = true;
-                        string options = "Select your saved game";
+                        string loadGame = "Select your saved game";
                         spriteBatch.Begin();
-                        spriteBatch.DrawString(spriteManager.font, options, new Vector2(300, 100), Color.Black);
+                        spriteBatch.Draw(mainMenuTexture, new Rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT), Color.White);
+                        newgame.Draw(spriteBatch);
+                        spriteBatch.DrawString(spriteManager.font, loadGame, new Vector2(300, 100), Color.Red);
                         spriteBatch.End();
-
                     }
                     break;
+
                 case GameState.Options:
                     {
                         IsMouseVisible = true;
@@ -315,17 +314,13 @@ namespace Yuuki2TheGame
                         spriteBatch.End();
                     }
                     break;
+
                 case GameState.Exit:
                     Exit();
                     break;
 
-
-
-
             }
             base.Draw(gameTime);
-
-
         }
 
         private void ProcessSpriteGraphics(IList<Sprite> sprites)
