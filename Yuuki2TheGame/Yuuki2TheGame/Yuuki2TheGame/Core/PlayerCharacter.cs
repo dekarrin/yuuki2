@@ -16,6 +16,7 @@ namespace Yuuki2TheGame.Core
         public const float JUMP_FORCE = 45000.0f;
         public const float MAX_SPEED = 10.0f;
 
+        private bool jumping = false;
 
         private bool movingLeft = false;
         private bool movingRight = false;
@@ -24,6 +25,12 @@ namespace Yuuki2TheGame.Core
         {
             this.Inventory = new Inventory(Game1.INVENTORY_ITEMS, Game1.QUICK_SLOTS);
             this.Mass = MASS;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            jumping = false;
+            base.Update(gameTime);
         }
 
         protected override void OnPhobCollision(IPhysical phob2)
@@ -62,8 +69,9 @@ namespace Yuuki2TheGame.Core
 
         public override void Jump()
         {
-            if (IsOnGround())
+            if (IsOnGround() && !jumping)
             {
+                jumping = true;
                 ApplyImpulse(new Vector2(0, -JUMP_FORCE));
             }
             base.Jump();
