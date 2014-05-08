@@ -79,6 +79,7 @@
     <Compile Include="ControlManager.cs" />
     <Compile Include="Core\ActiveEntity.cs" />
     <Compile Include="Core\BodyPart.cs" />
+    <Compile Include="Core\Button.cs" />
     <Compile Include="Core\Camera.cs" />
     <Compile Include="Core\Character.cs" />
     <Compile Include="Core\Block.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="Core\Item.cs" />
     <Compile Include="Core\Inventory.cs" />
     <Compile Include="Core\SoundEngine.cs" />
+    <Compile Include="Core\SpriteManager.cs" />
     <Compile Include="Core\World.cs" />
     <Compile Include="Data\GameDataObject.cs" />
     <Compile Include="Extensions\ExtensionMethods.cs" />
@@ -100,6 +102,7 @@
     <Compile Include="Graphics\Sprite.cs" />
     <Compile Include="Graphics\Tile.cs" />
     <Compile Include="Graphics\WorldPainter.cs" />
+    <Compile Include="MainMenu.cs" />
     <Compile Include="Physics\DragModel.cs" />
     <Compile Include="Physics\IPhysical.cs" />
     <Compile Include="Physics\IQuadObject.cs" />
