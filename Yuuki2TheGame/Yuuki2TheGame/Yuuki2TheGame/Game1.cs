@@ -83,11 +83,14 @@ namespace Yuuki2TheGame
             Content.RootDirectory = "Content";
 
 
-            SoundEffect bgm = Content.Load<SoundEffect>("Backround");
-            SoundEffect swing01 = Content.Load<SoundEffect>("swing01");
+            SoundEffect bgm = Content.Load<SoundEffect>("Sound/Backround");
+            SoundEffect swing01 = Content.Load<SoundEffect>("Sound/swing01");
+            SoundEffect onHover = Content.Load<SoundEffect>("Sound/onHover");
+            SoundEffect onSelect = Content.Load<SoundEffect>("Sound/onHover");
             GameAudio.Add(bgm);
             GameAudio.Add(swing01);
-
+            GameAudio.Add(onHover);
+            GameAudio.Add(onSelect);
 
 
             FileHelperEngine engine = new FileHelperEngine(typeof(GameDataObject));
