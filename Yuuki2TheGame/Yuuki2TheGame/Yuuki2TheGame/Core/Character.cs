@@ -37,6 +37,8 @@ namespace Yuuki2TheGame.Core
             }
         }
 
+        public bool Active { get; set; }
+
         public int ArmAnimationFrame { get; protected set; }
 
         public int LegAnimationFrame { get; protected set; }
@@ -71,6 +73,7 @@ namespace Yuuki2TheGame.Core
             ArmAnimationFrame = 0;
             LegAnimationFrame = 0;
             AnimationDelay = 500;
+            Active = true;
         }
 
         /// <summary>

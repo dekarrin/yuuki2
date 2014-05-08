@@ -156,18 +156,21 @@ namespace Yuuki2TheGame.Graphics
 
         private void DrawCharacter(SpriteBatch batch, Sprite sp)
         {
-            DrawRearHand(batch, sp);
-            DrawRearArm(batch, sp);
-            DrawRearFoot(batch, sp);
-            DrawRearLeg(batch, sp);
-            DrawPelvis(batch, sp);
-            DrawForeLeg(batch, sp);
-            DrawTorso(batch, sp);
-            DrawForeFoot(batch, sp);
-            DrawForeArm(batch, sp);
-            DrawForeHand(batch, sp);
-            DrawHead(batch, sp);
-            DrawEyes(batch, sp);
+            if (((GameCharacter)sp.Creator).Active)
+            {
+                DrawRearHand(batch, sp);
+                DrawRearArm(batch, sp);
+                DrawRearFoot(batch, sp);
+                DrawRearLeg(batch, sp);
+                DrawPelvis(batch, sp);
+                DrawForeLeg(batch, sp);
+                DrawTorso(batch, sp);
+                DrawForeFoot(batch, sp);
+                DrawForeArm(batch, sp);
+                DrawForeHand(batch, sp);
+                DrawHead(batch, sp);
+                DrawEyes(batch, sp);
+            }
         }
 
         private void DrawEyes(SpriteBatch batch, Sprite sp)

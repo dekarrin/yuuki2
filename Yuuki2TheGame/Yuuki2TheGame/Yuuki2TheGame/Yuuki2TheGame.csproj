@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="ControlManager.cs" />
     <Compile Include="Core\ActiveEntity.cs" />
+    <Compile Include="Core\BodyPart.cs" />
     <Compile Include="Core\Camera.cs" />
     <Compile Include="Core\Character.cs" />
     <Compile Include="Core\Block.cs" />

@@ -30,6 +30,11 @@ namespace Yuuki2TheGame.Core
         public override void Update(GameTime gameTime)
         {
             jumping = false;
+            if (!Active)
+            {
+                StopMovingLeft();
+                StopMovingRight();
+            }
             base.Update(gameTime);
         }
 
@@ -69,7 +74,7 @@ namespace Yuuki2TheGame.Core
 
         public override void Jump()
         {
-            if (IsOnGround() && !jumping)
+            if (IsOnGround() && !jumping && Active)
             {
                 jumping = true;
                 ApplyImpulse(new Vector2(0, -JUMP_FORCE));
@@ -79,7 +84,7 @@ namespace Yuuki2TheGame.Core
 
         public override void StartMovingLeft()
         {
-            if (!movingLeft)
+            if (!movingLeft && Active)
             {
                 movingLeft = true;
                 ApplyLeftForce();
@@ -89,7 +94,7 @@ namespace Yuuki2TheGame.Core
 
         public override void StartMovingRight()
         {
-            if (!movingRight)
+            if (!movingRight && Active)
             {
                 movingRight = true;
                 ApplyRightForce();

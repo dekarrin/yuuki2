@@ -206,6 +206,10 @@ namespace Yuuki2TheGame
             controls.BindKeyDown(Keys.F1, delegate(KeyEventArgs e) {
                 gameEngine.InHelpScreen = !gameEngine.InHelpScreen;
             }, false);
+            controls.BindKeyDown(Keys.F2, delegate(KeyEventArgs e)
+            {
+                gameEngine.Dismember();
+            }, false);
             controls.BindKeyDown(Keys.F3, delegate(KeyEventArgs e)
             {
                 gameEngine.GiveItem(ItemID.BlockDirt, 1);

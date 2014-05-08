@@ -83,7 +83,7 @@ namespace Yuuki2TheGame.Core
             InInventoryScreen = false;
             InDebugMode = false;
             CreateWorld(size);
-            Spawn = new Point(0, (size.Y / 2) * Game1.METER_LENGTH - 30);
+            Spawn = new Point(50, (size.Y / 2) * Game1.METER_LENGTH - 50);
             // temp vars until we can meet with the team
             Player = new PlayerCharacter("Becky", Spawn, 100, 10, 10);
             World.AddCharacter(Player);
@@ -118,6 +118,59 @@ namespace Yuuki2TheGame.Core
             }
         }
 
+        IList<BodyPart> parts = new List<BodyPart>();
+
+        public void Dismember()
+        {
+            if (Player.Active)
+            {
+                foreach (BodyPart part in parts)
+                {
+                    World.RemoveEntity(part);
+                }
+                parts.Clear();
+                Player.Active = false;
+                parts.Add(new BodyPart(WorldPainter.CHAR_ROW_HEAD, Player.SpriteBase));
+                parts.Add(new BodyPart(WorldPainter.CHAR_ROW_TORSO, Player.SpriteBase));
+                parts.Add(new BodyPart(WorldPainter.CHAR_ROW_PELVIS, Player.SpriteBase));
+                parts.Add(new BodyPart(WorldPainter.CHAR_ROW_LEG_FRONT_START + Player.LegAnimationFrame, Player.SpriteBase));
+                parts.Add(new BodyPart(WorldPainter.CHAR_ROW_LEG_BACK_START + Player.LegAnimationFrame + WorldPainter.CHAR_ANIM_OFFSET_LEG, Player.SpriteBase));
+                parts.Add(new BodyPart(WorldPainter.CHAR_ROW_FOOT_FRONT_START + Player.LegAnimationFrame, Player.SpriteBase));
+                parts.Add(new BodyPart(WorldPainter.CHAR_ROW_FOOT_BACK_START + Player.LegAnimationFrame + WorldPainter.CHAR_ANIM_OFFSET_LEG, Player.SpriteBase));
+                parts.Add(new BodyPart(WorldPainter.CHAR_ROW_ARM_FRONT_START + Player.ArmAnimationFrame, Player.SpriteBase));
+                parts.Add(new BodyPart(WorldPainter.CHAR_ROW_ARM_BACK_START + Player.ArmAnimationFrame + WorldPainter.CHAR_ANIM_OFFSET_ARM, Player.SpriteBase));
+                parts.Add(new BodyPart(WorldPainter.CHAR_ROW_HAND_FRONT_START + Player.ArmAnimationFrame, Player.SpriteBase));
+                parts.Add(new BodyPart(WorldPainter.CHAR_ROW_HAND_BACK_START + Player.ArmAnimationFrame + WorldPainter.CHAR_ANIM_OFFSET_ARM, Player.SpriteBase));
+                parts.Add(new BodyPart(WorldPainter.CHAR_ROW_EYES, Player.SpriteBase));
+                if (Player.CostumeBase != -1)
+                {
+                    parts.Add(new BodyPart(WorldPainter.CHAR_ROW_HEAD, WorldPainter.CHAR_COL_BASE_END + 1 + Player.CostumeBase));
+                    parts.Add(new BodyPart(WorldPainter.CHAR_ROW_TORSO, WorldPainter.CHAR_COL_BASE_END + 1 + Player.CostumeBase));
+                    parts.Add(new BodyPart(WorldPainter.CHAR_ROW_PELVIS, WorldPainter.CHAR_COL_BASE_END + 1 + Player.CostumeBase));
+                    parts.Add(new BodyPart(WorldPainter.CHAR_ROW_LEG_FRONT_START + Player.LegAnimationFrame, WorldPainter.CHAR_COL_BASE_END + 1 + Player.CostumeBase));
+                    parts.Add(new BodyPart(WorldPainter.CHAR_ROW_LEG_BACK_START + Player.LegAnimationFrame + WorldPainter.CHAR_ANIM_OFFSET_LEG, WorldPainter.CHAR_COL_BASE_END + 1 + Player.CostumeBase));
+                    parts.Add(new BodyPart(WorldPainter.CHAR_ROW_FOOT_FRONT_START + Player.LegAnimationFrame, WorldPainter.CHAR_COL_BASE_END + 1 + Player.CostumeBase));
+                    parts.Add(new BodyPart(WorldPainter.CHAR_ROW_FOOT_BACK_START + Player.LegAnimationFrame + WorldPainter.CHAR_ANIM_OFFSET_LEG, WorldPainter.CHAR_COL_BASE_END + 1 + Player.CostumeBase));
+                    parts.Add(new BodyPart(WorldPainter.CHAR_ROW_ARM_FRONT_START + Player.ArmAnimationFrame, WorldPainter.CHAR_COL_BASE_END + 1 + Player.CostumeBase));
+                    parts.Add(new BodyPart(WorldPainter.CHAR_ROW_ARM_BACK_START + Player.ArmAnimationFrame + WorldPainter.CHAR_ANIM_OFFSET_ARM, WorldPainter.CHAR_COL_BASE_END + 1 + Player.CostumeBase));
+                    parts.Add(new BodyPart(WorldPainter.CHAR_ROW_HAND_FRONT_START + Player.ArmAnimationFrame, WorldPainter.CHAR_COL_BASE_END + 1 + Player.CostumeBase));
+                    parts.Add(new BodyPart(WorldPainter.CHAR_ROW_HAND_BACK_START + Player.ArmAnimationFrame + WorldPainter.CHAR_ANIM_OFFSET_ARM, WorldPainter.CHAR_COL_BASE_END + 1 + Player.CostumeBase));
+                }
+                Random rng = new Random();
+                foreach (BodyPart part in parts)
+                {
+                    World.AddEntity(part);
+                    Vector2 r = new Vector2();
+                    r.X = rng.Next(-10, 10) * 1000;
+                    r.Y = rng.Next(-10, 10) * 1000;
+                    part.Mass = 10;
+                    part.Position = Player.Position;
+                    part.Velocity = Player.Velocity;
+                    part.ApplyImpulse(r);
+                }
+            }
+        }
+
         private void CreateWorld(Point size)
         {
             World.PhysicalConstants phys = new World.PhysicalConstants();
@@ -149,6 +202,7 @@ namespace Yuuki2TheGame.Core
         public void Respawn()
         {
             Player.Teleport(Spawn);
+            Player.Active = true;
         }
 
         public void StepPhysics()
