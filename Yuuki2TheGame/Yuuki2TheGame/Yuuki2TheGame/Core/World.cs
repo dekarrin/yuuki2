@@ -51,13 +51,7 @@ namespace Yuuki2TheGame.Core
 
         private IList<GameCharacter> _characters = new List<GameCharacter>();
 
-        public IList<ActiveEntity> Entities
-        {
-            get
-            {
-                return ((List<ActiveEntity>)_entities).AsReadOnly();
-            }
-        }
+        public Point Spawn { get; set; }
 
         public IList<IList<Block>> Map { get; private set; }
 
@@ -69,6 +63,7 @@ namespace Yuuki2TheGame.Core
         {
             ManualPhysStepMode = false;
             Map = GenerateMap(width, height);
+            Spawn = CreateSpawn();
             physics = new PhysicsController(phys.Wind, phys.Gravity, phys.MediumDensity, phys.SurfaceFriction, phys.Timescale);
             physics.AddMap(this);
             physics.SetBoundaryUse(true);
@@ -134,6 +129,29 @@ namespace Yuuki2TheGame.Core
             }
             CheckAllDirtBlocks(map);
             return map;
+        }
+
+        private Point CreateSpawn()
+        {
+            Rectangle start = new Rectangle();
+            start.X = Width / 2;
+            start.Y = Height / 2;
+            start.Width = PlayerCharacter.WIDTH;
+            start.Height = PlayerCharacter.HEIGHT;
+            FindClearSpace
+        }
+
+        /// <summary>
+        /// Finds the first clear rectangle starting from the coordinates of the given rect and moving until
+        /// a clear space is found.
+        /// </summary>
+        /// <param name="space">The</param>
+        /// <returns></returns>
+        private Rectangle FindClearSpace(Rectangle space, int incX, int incY)
+        {
+            Point spawn = new Point(Width / 2, Height / 2);
+            while (SpawnIsCovered)
+            return spawn;
         }
 
         public IList<Block> QueryPixels(Rectangle rect)
