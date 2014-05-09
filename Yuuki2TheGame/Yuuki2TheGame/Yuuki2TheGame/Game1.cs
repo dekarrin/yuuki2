@@ -47,11 +47,10 @@ namespace Yuuki2TheGame
 
         private SpriteFont font;
 
+        private SpriteFont menuFont;
+
         private IList<Painter> painters;
 
-        SpriteManager spriteManager;
-        MouseState mbd;
-        MouseState Prevmbd;
         public enum GameState
         {
             Menu,
@@ -125,8 +124,6 @@ namespace Yuuki2TheGame
             InitializePainters();
             BindControls();
             SetWindowSize();
-            spriteManager = new SpriteManager(this);
-            Components.Add(spriteManager);
             int butts = 0;
             butts++;
             butts++;
@@ -143,6 +140,7 @@ namespace Yuuki2TheGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
             defaultTexture = Content.Load<Texture2D>(@"Tiles\default_tile");
             font = Content.Load<SpriteFont>(@"Fonts\Default");
+            menuFont = Content.Load<SpriteFont>(@"Fonts\Menu");
             logo = Content.Load<Texture2D>(@"MainMenu/logo");
             mainMenuTexture = Content.Load<Texture2D>(@"MainMenu/background");
             defaultTexture = Content.Load<Texture2D>(@"Tiles/default_tile");
@@ -224,7 +222,8 @@ namespace Yuuki2TheGame
                     break;
 
                 case GameState.InGame:
-                    IsMouseVisible = false;
+                    MouseState mse = Mouse.GetState();
+                    IsMouseVisible = (mse.X > GAME_WIDTH || mse.Y > GAME_HEIGHT || mse.X < 0 || mse.Y < 0);
                     // Allows the game to exit
                     if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                         this.Exit();
@@ -243,10 +242,6 @@ namespace Yuuki2TheGame
         {
             System.Diagnostics.Debug.WriteLine(str);
         }
-
-        private bool mouseLeftLocked = false;
-
-        private bool pressedJump = false;
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -292,7 +287,7 @@ namespace Yuuki2TheGame
                         spriteBatch.Begin();
                         spriteBatch.Draw(mainMenuTexture, new Rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT), Color.White);
                         newgame.Draw(spriteBatch);
-                        spriteBatch.DrawString(spriteManager.font, loadGame, new Vector2(300, 100), Color.Red);
+                        spriteBatch.DrawString(font, loadGame, new Vector2(300, 100), Color.Red);
                         spriteBatch.End();
                     }
                     break;
@@ -302,7 +297,7 @@ namespace Yuuki2TheGame
                         IsMouseVisible = true;
                         string options = "Under construction. :(";
                         spriteBatch.Begin();
-                        spriteBatch.DrawString(spriteManager.font, options, new Vector2(200, 100), Color.Black);
+                        spriteBatch.DrawString(font, options, new Vector2(200, 100), Color.Black);
                         spriteBatch.End();
                     }
                     break;
