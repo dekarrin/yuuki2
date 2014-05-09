@@ -133,12 +133,20 @@ namespace Yuuki2TheGame.Core
 
         private Point CreateSpawn()
         {
+            Rectangle spawn = new Rectangle(-1, -1, 1, 1);
             Rectangle start = new Rectangle();
             start.X = Width / 2;
             start.Y = Height / 2;
-            start.Width = PlayerCharacter.WIDTH;
-            start.Height = PlayerCharacter.HEIGHT;
-            FindClearSpace
+            start.Width = (int) PhysicsController.PixelsToMeters(PlayerCharacter.WIDTH);
+            start.Height = (int) PhysicsController.PixelsToMeters(PlayerCharacter.HEIGHT);
+            while (spawn.X == -1 || spawn.Y == -1)
+            {
+                spawn = FindClearSpace(start, 0, -1);
+                start.X--;
+            }
+            spawn.X = PhysicsController.MetersToPixels(spawn.X);
+            spawn.Y = PhysicsController.MetersToPixels(spawn.Y);
+            return new Point(spawn.X, spawn.Y);
         }
 
         /// <summary>
@@ -149,9 +157,12 @@ namespace Yuuki2TheGame.Core
         /// <returns></returns>
         private Rectangle FindClearSpace(Rectangle space, int incX, int incY)
         {
-            Point spawn = new Point(Width / 2, Height / 2);
-            while (SpawnIsCovered)
-            return spawn;
+            while (Query(space).Count > 0 && space.X >= 0 && space.Y >= 0)
+            {
+                space.X += incX;
+                space.Y += incY;
+            }
+            return space;
         }
 
         public IList<Block> QueryPixels(Rectangle rect)
