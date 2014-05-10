@@ -38,7 +38,9 @@ namespace Yuuki2TheGame.Graphics
         { }
 
         protected override void Load()
-        { }
+        {
+            CreateRect("$debug_back", Game1.GAME_WIDTH, Game1.GAME_HEIGHT - (START_Y - 2));
+        }
 
         protected override void Unload()
         { }
@@ -61,6 +63,7 @@ namespace Yuuki2TheGame.Graphics
 
         private void DrawDebugInfo(SpriteBatch batch)
         {
+            Texture2D backdrop = TextureFromID("$debug_back");
             PlayerCharacter pc = engine.Player;
             Vector2 s = pc.PhysPosition;
             Vector2 v = pc.Velocity;
@@ -73,8 +76,10 @@ namespace Yuuki2TheGame.Graphics
             debug[1] = string.Format("Vel:({0:N7}, {1:N7})", v.X, v.Y);
             debug[2] = string.Format("Acc:({0:N7}, {1:N7})", a.X, a.Y);
             debug[3] = string.Format("Force:({0:N7}, {1:N7}), Fric:({2:N7}, {3:N7}), Drag:({4:N7}, {5:N7})", f.X, f.Y, fric.X, fric.Y, drag.X, drag.Y);
-            debug[4] = string.Format("Mass:{0:N2}  Contact:{1}", pc.Mass, Convert.ToString(pc.ContactMask, 2).PadLeft(4, '0'));
+            debug[4] = string.Format("Mass:{0:N2}  Contact:{1}", pc.Mass, Convert.ToString(pc.ContactMask, 2).PadLeft(5, '0'));
             debug[5] = string.Format("ArmFrame:{0}  LegFrame:{1}  Flipped:{2}", pc.ArmAnimationFrame, pc.LegAnimationFrame, pc.Flipped);
+            Rectangle destRect = new Rectangle(0, (START_Y - 2), backdrop.Width, backdrop.Height);
+            batch.Draw(backdrop, destRect, new Color(0x80, 0x80, 0x80, 0x80));
             for (int i = 0; i < debug.Length; i++)
             {
                 batch.DrawString(DefaultFont, debug[i], new Vector2(5, START_Y + (i * 15)), Color.Red);
