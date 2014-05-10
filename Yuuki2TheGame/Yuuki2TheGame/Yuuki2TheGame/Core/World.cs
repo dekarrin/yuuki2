@@ -155,7 +155,7 @@ namespace Yuuki2TheGame.Core
         /// </summary>
         /// <param name="space">The</param>
         /// <returns></returns>
-        private Rectangle FindClearSpace(Rectangle space, int incX, int incY)
+        public Rectangle FindClearSpace(Rectangle space, int incX, int incY)
         {
             while (Query(space).Count > 0 && space.X >= 0 && space.Y >= 0)
             {
@@ -163,6 +163,11 @@ namespace Yuuki2TheGame.Core
                 space.Y += incY;
             }
             return space;
+        }
+
+        public bool IsClear(Rectangle space)
+        {
+            return (Query(space).Count == 0);
         }
 
         public IList<Block> QueryPixels(Rectangle rect)

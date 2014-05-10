@@ -33,7 +33,8 @@ namespace Yuuki2TheGame.Physics
         DOWN = 0x01,
         UP = 0x02,
         RIGHT = 0x04,
-        LEFT = 0x08
+        LEFT = 0x08,
+        INNER = 0x10,
     }
 
     interface IPhysical : IQuadObject

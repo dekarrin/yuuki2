@@ -62,7 +62,7 @@ namespace Yuuki2TheGame.Physics
 
         private int maxY = 10000;
 
-        private bool useBounds = false;
+        private bool worldEdgeCollision = false;
 
         public PhysicsController(float wind, float gravity, float density, float friction, float timescale)
         {
@@ -74,7 +74,7 @@ namespace Yuuki2TheGame.Physics
 
         public void SetBoundaryUse(bool useBounds)
         {
-            this.useBounds = useBounds;
+            this.worldEdgeCollision = useBounds;
         }
 
         public void SetWorldBoundaries(int minX, int minY, int maxX, int maxY)
@@ -105,10 +105,10 @@ namespace Yuuki2TheGame.Physics
             foreach (IPhysical phob in activePhobs)
             {
                 phob.UpdatePhysics(secs * timescale);
-                CheckWorldCollision(phob, ContactType.DOWN);
-                CheckWorldCollision(phob, ContactType.UP);
-                CheckWorldCollision(phob, ContactType.RIGHT);
-                CheckWorldCollision(phob, ContactType.LEFT);
+                foreach (ContactType type in Enum.GetValues(typeof(ContactType)))
+                {
+                    CheckWorldCollision(phob, type);
+                }
                 CheckPhobCollision(phob);
             }
             inUpdate = false;
@@ -196,6 +196,7 @@ namespace Yuuki2TheGame.Physics
             switch (type)
             {
                 default:
+                case ContactType.INNER:
                 case ContactType.DOWN:
                 case ContactType.UP:
                     vCorrection = new Vector2(phob.Velocity.X, 0);
@@ -228,9 +229,9 @@ namespace Yuuki2TheGame.Physics
         private void CheckWorldCollision(IPhysical phob, ContactType type)
         {
             Block contact = CheckLandContact(phob, type);
-            if (useBounds && contact == null)
+            if (worldEdgeCollision && contact == null)
             {
-                contact = CheckBoundsContact(phob, type);
+                contact = CheckBoundaryContact(phob, type);
             }
             if (contact != null && !phob.IsInContact(type))
             {
@@ -238,6 +239,7 @@ namespace Yuuki2TheGame.Physics
                 switch (type)
                 {
                     default:
+                    case ContactType.INNER:
                     case ContactType.DOWN:
                         correction = new Point(phob.Bounds.X, contact.Bounds.Top - phob.Bounds.Height);
                         break;
@@ -253,6 +255,7 @@ namespace Yuuki2TheGame.Physics
                     case ContactType.RIGHT:
                         correction = new Point(contact.Bounds.Left - phob.Bounds.Width, phob.Bounds.Y);
                         break;
+
                 }
                 CorrectLandCollision(phob, type, correction);
                 accessors[phob].setContactMask(phob.ContactMask | (int)type);
@@ -263,7 +266,7 @@ namespace Yuuki2TheGame.Physics
             }
         }
 
-        private Block CheckBoundsContact(IPhysical toCheck, ContactType type)
+        private Block CheckBoundaryContact(IPhysical toCheck, ContactType type)
         {
             Block contact = null;
             Rectangle box = toCheck.Bounds;
@@ -297,6 +300,11 @@ namespace Yuuki2TheGame.Physics
                         contact = new Block(BlockID.Dirt, (int)PixelsToMeters(minX) - 1, (int)PixelsToMeters(box.Y));
                     }
                     break;
+
+                case ContactType.INNER:
+                    // do nothing; this is fine as long as the phob never starts past one block
+                    // outside the boundaries
+                    break;
             }
             return contact;
         }
@@ -306,6 +314,7 @@ namespace Yuuki2TheGame.Physics
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
             Rectangle bounds = toCheck.Bounds;
             Rectangle queryBounds;
+            // TODO: this could probably be combined into one call to query
             switch (type)
             {
                 default:
@@ -323,6 +332,10 @@ namespace Yuuki2TheGame.Physics
 
                 case ContactType.RIGHT:
                     queryBounds = new Rectangle(bounds.X + bounds.Width, bounds.Y, CONTACT_EPSILON, bounds.Height);
+                    break;
+
+                case ContactType.INNER:
+                    queryBounds = bounds;
                     break;
             }
             if (RecordingQueryTime)
