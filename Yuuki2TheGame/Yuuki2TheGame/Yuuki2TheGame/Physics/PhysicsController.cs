@@ -28,7 +28,9 @@ namespace Yuuki2TheGame.Physics
         /// </summary>
         private const int MIN_QUAD_SIZE = Game1.METER_LENGTH * 3;
 
-        private IList<IPhysical> phobs = new List<IPhysical>();
+        private IList<IPhysical> activePhobs = new List<IPhysical>();
+
+        private IList<IPhysical> inactivePhobs = new List<IPhysical>();
 
         private IList<IQuadObject> lands = new List<IQuadObject>();
 
@@ -47,6 +49,10 @@ namespace Yuuki2TheGame.Physics
         private volatile bool inUpdate = false;
 
         private IList<IPhysical> deferredRemovals = new List<IPhysical>();
+
+        private IList<IPhysical> deferredActivations = new List<IPhysical>();
+
+        private IList<IPhysical> deferredDeactivations = new List<IPhysical>();
 
         private int minX = 0;
 
@@ -96,7 +102,7 @@ namespace Yuuki2TheGame.Physics
         public void Step(float secs)
         {
             inUpdate = true;
-            foreach (IPhysical phob in phobs)
+            foreach (IPhysical phob in activePhobs)
             {
                 phob.UpdatePhysics(secs * timescale);
                 CheckWorldCollision(phob, ContactType.DOWN);
@@ -106,27 +112,41 @@ namespace Yuuki2TheGame.Physics
                 CheckPhobCollision(phob);
             }
             inUpdate = false;
-            foreach (IPhysical phob in deferredRemovals)
-            {
-                RemovePhob(phob);
-            }
-            deferredRemovals.Clear();
+            MakeDeferredChanges();
         }
 
         public void AddPhob(IPhysical obj)
         {
             PhysicsPrivateMethods acc = obj.AddToEngine(globalAcceleration, mediumDensity, friction);
             accessors[obj] = acc;
-            phobs.Add(obj);
-            phobTree.Insert(obj);
+            obj.OnActivationChanged += HandlePhobActivationChange;
+            if (obj.Active)
+            {
+                activePhobs.Add(obj);
+                phobTree.Insert(obj);
+            }
+            else
+            {
+                inactivePhobs.Add(obj);
+            }
         }
 
         public void RemovePhob(IPhysical obj)
         {
+            // if we are in an update, we are iterating over activePhobs,
+            // so we cannot remove from it
             if (!inUpdate)
             {
-                phobs.Remove(obj);
-                phobTree.Remove(obj);
+                if (obj.Active)
+                {
+                    activePhobs.Remove(obj);
+                    phobTree.Remove(obj);
+                }
+                else
+                {
+                    inactivePhobs.Remove(obj);
+                }
+                obj.OnActivationChanged -= HandlePhobActivationChange;
                 obj.RemoveFromEngine();
             }
             else
@@ -322,6 +342,68 @@ namespace Yuuki2TheGame.Physics
             else
             {
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Makes all pending changes to the phob lists.
+        /// </summary>
+        private void MakeDeferredChanges()
+        {
+            foreach (IPhysical phob in deferredRemovals)
+            {
+                RemovePhob(phob);
+            }
+            foreach (IPhysical phob in deferredDeactivations)
+            {
+                HandlePhobDeactivation(phob);
+            }
+            foreach (IPhysical phob in deferredActivations)
+            {
+                HandlePhobActivation(phob);
+            }
+            deferredRemovals.Clear();
+            deferredDeactivations.Clear();
+            deferredActivations.Clear();
+        }
+
+        private void HandlePhobActivationChange(IPhysical phob)
+        {
+            if (phob.Active)
+            {
+                HandlePhobActivation(phob);
+            }
+            else
+            {
+                HandlePhobDeactivation(phob);
+            }
+        }
+
+        private void HandlePhobDeactivation(IPhysical phob)
+        {
+            if (!inUpdate)
+            {
+                activePhobs.Remove(phob);
+                phobTree.Remove(phob);
+                inactivePhobs.Add(phob);
+            }
+            else
+            {
+                deferredDeactivations.Add(phob);
+            }
+        }
+
+        private void HandlePhobActivation(IPhysical phob)
+        {
+            if (!inUpdate)
+            {
+                inactivePhobs.Remove(phob);
+                activePhobs.Add(phob);
+                phobTree.Insert(phob);
+            }
+            else
+            {
+                deferredActivations.Add(phob);
             }
         }
     }

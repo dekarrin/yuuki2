@@ -17,6 +17,8 @@ namespace Yuuki2TheGame.Physics
 
     delegate void PhobCollisionHandler(IPhysical hit);
 
+    delegate void PhobEventHandler(IPhysical sender);
+
     /// <summary>
     /// Contains the setters that give the engine access to private physical properties.
     /// </summary>
@@ -69,6 +71,17 @@ namespace Yuuki2TheGame.Physics
         /// Acceleration imparted that cannot be removed except by explicitly setting GlobalAcceleration.
         /// </summary>
         Vector2 GlobalAcceleration { get; set; }
+
+        bool Active { get; set; }
+
+        #endregion
+
+        #region events
+
+        /// <summary>
+        /// Called whenever the activation of this phob is changed.
+        /// </summary>
+        event PhobEventHandler OnActivationChanged;
 
         #endregion
 

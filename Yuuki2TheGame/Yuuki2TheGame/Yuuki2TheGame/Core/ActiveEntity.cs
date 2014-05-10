@@ -46,6 +46,8 @@ namespace Yuuki2TheGame.Core
 
         private float _mass = 0.0f;
 
+        private bool _active = true;
+
         #endregion
 
         #region properties
@@ -239,6 +241,29 @@ namespace Yuuki2TheGame.Core
                 }
             }
         }
+
+        public bool Active
+        {
+            get
+            {
+                return _active;
+            }
+            set
+            {
+                bool oldActive = _active;
+                _active = value;
+                if (_active != oldActive && OnActivationChanged != null)
+                {
+                    OnActivationChanged(this);
+                }
+            }
+        }
+
+        #endregion
+
+        #region events
+
+        public event PhobEventHandler OnActivationChanged;
 
         #endregion
 
