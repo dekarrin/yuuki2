@@ -308,10 +308,9 @@ namespace Yuuki2TheGame.Core
 
         public void GiveItem(ItemID id, int count)
         {
-            Item item = new Item(id);
             for (int i = 0; i < count; i++)
             {
-                Player.Inventory.Add(item);
+                World.AddItem(new Item(id), new Point(Player.X, Player.Y));
             }
         }
 
